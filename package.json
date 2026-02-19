@@ -1,0 +1,72 @@
+{
+  "name": "@ratexai/event-graph",
+  "version": "1.0.0",
+  "description": "Event Flow & KOL Influence Graph visualization library for RateXAI SocialFi dashboard",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./types": {
+      "types": "./dist/types/index.d.ts"
+    },
+    "./hooks": {
+      "import": "./dist/hooks/index.mjs",
+      "require": "./dist/hooks/index.js",
+      "types": "./dist/hooks/index.d.ts"
+    },
+    "./utils": {
+      "import": "./dist/utils/index.mjs",
+      "require": "./dist/utils/index.js",
+      "types": "./dist/utils/index.d.ts"
+    },
+    "./api": {
+      "import": "./dist/api/client.mjs",
+      "require": "./dist/api/client.js",
+      "types": "./dist/api/client.d.ts"
+    },
+    "./theme": {
+      "import": "./dist/styles/theme.mjs",
+      "require": "./dist/styles/theme.js",
+      "types": "./dist/styles/theme.d.ts"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.3.0"
+  },
+  "keywords": [
+    "ratexai",
+    "event-graph",
+    "kol",
+    "sankey",
+    "visualization",
+    "crypto",
+    "socialfi"
+  ],
+  "license": "UNLICENSED",
+  "private": true
+}
