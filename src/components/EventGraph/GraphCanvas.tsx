@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import type { EventEdge, EventNode, GraphTheme, KolNode, TimeSlot, ViewMode } from "../../types";
 import { getEventTypeStyle, getKolTierStyle } from "../../styles/theme";
 import { kolStreamWidth, streamWidth, type ComputedPositions } from "../../utils";
@@ -68,17 +68,28 @@ export function GraphCanvas({
   onHover,
   onSelect,
 }: GraphCanvasProps) {
-  const isEdgeActive = (edge: EventEdge) => !!hoveredId && activeChain.has(edge.from) && activeChain.has(edge.to);
+  const isEventsMode = mode === "events";
 
-  const resolveColor = (nodeId: string) => {
-    if (mode === "events") {
-      const node = eventById.get(nodeId);
-      return node ? getEventTypeStyle(theme, node.type).color : theme.muted;
+  const colorResolver = useMemo(() => {
+    if (isEventsMode) {
+      return (nodeId: string) => {
+        const node = eventById.get(nodeId);
+        return node ? getEventTypeStyle(theme, node.type).color : theme.muted;
+      };
     }
 
-    const node = kolById.get(nodeId);
-    return node ? getKolTierStyle(theme, node.tier).color : theme.muted;
-  };
+    return (nodeId: string) => {
+      const node = kolById.get(nodeId);
+      return node ? getKolTierStyle(theme, node.tier).color : theme.muted;
+    };
+  }, [eventById, isEventsMode, kolById, theme]);
+
+  const streamWidthResolver = useMemo(() => {
+    if (isEventsMode) {
+      return (toId: string) => streamWidth(eventById.get(toId)?.weight ?? 0.5);
+    }
+    return (toId: string) => kolStreamWidth(kolById.get(toId)?.followers ?? 10000);
+  }, [eventById, isEventsMode, kolById]);
 
   return (
     <svg
@@ -103,7 +114,7 @@ export function GraphCanvas({
               x={x}
               topY={layoutPadding.top}
               bottomY={layoutPadding.top + graphHeight}
-              label={mode === "kols" ? `Wave ${i + 1}` : slot.label}
+              label={isEventsMode ? slot.label : `Wave ${i + 1}`}
               theme={theme}
             />
           );
@@ -121,27 +132,24 @@ export function GraphCanvas({
           const to = positions[edge.to];
           if (!from || !to) return null;
 
-          const widthByWeight = mode === "events"
-            ? streamWidth(eventById.get(edge.to)?.weight ?? 0.5)
-            : kolStreamWidth(kolById.get(edge.to)?.followers ?? 10000);
-          const active = isEdgeActive(edge);
+          const active = !!hoveredId && activeChain.has(edge.from) && activeChain.has(edge.to);
 
           return (
             <StreamPath
-              key={`s-${i}`}
+              key={`s-${edge.from}-${edge.to}-${i}`}
               index={i}
               from={from}
               to={to}
-              width={widthByWeight}
-              fromColor={resolveColor(edge.from)}
-              toColor={resolveColor(edge.to)}
+              width={streamWidthResolver(edge.to)}
+              fromColor={colorResolver(edge.from)}
+              toColor={colorResolver(edge.to)}
               isActive={active}
               isDimmed={!!hoveredId && !active}
             />
           );
         })}
 
-        {mode === "events"
+        {isEventsMode
           ? eventNodes.map((eventNode) => {
               const pos = positions[eventNode.id];
               if (!pos) return null;

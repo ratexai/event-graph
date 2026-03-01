@@ -22,6 +22,7 @@ import {
 } from "../hooks";
 import { DetailPanel, HoverTooltip } from "./Panel/DetailPanel";
 import { GraphCanvas } from "./EventGraph/GraphCanvas";
+import { StatusOverlay, ZoomControls } from "./EventGraph/Overlays";
 import { FilterBar, HeaderBar, KolStatsBar } from "./EventGraph/TopBars";
 
 const HEADER_HEIGHT = 48;
@@ -77,8 +78,8 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const statsHeight = mode === "kols" && showKolStats ? KOL_STATS_HEIGHT : 0;
   const topOffset = HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0) + statsHeight;
   const panelWidth = selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : 0;
-  const svgWidth = dims.w - panelWidth;
-  const svgHeight = dims.h - topOffset;
+  const svgWidth = Math.max(0, dims.w - panelWidth);
+  const svgHeight = Math.max(0, dims.h - topOffset);
 
   const evGraph = useEventFlowGraph(eventData, svgWidth, svgHeight, graphFilters.filters, selection.hovered, layoutOverrides);
   const kolGraph = useKolFlowGraph(kolData, svgWidth, svgHeight, graphFilters.filters, selection.hovered, layoutOverrides);
@@ -198,38 +199,16 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         onSelect={handleNodeSelect}
       />
 
-      {loading && (
-        <div style={{
-          position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)",
-          padding: "16px 32px", borderRadius: 12, background: theme.surface, border: `1px solid ${theme.border}`,
-          zIndex: 40, fontSize: 12, color: theme.textSecondary,
-        }}>
-          Loading graph data...
-        </div>
-      )}
-      {error && (
-        <div style={{
-          position: "absolute", top: "50%", left: "50%", transform: "translate(-50%,-50%)",
-          padding: "16px 32px", borderRadius: 12, background: theme.negativeDim, border: `1px solid ${theme.negative}40`,
-          zIndex: 40, fontSize: 12, color: theme.negative,
-        }}>
-          {error}
-        </div>
-      )}
+      <StatusOverlay theme={theme} loading={loading} error={error} />
 
       {showZoomControls && (
-        <div style={{ position: "absolute", bottom: 20, right: panelWidth ? panelWidth + 16 : 16, display: "flex", flexDirection: "column", gap: 3, zIndex: 25 }}>
-          {[
-            { label: "+", action: panZoom.zoomIn },
-            { label: "⊙", action: panZoom.reset },
-            { label: "−", action: panZoom.zoomOut },
-          ].map((button) => (
-            <button key={button.label} onClick={button.action} style={{
-              width: 30, height: 30, borderRadius: 8, border: `1px solid ${theme.border}`, background: theme.bgAlt,
-              color: theme.muted, fontSize: 15, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "inherit",
-            }}>{button.label}</button>
-          ))}
-        </div>
+        <ZoomControls
+          theme={theme}
+          panelOffset={panelWidth}
+          onZoomIn={panZoom.zoomIn}
+          onZoomOut={panZoom.zoomOut}
+          onReset={panZoom.reset}
+        />
       )}
 
       {showDetailPanel && (
