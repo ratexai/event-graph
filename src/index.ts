@@ -57,3 +57,4 @@ export {
   StreamPath, GridColumn, FlowArrow, SentimentRing, Sparkline,
   GlowRings, ImpactRing, TierBadge,
 } from "./components/Shared/SvgPrimitives";
+export { GraphErrorBoundary } from "./components/Shared/ErrorBoundary";

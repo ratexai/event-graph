@@ -11,15 +11,16 @@ interface ZoomControlsProps {
 
 export function ZoomControls({ theme, panelOffset, onZoomIn, onZoomOut, onReset }: ZoomControlsProps) {
   return (
-    <div style={{ position: "absolute", bottom: 20, right: panelOffset ? panelOffset + 16 : 16, display: "flex", flexDirection: "column", gap: 3, zIndex: 25 }}>
+    <div role="group" aria-label="Zoom controls" style={{ position: "absolute", bottom: 20, right: panelOffset ? panelOffset + 16 : 16, display: "flex", flexDirection: "column", gap: 3, zIndex: 25 }}>
       {[
-        { label: "+", action: onZoomIn },
-        { label: "⊙", action: onReset },
-        { label: "−", action: onZoomOut },
+        { label: "+", action: onZoomIn, ariaLabel: "Zoom in" },
+        { label: "⊙", action: onReset, ariaLabel: "Reset zoom" },
+        { label: "−", action: onZoomOut, ariaLabel: "Zoom out" },
       ].map((button) => (
         <button
           key={button.label}
           onClick={button.action}
+          aria-label={button.ariaLabel}
           style={{
             width: 30,
             height: 30,

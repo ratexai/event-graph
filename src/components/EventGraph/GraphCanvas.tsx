@@ -28,6 +28,9 @@ interface GraphCanvasProps {
       onMouseMove: (e: React.MouseEvent) => void;
       onMouseUp: () => void;
       onMouseLeave: () => void;
+      onTouchStart: (e: React.TouchEvent) => void;
+      onTouchMove: (e: React.TouchEvent) => void;
+      onTouchEnd: () => void;
     };
   };
   edges: EventEdge[];
@@ -97,7 +100,9 @@ export function GraphCanvas({
     <svg
       width={width}
       height={height}
-      style={{ marginTop: topOffset, cursor: panZoom.isPanning ? "grabbing" : "grab" }}
+      role="img"
+      aria-label={`${isEventsMode ? "Event flow" : "KOL influence"} graph visualization`}
+      style={{ marginTop: topOffset, cursor: panZoom.isPanning ? "grabbing" : "grab", touchAction: "none" }}
       {...panZoom.handlers}
     >
       <defs>

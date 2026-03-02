@@ -28,10 +28,16 @@ export const KolNodeComponent = memo<Props>(({
   const platMeta = PLATFORM_META[kol.platform] || PLATFORM_META.other;
   const handleEnter = useCallback(() => onHoverStart(kol.id), [kol.id, onHoverStart]);
   const handleClick = useCallback(() => onSelect(kol.id), [kol.id, onSelect]);
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(kol.id); }
+  }, [kol.id, onSelect]);
 
   return (
     <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s" }}
-      opacity={isDimmed ? 0.08 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd} onClick={handleClick}>
+      role="button" aria-label={`${tierMeta.label} KOL: ${kol.name}, ${formatNumber(kol.followers)} followers`}
+      tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
+      opacity={isDimmed ? 0.08 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
+      onFocus={handleEnter} onBlur={onHoverEnd} onClick={handleClick}>
       <GlowRings radius={r} color={tierStyle.color} time={time} isActive={isHovered || isSelected} />
       {/* Engagement ring */}
       <circle r={r + 5} fill="none" stroke={tierStyle.color} strokeWidth={1} opacity={0.2}

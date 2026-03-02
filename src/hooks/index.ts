@@ -74,6 +74,9 @@ export interface PanZoomState {
     onMouseMove: (e: React.MouseEvent) => void;
     onMouseUp: () => void;
     onMouseLeave: () => void;
+    onTouchStart: (e: React.TouchEvent) => void;
+    onTouchMove: (e: React.TouchEvent) => void;
+    onTouchEnd: () => void;
   };
   zoomIn: () => void;
   zoomOut: () => void;
@@ -91,6 +94,10 @@ export function usePanZoom(opts?: {
   const dragStart = useRef<{ x: number; y: number } | null>(null);
   const panRef = useRef(pan);
   panRef.current = pan;
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
+  const pinchStartDist = useRef<number | null>(null);
+  const pinchStartZoom = useRef(1);
 
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -115,9 +122,60 @@ export function usePanZoom(opts?: {
     dragStart.current = null;
   }, []);
 
+  // Touch: compute distance between two fingers
+  const touchDist = (t: React.TouchList) => {
+    if (t.length < 2) return 0;
+    const dx = t[0].clientX - t[1].clientX;
+    const dy = t[0].clientY - t[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      // Pinch-to-zoom start
+      pinchStartDist.current = touchDist(e.touches);
+      pinchStartZoom.current = zoomRef.current;
+    } else if (e.touches.length === 1) {
+      if ((e.target as HTMLElement).closest(`.${nodeClassName}`)) return;
+      isPanningRef.current = true;
+      setIsPanning(true);
+      dragStart.current = {
+        x: e.touches[0].clientX - panRef.current.x,
+        y: e.touches[0].clientY - panRef.current.y,
+      };
+    }
+  }, [nodeClassName]);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && pinchStartDist.current) {
+      // Pinch-to-zoom
+      const dist = touchDist(e.touches);
+      const scale = dist / pinchStartDist.current;
+      setZoom(Math.max(minZoom, Math.min(maxZoom, pinchStartZoom.current * scale)));
+    } else if (e.touches.length === 1 && isPanningRef.current && dragStart.current) {
+      // Pan
+      setPan({
+        x: e.touches[0].clientX - dragStart.current.x,
+        y: e.touches[0].clientY - dragStart.current.y,
+      });
+    }
+  }, [minZoom, maxZoom]);
+
+  const onTouchEnd = useCallback(() => {
+    isPanningRef.current = false;
+    setIsPanning(false);
+    dragStart.current = null;
+    pinchStartDist.current = null;
+  }, []);
+
+  const handlers = useMemo(() => ({
+    onWheel, onMouseDown, onMouseMove, onMouseUp, onMouseLeave: onMouseUp,
+    onTouchStart, onTouchMove, onTouchEnd,
+  }), [onWheel, onMouseDown, onMouseMove, onMouseUp, onTouchStart, onTouchMove, onTouchEnd]);
+
   return {
     zoom, pan, isPanning,
-    handlers: { onWheel, onMouseDown, onMouseMove, onMouseUp, onMouseLeave: onMouseUp },
+    handlers,
     zoomIn: useCallback(() => setZoom((z) => Math.min(maxZoom, z + zoomStep)), [maxZoom, zoomStep]),
     zoomOut: useCallback(() => setZoom((z) => Math.max(minZoom, z - zoomStep)), [minZoom, zoomStep]),
     reset: useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []),
@@ -302,8 +360,7 @@ export function useEventGraphApi(client: EventGraphApiClient, request: EventFlow
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [client, serialized]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  }, [client, serialized]); 
   return { data, loading, error, setData };
 }
 
@@ -325,7 +382,6 @@ export function useKolGraphApi(client: EventGraphApiClient, request: KolFlowRequ
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [client, serialized]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  }, [client, serialized]); 
   return { data, loading, error, setData };
 }

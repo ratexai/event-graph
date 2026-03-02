@@ -24,6 +24,7 @@ import { DetailPanel, HoverTooltip } from "./Panel/DetailPanel";
 import { GraphCanvas } from "./EventGraph/GraphCanvas";
 import { StatusOverlay, ZoomControls } from "./EventGraph/Overlays";
 import { FilterBar, HeaderBar, KolStatsBar } from "./EventGraph/TopBars";
+import { GraphErrorBoundary } from "./Shared/ErrorBoundary";
 
 const HEADER_HEIGHT = 48;
 const FILTER_HEIGHT = 38;
@@ -191,31 +192,33 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         />
       )}
 
-      <GraphCanvas
-        width={svgWidth}
-        height={svgHeight}
-        topOffset={topOffset}
-        mode={mode}
-        theme={theme}
-        time={time}
-        timeSlots={timeSlots}
-        maxCol={currentGraph.maxCol}
-        graphWidth={graphWidth}
-        graphHeight={graphHeight}
-        layoutPadding={currentGraph.layout.padding}
-        panZoom={panZoom}
-        edges={currentGraph.edges}
-        positions={currentGraph.positions}
-        activeChain={currentGraph.activeChain}
-        hoveredId={selection.hovered}
-        selectedId={selection.selected}
-        eventNodes={evGraph.filtered}
-        kolNodes={kolGraph.filtered}
-        eventById={eventById}
-        kolById={kolById}
-        onHover={handleNodeHover}
-        onSelect={handleNodeSelect}
-      />
+      <GraphErrorBoundary theme={theme}>
+        <GraphCanvas
+          width={svgWidth}
+          height={svgHeight}
+          topOffset={topOffset}
+          mode={mode}
+          theme={theme}
+          time={time}
+          timeSlots={timeSlots}
+          maxCol={currentGraph.maxCol}
+          graphWidth={graphWidth}
+          graphHeight={graphHeight}
+          layoutPadding={currentGraph.layout.padding}
+          panZoom={panZoom}
+          edges={currentGraph.edges}
+          positions={currentGraph.positions}
+          activeChain={currentGraph.activeChain}
+          hoveredId={selection.hovered}
+          selectedId={selection.selected}
+          eventNodes={evGraph.filtered}
+          kolNodes={kolGraph.filtered}
+          eventById={eventById}
+          kolById={kolById}
+          onHover={handleNodeHover}
+          onSelect={handleNodeSelect}
+        />
+      </GraphErrorBoundary>
 
       <StatusOverlay theme={theme} loading={loading} error={error} />
 
