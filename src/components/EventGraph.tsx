@@ -8,8 +8,8 @@
    ```
    ═══════════════════════════════════════════════════════════════ */
 
-import React, { useCallback, useMemo, useRef, useState } from "react";
-import type { EventGraphProps, EventNode, EventType, KolNode, KolTier, Platform, ViewMode } from "../types";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { EventGraphProps, EventNode, EventType, FilterState, KolNode, KolTier, Platform, ViewMode } from "../types";
 import { mergeTheme } from "../styles/theme";
 import {
   useAnimationTime,
@@ -52,6 +52,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   onNodeSelect,
   onNodeHover,
   onModeChange,
+  onFilterChange,
   loading = false,
   error = null,
   className,
@@ -75,6 +76,11 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const allPlatforms = useMemo<Platform[]>(() => [...new Set(kolNodes.map((node) => node.platform))], [kolNodes]);
   const graphFilters = useGraphFilters(allEventTypes, allTiers, allPlatforms);
 
+  // Notify parent when filters change
+  useEffect(() => {
+    onFilterChangeRef.current?.(graphFilters.filters);
+  }, [graphFilters.filters]);
+
   const statsHeight = mode === "kols" && showKolStats ? KOL_STATS_HEIGHT : 0;
   const topOffset = HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0) + statsHeight;
   const panelWidth = selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : 0;
@@ -93,21 +99,33 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const eventById = useMemo(() => toIdMap(eventNodes), [eventNodes]);
   const kolById = useMemo(() => toIdMap(kolNodes), [kolNodes]);
 
+  // Use refs for callbacks to avoid recreating handlers on every render
+  const onModeChangeRef = useRef(onModeChange);
+  onModeChangeRef.current = onModeChange;
+  const onNodeHoverRef = useRef(onNodeHover);
+  onNodeHoverRef.current = onNodeHover;
+  const onNodeSelectRef = useRef(onNodeSelect);
+  onNodeSelectRef.current = onNodeSelect;
+  const onFilterChangeRef = useRef(onFilterChange);
+  onFilterChangeRef.current = onFilterChange;
+  const modeRef = useRef(mode);
+  modeRef.current = mode;
+
   const handleModeChange = useCallback((nextMode: ViewMode) => {
     setMode(nextMode);
     selection.closePanel();
-    onModeChange?.(nextMode);
-  }, [onModeChange, selection]);
+    onModeChangeRef.current?.(nextMode);
+  }, [selection.closePanel]);
 
   const handleNodeHover = useCallback((id: string | null) => {
     selection.setHovered(id);
-    onNodeHover?.(id, mode);
-  }, [mode, onNodeHover, selection]);
+    onNodeHoverRef.current?.(id, modeRef.current);
+  }, [selection.setHovered]);
 
   const handleNodeSelect = useCallback((id: string) => {
     selection.setSelected(id);
-    onNodeSelect?.(id, mode);
-  }, [mode, onNodeSelect, selection]);
+    onNodeSelectRef.current?.(id, modeRef.current);
+  }, [selection.setSelected]);
 
   const selectedEvent = mode === "events" && selection.selected ? eventById.get(selection.selected) ?? null : null;
   const selectedKol = mode === "kols" && selection.selected ? kolById.get(selection.selected) ?? null : null;

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import type { EventEdge, EventNode, GraphTheme, KolNode, TimeSlot, ViewMode } from "../../types";
 import { getEventTypeStyle, getKolTierStyle } from "../../styles/theme";
 import { kolStreamWidth, streamWidth, type ComputedPositions } from "../../utils";
@@ -69,6 +69,8 @@ export function GraphCanvas({
   onSelect,
 }: GraphCanvasProps) {
   const isEventsMode = mode === "events";
+
+  const handleHoverEnd = useCallback(() => onHover(null), [onHover]);
 
   const colorResolver = useMemo(() => {
     if (isEventsMode) {
@@ -166,7 +168,7 @@ export function GraphCanvas({
                   isSelected={selectedId === eventNode.id}
                   isDimmed={!!hoveredId && !activeChain.has(eventNode.id)}
                   onHoverStart={onHover}
-                  onHoverEnd={() => onHover(null)}
+                  onHoverEnd={handleHoverEnd}
                   onSelect={onSelect}
                 />
               );
@@ -187,7 +189,7 @@ export function GraphCanvas({
                   isSelected={selectedId === kolNode.id}
                   isDimmed={!!hoveredId && !activeChain.has(kolNode.id)}
                   onHoverStart={onHover}
-                  onHoverEnd={() => onHover(null)}
+                  onHoverEnd={handleHoverEnd}
                   onSelect={onSelect}
                 />
               );

@@ -34,15 +34,31 @@ const DEFAULT_CONFIG: ApiConfig = {
 
 // ─── In-memory cache ────────────────────────────────────────────
 
+const MAX_CACHE_SIZE = 200;
 const cache = new Map<string, { data: unknown; ts: number }>();
+
+function evictStaleEntries(ttl: number): void {
+  const now = Date.now();
+  for (const [key, entry] of cache) {
+    if (now - entry.ts >= ttl) cache.delete(key);
+  }
+  // If still over limit, remove oldest entries
+  if (cache.size > MAX_CACHE_SIZE) {
+    const sorted = [...cache.entries()].sort((a, b) => a[1].ts - b[1].ts);
+    const toRemove = sorted.slice(0, cache.size - MAX_CACHE_SIZE);
+    for (const [key] of toRemove) cache.delete(key);
+  }
+}
 
 function getCached<T>(key: string, ttl: number): T | null {
   const entry = cache.get(key);
   if (entry && Date.now() - entry.ts < ttl) return entry.data as T;
+  if (entry) cache.delete(key);
   return null;
 }
 
-function setCache(key: string, data: unknown): void {
+function setCache(key: string, data: unknown, ttl: number): void {
+  if (cache.size >= MAX_CACHE_SIZE) evictStaleEntries(ttl);
   cache.set(key, { data, ts: Date.now() });
 }
 
@@ -107,7 +123,7 @@ async function apiFetch<T>(
       }
 
       const data = (await response.json()) as T;
-      setCache(cacheKey, data);
+      setCache(cacheKey, data, config.cacheTtl || 60000);
       return data;
     } catch (err) {
       lastError = err as Error;
@@ -169,10 +185,13 @@ export class EventGraphApiClient {
 // ─── Singleton factory ──────────────────────────────────────────
 
 let defaultClient: EventGraphApiClient | null = null;
+let defaultClientConfigKey: string | null = null;
 
 export function getApiClient(config?: Partial<ApiConfig>): EventGraphApiClient {
-  if (!defaultClient || config) {
+  const configKey = config ? JSON.stringify(config) : "__default__";
+  if (!defaultClient || configKey !== defaultClientConfigKey) {
     defaultClient = new EventGraphApiClient(config);
+    defaultClientConfigKey = configKey;
   }
   return defaultClient;
 }
