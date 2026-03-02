@@ -205,8 +205,9 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
   const tierMeta = KOL_TIER_META[kol.tier];
   const platMeta = PLATFORM_META[kol.platform] || PLATFORM_META.other;
 
-  const influencedKols = (kol.influence || []).map((id) => allKols.find((k) => k.id === id)).filter(Boolean) as KolNode[];
-  const influencedBy = (kol.from || []).map((id) => allKols.find((k) => k.id === id)).filter(Boolean) as KolNode[];
+  const kolMap = useMemo(() => new Map(allKols.map((k) => [k.id, k])), [allKols]);
+  const influencedKols = (kol.influence || []).map((id) => kolMap.get(id)).filter(Boolean) as KolNode[];
+  const influencedBy = (kol.from || []).map((id) => kolMap.get(id)).filter(Boolean) as KolNode[];
 
   return (
     <div style={{ padding: 20 }}>
@@ -358,7 +359,7 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, theme }) => {
         </div>
         <div style={{ display: "flex", gap: 12 }}>
           <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.text }}>{formatNumber(kol.followers)}</div><div style={{ fontSize: 7, color: theme.muted }}>FOLLOWERS</div></div>
-          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.accent }}>{kol.engRate}%</div><div style={{ fontSize: 7, color: theme.muted }}>ENG RATE</div></div>
+          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.accent }}>{kol.engRate.toFixed(1)}%</div><div style={{ fontSize: 7, color: theme.muted }}>ENG RATE</div></div>
           <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: tierStyle.color }}>{formatNumber(kol.reach)}</div><div style={{ fontSize: 7, color: theme.muted }}>REACH</div></div>
         </div>
         <SentimentBadge sentiment={kol.sentiment} theme={theme} />

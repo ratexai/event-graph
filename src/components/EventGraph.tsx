@@ -247,5 +247,3 @@ export const EventGraph: React.FC<EventGraphProps> = ({
     </div>
   );
 };
-
-export default EventGraph;
