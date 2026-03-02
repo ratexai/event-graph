@@ -4,9 +4,11 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import type {
-  EventNode, EventEdge, KolNode,
-  KolAggregateStats, Point2D, LayoutConfig, FilterState,
+  EventNode, EventEdge, KolNode, NarrativeNode,
+  KolAggregateStats, NarrativeAggregateStats,
+  Point2D, LayoutConfig, FilterState,
   KolTier, Platform, Sentiment, SortField,
+  NarrativeCategory, NarrativeSignal,
 } from "../types";
 
 // ─── Default Layout ─────────────────────────────────────────────
@@ -358,4 +360,135 @@ export function streamWidth(weight: number, layout: LayoutConfig = DEFAULT_LAYOU
 
 export function kolStreamWidth(followers: number): number {
   return Math.max(3, Math.log10(Math.max(followers, 1000)) * 4);
+}
+
+// ─── Narrative Utilities ─────────────────────────────────────────
+
+/** Compute positions for narrative nodes */
+export function computeNarrativePositions(
+  nodes: NarrativeNode[], width: number, height: number, layout: LayoutConfig = DEFAULT_LAYOUT,
+): ComputedPositions {
+  return computeColumnPositions(nodes, width, height, layout);
+}
+
+/** Derive edges from NarrativeNode.from[] fields */
+export function deriveNarrativeEdges(nodes: NarrativeNode[]): EventEdge[] {
+  const idSet = new Set(nodes.map((n) => n.id));
+  return nodes.flatMap((node) =>
+    (node.from || [])
+      .filter((fid) => idSet.has(fid))
+      .map((fid) => ({ from: fid, to: node.id, type: "causal" as const })),
+  );
+}
+
+/** Collect full upstream + downstream chain from a narrative node */
+export function getNarrativeChain(nodeId: string, nodes: NarrativeNode[]): Set<string> {
+  const visited = new Set<string>([nodeId]);
+  const nodeMap = new Map(nodes.map((n) => [n.id, n]));
+  const childMap = new Map<string, string[]>();
+  for (const n of nodes) {
+    for (const fid of n.from || []) {
+      const arr = childMap.get(fid);
+      if (arr) arr.push(n.id);
+      else childMap.set(fid, [n.id]);
+    }
+  }
+
+  const upStack = [nodeId];
+  while (upStack.length) {
+    const id = upStack.pop()!;
+    for (const fid of nodeMap.get(id)?.from || []) {
+      if (!visited.has(fid)) { visited.add(fid); upStack.push(fid); }
+    }
+  }
+  const downStack = [nodeId];
+  while (downStack.length) {
+    const id = downStack.pop()!;
+    for (const cid of childMap.get(id) || []) {
+      if (!visited.has(cid)) { visited.add(cid); downStack.push(cid); }
+    }
+  }
+
+  return visited;
+}
+
+/** Filter narrative nodes by category, signal, search, weight */
+export function filterNarratives(nodes: NarrativeNode[], filters: Partial<FilterState>): NarrativeNode[] {
+  let result = nodes;
+
+  if (filters.activeCategories?.size) {
+    result = result.filter((n) => filters.activeCategories!.has(n.category));
+  }
+  if (filters.activeSignals?.size) {
+    result = result.filter((n) => filters.activeSignals!.has(n.signal));
+  }
+  if (filters.minWeight != null) {
+    result = result.filter((n) => n.weight >= filters.minWeight!);
+  }
+  if (filters.searchQuery) {
+    const q = filters.searchQuery.toLowerCase();
+    result = result.filter((n) => n.label.toLowerCase().includes(q) || n.desc.toLowerCase().includes(q));
+  }
+
+  return result;
+}
+
+/** Compute aggregate stats for narrative nodes */
+export function computeNarrativeStats(nodes: NarrativeNode[]): NarrativeAggregateStats {
+  const total = nodes.length;
+  const empty: NarrativeAggregateStats = {
+    totalEvents: 0, totalVolume: 0, avgMomentum: 0,
+    currentProb: 0, netOddsDelta: 0,
+    signalBreakdown: {} as Record<NarrativeSignal, number>,
+    categoryBreakdown: {} as Record<NarrativeCategory, number>,
+    sentimentBreakdown: {} as Record<Sentiment, number>,
+  };
+  if (total === 0) return empty;
+
+  let totalVolume = 0, totalMomentum = 0, netOddsDelta = 0;
+  const signalBreakdown = {} as Record<NarrativeSignal, number>;
+  const categoryBreakdown = {} as Record<NarrativeCategory, number>;
+  const sentimentBreakdown = {} as Record<Sentiment, number>;
+  let topByImpact: NarrativeNode = nodes[0];
+  let topByOddsDelta: NarrativeNode = nodes[0];
+  let lastProb = 50;
+
+  for (const n of nodes) {
+    totalVolume += n.volume;
+    totalMomentum += n.momentum;
+    netOddsDelta += n.oddsDelta;
+    signalBreakdown[n.signal] = (signalBreakdown[n.signal] || 0) + 1;
+    categoryBreakdown[n.category] = (categoryBreakdown[n.category] || 0) + 1;
+    sentimentBreakdown[n.sentiment] = (sentimentBreakdown[n.sentiment] || 0) + 1;
+    if (n.weight > topByImpact.weight) topByImpact = n;
+    if (Math.abs(n.oddsDelta) > Math.abs(topByOddsDelta.oddsDelta)) topByOddsDelta = n;
+    lastProb = n.marketProb;
+  }
+
+  return {
+    totalEvents: total,
+    totalVolume,
+    avgMomentum: totalMomentum / total,
+    currentProb: lastProb,
+    netOddsDelta,
+    signalBreakdown,
+    categoryBreakdown,
+    sentimentBreakdown,
+    topEventByImpact: topByImpact.id,
+    topEventByOddsDelta: topByOddsDelta.id,
+  };
+}
+
+/** Narrative node radius based on weight and oddsDelta */
+export function narrativeNodeRadius(weight: number, oddsDelta: number, layout: LayoutConfig = DEFAULT_LAYOUT): number {
+  const base = layout.nodeBaseRadius + weight * layout.nodeWeightScale;
+  const boost = Math.min(Math.abs(oddsDelta) * 0.3, 8);
+  return base + boost;
+}
+
+/** Narrative stream width based on weight + oddsDelta magnitude */
+export function narrativeStreamWidth(weight: number, oddsDelta: number, layout: LayoutConfig = DEFAULT_LAYOUT): number {
+  const base = Math.max(layout.streamMinWidth, weight * layout.streamWidthScale);
+  const boost = Math.min(Math.abs(oddsDelta) * 0.2, 4);
+  return base + boost;
 }

@@ -28,9 +28,26 @@ export type KolTier = "mega" | "macro" | "mid" | "micro" | "nano";
 
 export type Platform = "youtube" | "twitter" | "telegram" | "tiktok" | "instagram" | "medium" | "other";
 
-export type ViewMode = "events" | "kols";
+export type ViewMode = "events" | "kols" | "narratives";
 
 export type SortField = "followers" | "engRate" | "reach" | "mentions" | "impact" | "date";
+
+export type NarrativeCategory =
+  | "ai"
+  | "war"
+  | "elections"
+  | "regulation"
+  | "defi"
+  | "memecoin"
+  | "macro"
+  | "tech"
+  | "scandal"
+  | "climate"
+  | "sports"
+  | "other";
+
+/** Significance level: how much this event shifts the narrative */
+export type NarrativeSignal = "catalyst" | "escalation" | "resolution" | "reversal" | "noise";
 
 export type SortOrder = "asc" | "desc";
 
@@ -152,6 +169,116 @@ export interface KolAggregateStats {
   topKolByEngagement?: string;
 }
 
+// ─── Narrative Flow Types ───────────────────────────────────
+
+/** Single event node in a narrative timeline */
+export interface NarrativeNode {
+  id: string;
+  /** Time column (timeline position) */
+  col: number;
+  /** Short headline */
+  label: string;
+  /** Narrative category */
+  category: NarrativeCategory;
+  /** How this event shifts the narrative */
+  signal: NarrativeSignal;
+  sentiment: Sentiment;
+  /** Full description */
+  desc: string;
+  /** Parent event IDs this flows from */
+  from?: string[];
+
+  // ─── Scoring (core for prediction markets) ─────────
+  /** Composite event weight 0..1 (normalized importance) */
+  weight: number;
+  /** How much this event changed prediction market odds (e.g., +12.5 means +12.5pp) */
+  oddsDelta: number;
+  /** Current market probability after this event, 0..100 */
+  marketProb: number;
+  /** Source credibility score 0..100 */
+  sourceAuthority: number;
+  /** Narrative momentum: positive = accelerating, negative = decelerating */
+  momentum: number;
+  /** Volume of mentions/discussion */
+  volume: number;
+
+  // ─── Prediction market link ────────────────────────
+  /** Linked prediction market (e.g., "polymarket") */
+  marketPlatform?: string;
+  /** Market question / bet title */
+  marketQuestion?: string;
+  /** Direct URL to the prediction market */
+  marketUrl?: string;
+  /** Market slug/ID for API lookups */
+  marketSlug?: string;
+
+  // ─── Metadata ──────────────────────────────────────
+  /** Primary source URL */
+  sourceUrl?: string;
+  /** Source name (e.g., "Reuters", "CoinDesk") */
+  sourceName?: string;
+  /** ISO timestamp */
+  timestamp?: string;
+  /** Optional badge (e.g., "Breaking", "+15pp") */
+  extra?: string;
+  /** Tags for cross-referencing */
+  tags?: string[];
+  /** Extensible metadata */
+  meta?: Record<string, unknown>;
+}
+
+/** A narrative is a tracked story that evolves over time */
+export interface Narrative {
+  id: string;
+  title: string;
+  category: NarrativeCategory;
+  /** Current status */
+  status: "active" | "resolved" | "stale";
+  /** Overall sentiment trend */
+  sentimentTrend: Sentiment;
+  /** Current consensus market probability */
+  currentProb: number;
+  /** Probability when narrative started tracking */
+  startProb: number;
+  /** Momentum history for sparkline */
+  momentumHistory?: number[];
+  /** Probability history for sparkline */
+  probHistory?: number[];
+  /** Related prediction market URLs */
+  markets?: Array<{ platform: string; question: string; url: string; prob: number }>;
+}
+
+/** Complete narrative flow dataset */
+export interface NarrativeFlowData {
+  nodes: NarrativeNode[];
+  edges?: EventEdge[];
+  timeSlots: TimeSlot[];
+  /** The narrative this graph represents */
+  narrative?: Narrative;
+  /** All available narratives for switching */
+  narratives?: Narrative[];
+  project?: ProjectInfo;
+  stats?: NarrativeAggregateStats;
+}
+
+export interface NarrativeAggregateStats {
+  totalEvents: number;
+  totalVolume: number;
+  avgMomentum: number;
+  /** Current market probability */
+  currentProb: number;
+  /** Total odds delta (net shift) */
+  netOddsDelta: number;
+  /** Count of catalysts vs noise */
+  signalBreakdown: Record<NarrativeSignal, number>;
+  categoryBreakdown: Record<NarrativeCategory, number>;
+  /** Highest-impact event ID */
+  topEventByImpact?: string;
+  /** Biggest market mover event ID */
+  topEventByOddsDelta?: string;
+  sentimentBreakdown: Record<Sentiment, number>;
+}
+
 // ─── Project ────────────────────────────────────────────────────
 
 export interface ProjectInfo {
@@ -190,6 +317,7 @@ export interface EventGraphProps {
   defaultMode?: ViewMode;
   eventData?: EventFlowData;
   kolData?: KolFlowData;
+  narrativeData?: NarrativeFlowData;
   theme?: Partial<GraphTheme>;
   layout?: Partial<LayoutConfig>;
   showModeSwitcher?: boolean;
@@ -197,6 +325,7 @@ export interface EventGraphProps {
   showDetailPanel?: boolean;
   showZoomControls?: boolean;
   showKolStats?: boolean;
+  showNarrativeStats?: boolean;
   branding?: BrandingConfig;
   onNodeSelect?: (nodeId: string, mode: ViewMode) => void;
   onNodeHover?: (nodeId: string | null, mode: ViewMode) => void;
@@ -214,6 +343,8 @@ export interface FilterState {
   activeEventTypes: Set<EventType>;
   activeTiers: Set<KolTier>;
   activePlatforms: Set<Platform>;
+  activeCategories: Set<NarrativeCategory>;
+  activeSignals: Set<NarrativeSignal>;
   sortField: SortField;
   sortOrder: SortOrder;
   searchQuery: string;
@@ -250,6 +381,8 @@ export interface GraphTheme {
   neutralDim: string;
   eventTypeColors: Record<EventType, { color: string; bg: string }>;
   kolTierColors: Record<KolTier, { color: string; bg: string }>;
+  narrativeCategoryColors: Record<NarrativeCategory, { color: string; bg: string }>;
+  narrativeSignalColors: Record<NarrativeSignal, { color: string; bg: string }>;
 }
 
 // ─── API Request/Response ───────────────────────────────────────
@@ -298,5 +431,20 @@ export interface ApiResponse<T> {
   };
 }
 
+export interface NarrativeFlowRequest {
+  narrativeId?: string;
+  dateFrom: string;
+  dateTo: string;
+  categories?: NarrativeCategory[];
+  signals?: NarrativeSignal[];
+  minWeight?: number;
+  minOddsDelta?: number;
+  marketPlatform?: string;
+  limit?: number;
+  includeEdges?: boolean;
+  sentiment?: Sentiment[];
+}
+
 export type EventFlowResponse = ApiResponse<EventFlowData>;
 export type KolFlowResponse = ApiResponse<KolFlowData>;
+export type NarrativeFlowResponse = ApiResponse<NarrativeFlowData>;

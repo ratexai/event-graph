@@ -9,7 +9,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { EventGraphProps, EventNode, EventType, FilterState, KolNode, KolTier, Platform, ViewMode } from "../types";
+import type { EventGraphProps, EventNode, EventType, FilterState, KolNode, NarrativeNode, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../types";
 import { mergeTheme } from "../styles/theme";
 import {
   useAnimationTime,
@@ -18,12 +18,13 @@ import {
   useGraphFilters,
   useGraphSelection,
   useKolFlowGraph,
+  useNarrativeFlowGraph,
   usePanZoom,
 } from "../hooks";
 import { DetailPanel, HoverTooltip } from "./Panel/DetailPanel";
 import { GraphCanvas } from "./EventGraph/GraphCanvas";
 import { StatusOverlay, ZoomControls } from "./EventGraph/Overlays";
-import { FilterBar, HeaderBar, KolStatsBar } from "./EventGraph/TopBars";
+import { FilterBar, HeaderBar, KolStatsBar, NarrativeStatsBar } from "./EventGraph/TopBars";
 import { GraphErrorBoundary } from "./Shared/ErrorBoundary";
 
 const HEADER_HEIGHT = 48;
@@ -33,6 +34,8 @@ const DETAIL_PANEL_WIDTH = 340;
 
 const EMPTY_EVENT_NODES: EventNode[] = [];
 const EMPTY_KOL_NODES: KolNode[] = [];
+const EMPTY_NARRATIVE_NODES: NarrativeNode[] = [];
+const NARRATIVE_STATS_HEIGHT = 52;
 
 function toIdMap<T extends { id: string }>(items: T[]): Map<string, T> {
   return new Map(items.map((item) => [item.id, item]));
@@ -42,6 +45,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   defaultMode = "events",
   eventData,
   kolData,
+  narrativeData,
   theme: themeOverrides,
   layout: layoutOverrides,
   showModeSwitcher = true,
@@ -49,6 +53,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   showDetailPanel = true,
   showZoomControls = true,
   showKolStats = true,
+  showNarrativeStats = true,
   branding = { name: "RateXAI" },
   onNodeSelect,
   onNodeHover,
@@ -71,18 +76,21 @@ export const EventGraph: React.FC<EventGraphProps> = ({
 
   const eventNodes = eventData?.nodes ?? EMPTY_EVENT_NODES;
   const kolNodes = kolData?.nodes ?? EMPTY_KOL_NODES;
+  const narrativeNodes = narrativeData?.nodes ?? EMPTY_NARRATIVE_NODES;
 
   const allEventTypes = useMemo<EventType[]>(() => [...new Set(eventNodes.map((node) => node.type))], [eventNodes]);
   const allTiers = useMemo<KolTier[]>(() => [...new Set(kolNodes.map((node) => node.tier))], [kolNodes]);
   const allPlatforms = useMemo<Platform[]>(() => [...new Set(kolNodes.map((node) => node.platform))], [kolNodes]);
-  const graphFilters = useGraphFilters(allEventTypes, allTiers, allPlatforms);
+  const allCategories = useMemo<NarrativeCategory[]>(() => [...new Set(narrativeNodes.map((node) => node.category))], [narrativeNodes]);
+  const allSignals = useMemo<NarrativeSignal[]>(() => [...new Set(narrativeNodes.map((node) => node.signal))], [narrativeNodes]);
+  const graphFilters = useGraphFilters(allEventTypes, allTiers, allPlatforms, allCategories, allSignals);
 
   // Notify parent when filters change
   useEffect(() => {
     onFilterChangeRef.current?.(graphFilters.filters);
   }, [graphFilters.filters]);
 
-  const statsHeight = mode === "kols" && showKolStats ? KOL_STATS_HEIGHT : 0;
+  const statsHeight = mode === "kols" && showKolStats ? KOL_STATS_HEIGHT : mode === "narratives" && showNarrativeStats ? NARRATIVE_STATS_HEIGHT : 0;
   const topOffset = HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0) + statsHeight;
   const panelWidth = selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : 0;
   const svgWidth = Math.max(0, dims.w - panelWidth);
@@ -90,15 +98,17 @@ export const EventGraph: React.FC<EventGraphProps> = ({
 
   const evGraph = useEventFlowGraph(eventData, svgWidth, svgHeight, graphFilters.filters, selection.hovered, layoutOverrides);
   const kolGraph = useKolFlowGraph(kolData, svgWidth, svgHeight, graphFilters.filters, selection.hovered, layoutOverrides);
+  const narGraph = useNarrativeFlowGraph(narrativeData, svgWidth, svgHeight, graphFilters.filters, selection.hovered, layoutOverrides);
 
-  const currentGraph = mode === "events" ? evGraph : kolGraph;
-  const timeSlots = mode === "events" ? (eventData?.timeSlots ?? []) : (kolData?.timeSlots ?? []);
+  const currentGraph = mode === "events" ? evGraph : mode === "narratives" ? narGraph : kolGraph;
+  const timeSlots = mode === "events" ? (eventData?.timeSlots ?? []) : mode === "narratives" ? (narrativeData?.timeSlots ?? []) : (kolData?.timeSlots ?? []);
 
   const graphWidth = svgWidth - currentGraph.layout.padding.left - currentGraph.layout.padding.right;
   const graphHeight = svgHeight - currentGraph.layout.padding.top - currentGraph.layout.padding.bottom;
 
   const eventById = useMemo(() => toIdMap(eventNodes), [eventNodes]);
   const kolById = useMemo(() => toIdMap(kolNodes), [kolNodes]);
+  const narrativeById = useMemo(() => toIdMap(narrativeNodes), [narrativeNodes]);
 
   // Use refs for callbacks to avoid recreating handlers on every render
   const onModeChangeRef = useRef(onModeChange);
@@ -130,8 +140,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
 
   const selectedEvent = mode === "events" && selection.selected ? eventById.get(selection.selected) ?? null : null;
   const selectedKol = mode === "kols" && selection.selected ? kolById.get(selection.selected) ?? null : null;
+  const selectedNarrative = mode === "narratives" && selection.selected ? narrativeById.get(selection.selected) ?? null : null;
   const hoveredEvent = mode === "events" && selection.hovered && !selection.panelOpen ? eventById.get(selection.hovered) ?? null : null;
   const hoveredKol = mode === "kols" && selection.hovered && !selection.panelOpen ? kolById.get(selection.hovered) ?? null : null;
+  const hoveredNarrative = mode === "narratives" && selection.hovered && !selection.panelOpen ? narrativeById.get(selection.hovered) ?? null : null;
   const timeSlotLabels = useMemo(() => timeSlots.map((slot) => slot.label), [timeSlots]);
 
   return (
@@ -159,6 +171,8 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         eventEdgeCount={evGraph.edges.length}
         kolCount={kolGraph.filtered.length}
         totalReach={kolGraph.stats.totalReach}
+        narrativeCount={narGraph.filtered.length}
+        currentProb={narGraph.stats.currentProb}
         zoom={panZoom.zoom}
         onModeChange={handleModeChange}
       />
@@ -172,13 +186,20 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           allEventTypes={allEventTypes}
           allTiers={allTiers}
           allPlatforms={allPlatforms}
+          allCategories={allCategories}
+          allSignals={allSignals}
           activeEventTypes={graphFilters.filters.activeEventTypes}
           activeTiers={graphFilters.filters.activeTiers}
           activePlatforms={graphFilters.filters.activePlatforms}
+          activeCategories={graphFilters.filters.activeCategories}
+          activeSignals={graphFilters.filters.activeSignals}
           onResetEventTypes={graphFilters.resetEventTypes}
+          onResetCategories={graphFilters.resetCategories}
           onToggleEventType={graphFilters.toggleEventType}
           onToggleTier={graphFilters.toggleTier}
           onTogglePlatform={graphFilters.togglePlatform}
+          onToggleCategory={graphFilters.toggleCategory}
+          onToggleSignal={graphFilters.toggleSignal}
         />
       )}
 
@@ -189,6 +210,16 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           panelOffset={panelWidth}
           theme={theme}
           stats={kolGraph.stats}
+        />
+      )}
+
+      {mode === "narratives" && showNarrativeStats && (
+        <NarrativeStatsBar
+          top={HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0)}
+          height={statsHeight}
+          panelOffset={panelWidth}
+          theme={theme}
+          stats={narGraph.stats}
         />
       )}
 
@@ -213,8 +244,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           selectedId={selection.selected}
           eventNodes={evGraph.filtered}
           kolNodes={kolGraph.filtered}
+          narrativeNodes={narGraph.filtered}
           eventById={eventById}
           kolById={kolById}
+          narrativeById={narrativeById}
           onHover={handleNodeHover}
           onSelect={handleNodeSelect}
         />
@@ -237,8 +270,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           isOpen={selection.panelOpen}
           selectedEvent={selectedEvent}
           selectedKol={selectedKol}
+          selectedNarrative={selectedNarrative}
           allEvents={eventNodes}
           allKols={kolNodes}
+          allNarratives={narrativeNodes}
           timeSlotLabels={timeSlotLabels}
           theme={theme}
           onClose={selection.closePanel}
@@ -246,7 +281,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         />
       )}
 
-      <HoverTooltip event={hoveredEvent} kol={hoveredKol} theme={theme} />
+      <HoverTooltip event={hoveredEvent} kol={hoveredKol} narrative={hoveredNarrative} theme={theme} />
     </div>
   );
 };

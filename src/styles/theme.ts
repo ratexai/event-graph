@@ -2,7 +2,7 @@
    @ratexai/event-graph — Theme System
    ═══════════════════════════════════════════════════════════════ */
 
-import type { GraphTheme, EventType, KolTier, Sentiment } from "../types";
+import type { GraphTheme, EventType, KolTier, NarrativeCategory, NarrativeSignal, Sentiment } from "../types";
 
 export const DEFAULT_THEME: GraphTheme = {
   bg: "#050608",
@@ -46,6 +46,27 @@ export const DEFAULT_THEME: GraphTheme = {
     micro: { color: "#a78bfa", bg: "rgba(167,139,250,0.12)" },
     nano:  { color: "#6b7280", bg: "rgba(107,114,128,0.1)" },
   },
+  narrativeCategoryColors: {
+    ai:         { color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
+    war:        { color: "#f87171", bg: "rgba(248,113,113,0.12)" },
+    elections:  { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
+    regulation: { color: "#67e8f9", bg: "rgba(103,232,249,0.12)" },
+    defi:       { color: "#2dd4bf", bg: "rgba(45,212,191,0.12)" },
+    memecoin:   { color: "#e879f9", bg: "rgba(232,121,249,0.12)" },
+    macro:      { color: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
+    tech:       { color: "#a78bfa", bg: "rgba(167,139,250,0.12)" },
+    scandal:    { color: "#fb923c", bg: "rgba(251,146,60,0.12)" },
+    climate:    { color: "#4ade80", bg: "rgba(74,222,128,0.12)" },
+    sports:     { color: "#22d3ee", bg: "rgba(34,211,238,0.12)" },
+    other:      { color: "#94a3b8", bg: "rgba(148,163,184,0.1)" },
+  },
+  narrativeSignalColors: {
+    catalyst:   { color: "#fbbf24", bg: "rgba(251,191,36,0.15)" },
+    escalation: { color: "#f87171", bg: "rgba(248,113,113,0.15)" },
+    resolution: { color: "#34d399", bg: "rgba(52,211,153,0.15)" },
+    reversal:   { color: "#e879f9", bg: "rgba(232,121,249,0.15)" },
+    noise:      { color: "#6b7280", bg: "rgba(107,114,128,0.08)" },
+  },
 };
 
 /** Deep-merge partial theme overrides with defaults */
@@ -56,6 +77,8 @@ export function mergeTheme(overrides?: Partial<GraphTheme>): GraphTheme {
     ...overrides,
     eventTypeColors: { ...DEFAULT_THEME.eventTypeColors, ...overrides.eventTypeColors },
     kolTierColors: { ...DEFAULT_THEME.kolTierColors, ...overrides.kolTierColors },
+    narrativeCategoryColors: { ...DEFAULT_THEME.narrativeCategoryColors, ...overrides.narrativeCategoryColors },
+    narrativeSignalColors: { ...DEFAULT_THEME.narrativeSignalColors, ...overrides.narrativeSignalColors },
   };
 }
 
@@ -67,6 +90,14 @@ export function getEventTypeStyle(theme: GraphTheme, type: EventType) {
 
 export function getKolTierStyle(theme: GraphTheme, tier: KolTier) {
   return theme.kolTierColors[tier] ?? { color: theme.muted, bg: theme.neutralDim };
+}
+
+export function getNarrativeCategoryStyle(theme: GraphTheme, category: NarrativeCategory) {
+  return theme.narrativeCategoryColors[category] ?? { color: theme.muted, bg: theme.neutralDim };
+}
+
+export function getNarrativeSignalStyle(theme: GraphTheme, signal: NarrativeSignal) {
+  return theme.narrativeSignalColors[signal] ?? { color: theme.muted, bg: theme.neutralDim };
 }
 
 export function getSentimentColor(theme: GraphTheme, sentiment: Sentiment) {
@@ -103,6 +134,29 @@ export const KOL_TIER_META: Record<KolTier, { label: string; minFollowers: strin
   mid:   { label: "MID",   minFollowers: "100K+" },
   micro: { label: "MICRO", minFollowers: "10K+" },
   nano:  { label: "NANO",  minFollowers: "<10K" },
+};
+
+export const NARRATIVE_CATEGORY_META: Record<NarrativeCategory, { icon: string; label: string }> = {
+  ai:         { icon: "🤖", label: "AI" },
+  war:        { icon: "⚔️", label: "Wars & Conflicts" },
+  elections:  { icon: "🗳️", label: "Elections" },
+  regulation: { icon: "⚖️", label: "Regulation" },
+  defi:       { icon: "🏦", label: "DeFi" },
+  memecoin:   { icon: "🐸", label: "Memecoin" },
+  macro:      { icon: "🌍", label: "Macro" },
+  tech:       { icon: "💻", label: "Tech" },
+  scandal:    { icon: "🔥", label: "Scandal" },
+  climate:    { icon: "🌱", label: "Climate" },
+  sports:     { icon: "⚽", label: "Sports" },
+  other:      { icon: "●", label: "Other" },
+};
+
+export const NARRATIVE_SIGNAL_META: Record<NarrativeSignal, { icon: string; label: string; desc: string }> = {
+  catalyst:   { icon: "⚡", label: "Catalyst",   desc: "Triggers significant narrative shift" },
+  escalation: { icon: "📈", label: "Escalation", desc: "Amplifies existing narrative trend" },
+  resolution: { icon: "✅", label: "Resolution", desc: "Resolves uncertainty, settles narrative" },
+  reversal:   { icon: "🔄", label: "Reversal",   desc: "Flips the narrative direction" },
+  noise:      { icon: "○", label: "Noise",      desc: "Low-impact, does not shift narrative" },
 };
 
 export const PLATFORM_META: Record<string, { icon: string; label: string }> = {

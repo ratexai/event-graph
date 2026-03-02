@@ -3,8 +3,8 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useMemo } from "react";
-import type { EventNode, KolNode, GraphTheme, Sentiment } from "../../types";
-import { getEventTypeStyle, getKolTierStyle, EVENT_TYPE_META, KOL_TIER_META, PLATFORM_META } from "../../styles/theme";
+import type { EventNode, KolNode, NarrativeNode, GraphTheme, Sentiment } from "../../types";
+import { getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, getNarrativeSignalStyle, EVENT_TYPE_META, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META, NARRATIVE_SIGNAL_META } from "../../styles/theme";
 import { formatNumber, sentimentLabel, sentimentArrow } from "../../utils";
 import { Sparkline } from "../Shared/SvgPrimitives";
 
@@ -302,15 +302,185 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
   );
 };
 
+// ─── Narrative Detail ────────────────────────────────────────────
+
+interface NarrativeDetailProps {
+  node: NarrativeNode;
+  allNodes: NarrativeNode[];
+  timeSlotLabels: string[];
+  theme: GraphTheme;
+  onNavigate: (id: string) => void;
+}
+
+const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeSlotLabels, theme, onNavigate }) => {
+  const catStyle = getNarrativeCategoryStyle(theme, node.category);
+  const sigStyle = getNarrativeSignalStyle(theme, node.signal);
+  const catMeta = NARRATIVE_CATEGORY_META[node.category];
+  const sigMeta = NARRATIVE_SIGNAL_META[node.signal];
+  const dayLabel = timeSlotLabels[node.col] || `Col ${node.col}`;
+  const deltaColor = node.oddsDelta > 0 ? theme.positive : node.oddsDelta < 0 ? theme.negative : theme.neutral;
+  const deltaText = node.oddsDelta > 0 ? `+${node.oddsDelta.toFixed(1)}pp` : `${node.oddsDelta.toFixed(1)}pp`;
+
+  const nodeMap = useMemo(() => new Map(allNodes.map((n) => [n.id, n])), [allNodes]);
+
+  // Upstream chain
+  const upstream: NarrativeNode[] = [];
+  const visited = new Set<string>();
+  const trace = (id: string) => {
+    if (visited.has(id)) return;
+    visited.add(id);
+    const ev = nodeMap.get(id);
+    if (!ev) return;
+    for (const fid of ev.from || []) trace(fid);
+    if (ev.id !== node.id) upstream.push(ev);
+  };
+  trace(node.id);
+
+  const downstream = allNodes.filter((n) => n.from?.includes(node.id));
+
+  return (
+    <div style={{ padding: 20 }}>
+      {/* Header */}
+      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 20 }}>
+        <div style={{
+          width: 48, height: 48, borderRadius: 14, background: catStyle.bg,
+          border: `1px solid ${catStyle.color}30`, display: "flex", alignItems: "center",
+          justifyContent: "center", fontSize: 24, flexShrink: 0,
+        }}>{catMeta?.icon || "●"}</div>
+        <div>
+          <div style={{ fontSize: 16, fontWeight: 800 }}>{node.label}</div>
+          <div style={{ fontSize: 10, color: catStyle.color, fontWeight: 600, marginTop: 2 }}>{catMeta?.label} · {dayLabel}</div>
+          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
+            <div style={{ padding: "2px 8px", borderRadius: 10, background: sigStyle.bg, fontSize: 9, fontWeight: 700, color: sigStyle.color }}>
+              {sigMeta?.icon} {sigMeta?.label}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Description */}
+      <p style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.6, margin: "0 0 20px" }}>{node.desc}</p>
+
+      {/* Badges */}
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+        <SentimentBadge sentiment={node.sentiment} theme={theme} full />
+        <div style={{ padding: "4px 12px", borderRadius: 20, background: theme.bgAlt, fontSize: 10, fontWeight: 700, color: deltaColor }}>
+          {deltaText}
+        </div>
+        {node.extra && (
+          <div style={{ padding: "4px 12px", borderRadius: 20, background: catStyle.bg, fontSize: 10, fontWeight: 600, color: catStyle.color }}>{node.extra}</div>
+        )}
+      </div>
+
+      {/* Market probability card */}
+      <div style={{ padding: 16, borderRadius: 12, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase" }}>Market Probability</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: theme.accent }}>{node.marketProb.toFixed(1)}%</div>
+        </div>
+        <div style={{ height: 6, borderRadius: 3, background: theme.border, overflow: "hidden" }}>
+          <div style={{ height: 6, borderRadius: 3, background: theme.accent, width: `${node.marketProb}%`, transition: "width 0.3s" }} />
+        </div>
+        {node.marketQuestion && (
+          <div style={{ fontSize: 10, color: theme.textSecondary, marginTop: 10, fontStyle: "italic" }}>
+            "{node.marketQuestion}"
+          </div>
+        )}
+        {node.marketPlatform && (
+          <div style={{ fontSize: 9, color: theme.muted, marginTop: 4 }}>
+            via {node.marketPlatform}{node.marketUrl ? " · " : ""}
+            {node.marketUrl && <a href={node.marketUrl} target="_blank" rel="noopener noreferrer" style={{ color: theme.accent, textDecoration: "none" }}>View Market →</a>}
+          </div>
+        )}
+      </div>
+
+      {/* Metrics grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 24 }}>
+        <MetricCard label="Odds Delta" value={deltaText} color={deltaColor} theme={theme} />
+        <MetricCard label="Weight" value={`${(node.weight * 100).toFixed(0)}%`} color={catStyle.color} maxVal={100} currentVal={node.weight * 100} theme={theme} />
+        <MetricCard label="Momentum" value={node.momentum > 0 ? `+${node.momentum.toFixed(1)}` : node.momentum.toFixed(1)} color={node.momentum > 0 ? theme.positive : node.momentum < 0 ? theme.negative : theme.neutral} theme={theme} />
+        <MetricCard label="Volume" value={formatNumber(node.volume)} color={theme.accent} theme={theme} />
+        <MetricCard label="Source Authority" value={`${node.sourceAuthority}`} color={sigStyle.color} maxVal={100} currentVal={node.sourceAuthority} theme={theme} />
+        <MetricCard label="Signal" value={sigMeta?.label || node.signal} color={sigStyle.color} theme={theme} />
+      </div>
+
+      {/* Source info */}
+      {(node.sourceName || node.sourceUrl) && (
+        <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 20 }}>
+          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 6, textTransform: "uppercase" }}>Source</div>
+          {node.sourceName && <div style={{ fontSize: 11, fontWeight: 600 }}>{node.sourceName}</div>}
+          {node.sourceUrl && (
+            <a href={node.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: theme.accent, textDecoration: "none" }}>
+              {node.sourceUrl.length > 50 ? node.sourceUrl.slice(0, 50) + "..." : node.sourceUrl}
+            </a>
+          )}
+        </div>
+      )}
+
+      {/* Sparkline placeholder (volume trend) */}
+      <div style={{ padding: 14, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 24 }}>
+        <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 8, textTransform: "uppercase" }}>Volume Trend</div>
+        <Sparkline data={mockSparkData(node.volume > 0 ? node.volume : 50)} color={catStyle.color} width={280} height={40} />
+      </div>
+
+      {/* Tags */}
+      {node.tags && node.tags.length > 0 && (
+        <div style={{ marginBottom: 20, display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {node.tags.map((tag) => (
+            <span key={tag} style={{ padding: "3px 10px", borderRadius: 10, background: theme.bgAlt, border: `1px solid ${theme.border}`, fontSize: 9, color: theme.textSecondary }}>
+              #{tag}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Upstream chain */}
+      {upstream.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>Narrative Chain (upstream)</div>
+          {upstream.map((n) => {
+            const nStyle = getNarrativeCategoryStyle(theme, n.category);
+            const nMeta = NARRATIVE_CATEGORY_META[n.category];
+            return (
+              <LinkItem key={n.id} avatar={nMeta?.icon || "●"} name={n.label}
+                subtitle={`${nMeta?.label} · ${n.oddsDelta > 0 ? "+" : ""}${n.oddsDelta.toFixed(1)}pp`}
+                badgeColor={nStyle.color} badgeBg={nStyle.bg}
+                theme={theme} onClick={() => onNavigate(n.id)} />
+            );
+          })}
+        </div>
+      )}
+
+      {/* Downstream */}
+      {downstream.length > 0 && (
+        <div>
+          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>Led to →</div>
+          {downstream.map((n) => {
+            const nStyle = getNarrativeCategoryStyle(theme, n.category);
+            const nMeta = NARRATIVE_CATEGORY_META[n.category];
+            return (
+              <LinkItem key={n.id} avatar={nMeta?.icon || "●"} name={n.label}
+                subtitle={`${nMeta?.label} · ${n.oddsDelta > 0 ? "+" : ""}${n.oddsDelta.toFixed(1)}pp`}
+                badgeColor={nStyle.color} badgeBg={nStyle.bg}
+                theme={theme} onClick={() => onNavigate(n.id)} />
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─── HoverTooltip ───────────────────────────────────────────────
 
 interface TooltipProps {
   event?: EventNode | null;
   kol?: KolNode | null;
+  narrative?: NarrativeNode | null;
   theme: GraphTheme;
 }
 
-const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, theme }) => {
+const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) => {
   if (event) {
     const style = getEventTypeStyle(theme, event.type);
     return (
@@ -368,6 +538,38 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, theme }) => {
     );
   }
 
+  if (narrative) {
+    const catStyle = getNarrativeCategoryStyle(theme, narrative.category);
+    const sigStyle = getNarrativeSignalStyle(theme, narrative.signal);
+    const catMeta = NARRATIVE_CATEGORY_META[narrative.category];
+    const sigMeta = NARRATIVE_SIGNAL_META[narrative.signal];
+    const deltaColor = narrative.oddsDelta > 0 ? theme.positive : narrative.oddsDelta < 0 ? theme.negative : theme.neutral;
+    const deltaText = narrative.oddsDelta > 0 ? `+${narrative.oddsDelta.toFixed(1)}pp` : `${narrative.oddsDelta.toFixed(1)}pp`;
+    return (
+      <div style={{
+        position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)",
+        background: theme.surface, border: `1px solid ${catStyle.color}25`, borderRadius: 12,
+        padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
+        backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "0 12px 48px rgba(0,0,0,.7)", maxWidth: "92%",
+      }}>
+        <span style={{ fontSize: 22 }}>{catMeta?.icon}</span>
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 700 }}>{narrative.label}</div>
+          <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 2, maxWidth: 260 }}>{narrative.desc}</div>
+        </div>
+        <div style={{ padding: "2px 8px", borderRadius: 10, background: sigStyle.bg, fontSize: 9, fontWeight: 700, color: sigStyle.color }}>
+          {sigMeta?.icon} {sigMeta?.label}
+        </div>
+        <SentimentBadge sentiment={narrative.sentiment} theme={theme} />
+        <div style={{ display: "flex", gap: 12 }}>
+          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: deltaColor }}>{deltaText}</div><div style={{ fontSize: 7, color: theme.muted }}>ODDS</div></div>
+          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.accent }}>{narrative.marketProb.toFixed(0)}%</div><div style={{ fontSize: 7, color: theme.muted }}>PROB</div></div>
+        </div>
+        <div style={{ fontSize: 9, color: theme.muted, padding: "3px 8px", background: theme.bgAlt, borderRadius: 8 }}>Click →</div>
+      </div>
+    );
+  }
+
   return null;
 };
 
@@ -377,8 +579,10 @@ export interface DetailPanelProps {
   isOpen: boolean;
   selectedEvent: EventNode | null;
   selectedKol: KolNode | null;
+  selectedNarrative?: NarrativeNode | null;
   allEvents: EventNode[];
   allKols: KolNode[];
+  allNarratives?: NarrativeNode[];
   timeSlotLabels: string[];
   theme: GraphTheme;
   onClose: () => void;
@@ -386,7 +590,8 @@ export interface DetailPanelProps {
 }
 
 export const DetailPanel: React.FC<DetailPanelProps> = ({
-  isOpen, selectedEvent, selectedKol, allEvents, allKols, timeSlotLabels,
+  isOpen, selectedEvent, selectedKol, selectedNarrative,
+  allEvents, allKols, allNarratives = [], timeSlotLabels,
   theme, onClose, onNavigate,
 }) => (
   <div style={{
@@ -411,6 +616,11 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
 
     {selectedKol && (
       <KolDetail kol={selectedKol} allKols={allKols}
+        timeSlotLabels={timeSlotLabels} theme={theme} onNavigate={onNavigate} />
+    )}
+
+    {selectedNarrative && (
+      <NarrativeDetail node={selectedNarrative} allNodes={allNarratives}
         timeSlotLabels={timeSlotLabels} theme={theme} onNavigate={onNavigate} />
     )}
   </div>

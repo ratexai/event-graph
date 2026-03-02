@@ -1,9 +1,10 @@
 import React, { useCallback, useMemo } from "react";
-import type { EventEdge, EventNode, GraphTheme, KolNode, TimeSlot, ViewMode } from "../../types";
-import { getEventTypeStyle, getKolTierStyle } from "../../styles/theme";
-import { kolStreamWidth, streamWidth, type ComputedPositions } from "../../utils";
+import type { EventEdge, EventNode, GraphTheme, KolNode, NarrativeNode, TimeSlot, ViewMode } from "../../types";
+import { getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle } from "../../styles/theme";
+import { kolStreamWidth, streamWidth, narrativeStreamWidth, type ComputedPositions } from "../../utils";
 import { EventNodeComponent } from "../EventFlow/EventNode";
 import { KolNodeComponent } from "../KolFlow/KolNode";
+import { NarrativeNodeComponent } from "../NarrativeFlow/NarrativeNode";
 import { FlowArrow, GridColumn, StreamPath } from "../Shared/SvgPrimitives";
 
 interface GraphCanvasProps {
@@ -40,8 +41,10 @@ interface GraphCanvasProps {
   selectedId: string | null;
   eventNodes: EventNode[];
   kolNodes: KolNode[];
+  narrativeNodes?: NarrativeNode[];
   eventById: Map<string, EventNode>;
   kolById: Map<string, KolNode>;
+  narrativeById?: Map<string, NarrativeNode>;
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
 }
@@ -66,12 +69,15 @@ export function GraphCanvas({
   selectedId,
   eventNodes,
   kolNodes,
+  narrativeNodes = [],
   eventById,
   kolById,
+  narrativeById,
   onHover,
   onSelect,
 }: GraphCanvasProps) {
   const isEventsMode = mode === "events";
+  const isNarrativeMode = mode === "narratives";
 
   const handleHoverEnd = useCallback(() => onHover(null), [onHover]);
 
@@ -82,26 +88,37 @@ export function GraphCanvas({
         return node ? getEventTypeStyle(theme, node.type).color : theme.muted;
       };
     }
-
+    if (isNarrativeMode) {
+      return (nodeId: string) => {
+        const node = narrativeById?.get(nodeId);
+        return node ? getNarrativeCategoryStyle(theme, node.category).color : theme.muted;
+      };
+    }
     return (nodeId: string) => {
       const node = kolById.get(nodeId);
       return node ? getKolTierStyle(theme, node.tier).color : theme.muted;
     };
-  }, [eventById, isEventsMode, kolById, theme]);
+  }, [eventById, isEventsMode, isNarrativeMode, kolById, narrativeById, theme]);
 
   const streamWidthResolver = useMemo(() => {
     if (isEventsMode) {
       return (toId: string) => streamWidth(eventById.get(toId)?.weight ?? 0.5);
     }
+    if (isNarrativeMode) {
+      return (toId: string) => {
+        const n = narrativeById?.get(toId);
+        return narrativeStreamWidth(n?.weight ?? 0.5, n?.oddsDelta ?? 0);
+      };
+    }
     return (toId: string) => kolStreamWidth(kolById.get(toId)?.followers ?? 10000);
-  }, [eventById, isEventsMode, kolById]);
+  }, [eventById, isEventsMode, isNarrativeMode, kolById, narrativeById]);
 
   return (
     <svg
       width={width}
       height={height}
       role="img"
-      aria-label={`${isEventsMode ? "Event flow" : "KOL influence"} graph visualization`}
+      aria-label={`${isEventsMode ? "Event flow" : isNarrativeMode ? "Narrative flow" : "KOL influence"} graph visualization`}
       style={{ marginTop: topOffset, cursor: panZoom.isPanning ? "grabbing" : "grab", touchAction: "none" }}
       {...panZoom.handlers}
     >
@@ -121,7 +138,7 @@ export function GraphCanvas({
               x={x}
               topY={layoutPadding.top}
               bottomY={layoutPadding.top + graphHeight}
-              label={isEventsMode ? slot.label : `Wave ${i + 1}`}
+              label={isEventsMode ? slot.label : isNarrativeMode ? slot.label : `Wave ${i + 1}`}
               theme={theme}
             />
           );
@@ -160,7 +177,6 @@ export function GraphCanvas({
           ? eventNodes.map((eventNode) => {
               const pos = positions[eventNode.id];
               if (!pos) return null;
-
               return (
                 <EventNodeComponent
                   key={eventNode.id}
@@ -178,27 +194,47 @@ export function GraphCanvas({
                 />
               );
             })
-          : kolNodes.map((kolNode) => {
-              const pos = positions[kolNode.id];
-              if (!pos) return null;
-
-              return (
-                <KolNodeComponent
-                  key={kolNode.id}
-                  kol={kolNode}
-                  x={pos.x}
-                  y={pos.y}
-                  theme={theme}
-                  time={time}
-                  isHovered={hoveredId === kolNode.id}
-                  isSelected={selectedId === kolNode.id}
-                  isDimmed={!!hoveredId && !activeChain.has(kolNode.id)}
-                  onHoverStart={onHover}
-                  onHoverEnd={handleHoverEnd}
-                  onSelect={onSelect}
-                />
-              );
-            })}
+          : isNarrativeMode
+            ? narrativeNodes.map((narNode) => {
+                const pos = positions[narNode.id];
+                if (!pos) return null;
+                return (
+                  <NarrativeNodeComponent
+                    key={narNode.id}
+                    node={narNode}
+                    x={pos.x}
+                    y={pos.y}
+                    theme={theme}
+                    time={time}
+                    isHovered={hoveredId === narNode.id}
+                    isSelected={selectedId === narNode.id}
+                    isDimmed={!!hoveredId && !activeChain.has(narNode.id)}
+                    onHoverStart={onHover}
+                    onHoverEnd={handleHoverEnd}
+                    onSelect={onSelect}
+                  />
+                );
+              })
+            : kolNodes.map((kolNode) => {
+                const pos = positions[kolNode.id];
+                if (!pos) return null;
+                return (
+                  <KolNodeComponent
+                    key={kolNode.id}
+                    kol={kolNode}
+                    x={pos.x}
+                    y={pos.y}
+                    theme={theme}
+                    time={time}
+                    isHovered={hoveredId === kolNode.id}
+                    isSelected={selectedId === kolNode.id}
+                    isDimmed={!!hoveredId && !activeChain.has(kolNode.id)}
+                    onHoverStart={onHover}
+                    onHoverEnd={handleHoverEnd}
+                    onSelect={onSelect}
+                  />
+                );
+              })}
       </g>
     </svg>
   );
