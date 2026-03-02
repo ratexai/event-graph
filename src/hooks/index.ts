@@ -18,15 +18,27 @@ import {
   type ComputedPositions,
 } from "../utils";
 
+const isBrowser = typeof window !== "undefined";
+
 // ─── useAnimationTime ───────────────────────────────────────────
 
-/** Continuously incrementing time value in seconds (for SVG animations) */
+/** Continuously incrementing time value in seconds (for SVG animations).
+ *  Throttled to ~12fps to avoid re-rendering the entire tree at 60fps. */
 export function useAnimationTime(): number {
   const [t, setT] = useState(0);
   useEffect(() => {
+    if (!isBrowser) return;
     let af: number;
     const start = performance.now();
-    const tick = (now: number) => { setT((now - start) / 1000); af = requestAnimationFrame(tick); };
+    let lastUpdate = 0;
+    const THROTTLE_MS = 83; // ~12fps — sufficient for glow animations
+    const tick = (now: number) => {
+      if (now - lastUpdate >= THROTTLE_MS) {
+        setT((now - start) / 1000);
+        lastUpdate = now;
+      }
+      af = requestAnimationFrame(tick);
+    };
     af = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(af);
   }, []);
@@ -38,6 +50,7 @@ export function useAnimationTime(): number {
 export function useContainerSize(ref: React.RefObject<HTMLElement | null>) {
   const [dims, setDims] = useState({ w: 1200, h: 700 });
   useEffect(() => {
+    if (!isBrowser) return;
     const el = ref.current;
     if (!el) return;
     const ro = new ResizeObserver(([entry]) => {
@@ -122,6 +135,16 @@ export function useGraphFilters(allEventTypes: EventType[], allTiers: KolTier[],
     sortOrder: "desc",
     searchQuery: "",
   });
+
+  // Sync filter sets when available data changes (e.g., async load)
+  useEffect(() => {
+    setFilters((prev) => ({
+      ...prev,
+      activeEventTypes: new Set(allEventTypes),
+      activeTiers: new Set(allTiers),
+      activePlatforms: new Set(allPlatforms),
+    }));
+  }, [allEventTypes, allTiers, allPlatforms]);
 
   const toggleEventType = useCallback((type: EventType) => {
     setFilters((prev) => {

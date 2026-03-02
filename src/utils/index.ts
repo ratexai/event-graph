@@ -131,7 +131,6 @@ export function getEventChain(nodeId: string, nodes: EventNode[]): Set<string> {
     }
   }
 
-  const stack: string[] = [nodeId];
   // Trace upstream
   const upStack = [nodeId];
   while (upStack.length) {

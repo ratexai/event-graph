@@ -2,19 +2,23 @@
    DetailPanel — Right-side panel for event/KOL node details
    ═══════════════════════════════════════════════════════════════ */
 
-import React from "react";
-import type { EventNode, KolNode, GraphTheme, KolTier } from "../../types";
+import React, { useMemo } from "react";
+import type { EventNode, KolNode, GraphTheme, Sentiment } from "../../types";
 import { getEventTypeStyle, getKolTierStyle, EVENT_TYPE_META, KOL_TIER_META, PLATFORM_META } from "../../styles/theme";
 import { formatNumber, sentimentLabel, sentimentArrow } from "../../utils";
 import { Sparkline } from "../Shared/SvgPrimitives";
 
 // ─── Helpers ────────────────────────────────────────────────────
 
-/** Generate mock sparkline data (replace with real engHistory / mention trend from API) */
+/** Generate deterministic sparkline placeholder from a seed value.
+ *  Replace with real engHistory / mention trend from API when available. */
 function mockSparkData(base: number, len = 14): number[] {
-  return Array.from({ length: len }, (_, i) =>
-    Math.max(5, base * (0.2 + Math.random() * 0.8) + (i / len) * base * 0.3),
-  );
+  let seed = Math.abs(base * 1000) | 0;
+  return Array.from({ length: len }, (_, i) => {
+    seed = (seed * 16807 + 7) % 2147483647; // LCG PRNG
+    const pseudo = (seed % 1000) / 1000;
+    return Math.max(5, base * (0.2 + pseudo * 0.8) + (i / len) * base * 0.3);
+  });
 }
 
 // ─── Metric Card ────────────────────────────────────────────────
@@ -36,12 +40,12 @@ const MetricCard: React.FC<{
 
 // ─── Sentiment Badge ────────────────────────────────────────────
 
-const SentimentBadge: React.FC<{ sentiment: string; theme: GraphTheme; full?: boolean }> = ({ sentiment, theme, full = false }) => {
+const SentimentBadge: React.FC<{ sentiment: Sentiment; theme: GraphTheme; full?: boolean }> = ({ sentiment, theme, full = false }) => {
   const color = sentiment === "pos" ? theme.positive : sentiment === "neg" ? theme.negative : theme.neutral;
   const bg = sentiment === "pos" ? theme.positiveDim : sentiment === "neg" ? theme.negativeDim : theme.neutralDim;
   return (
     <div style={{ padding: "4px 12px", borderRadius: 20, background: bg, fontSize: 10, fontWeight: 700, color }}>
-      {sentimentArrow(sentiment as any)} {full ? sentimentLabel(sentiment as any) : sentiment === "pos" ? "Pos" : sentiment === "neg" ? "Neg" : "Neu"}
+      {sentimentArrow(sentiment)} {full ? sentimentLabel(sentiment) : sentiment === "pos" ? "Pos" : sentiment === "neg" ? "Neg" : "Neu"}
     </div>
   );
 };
@@ -90,13 +94,16 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, allEvents, timeSlotLab
   const meta = EVENT_TYPE_META[event.type];
   const dayLabel = timeSlotLabels[event.col] || `Col ${event.col}`;
 
+  // Build lookup map for O(1) access
+  const eventMap = useMemo(() => new Map(allEvents.map((e) => [e.id, e])), [allEvents]);
+
   // Upstream chain
   const upstream: EventNode[] = [];
   const visited = new Set<string>();
   const trace = (id: string) => {
     if (visited.has(id)) return;
     visited.add(id);
-    const ev = allEvents.find((e) => e.id === id);
+    const ev = eventMap.get(id);
     if (!ev) return;
     for (const fid of ev.from || []) trace(fid);
     if (ev.id !== event.id) upstream.push(ev);
@@ -224,7 +231,7 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
       {/* Metrics grid */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
         <MetricCard label="Followers" value={formatNumber(kol.followers)} color={tierStyle.color} theme={theme} />
-        <MetricCard label="Eng. Rate" value={kol.engRate + "%"} color={theme.accent} theme={theme} />
+        <MetricCard label="Eng. Rate" value={kol.engRate.toFixed(1) + "%"} color={theme.accent} theme={theme} />
         <MetricCard label="Reach" value={formatNumber(kol.reach)} color={getKolTierStyle(theme, "mega").color} theme={theme} />
         <MetricCard label="Mentions" value={kol.mentions} color={getKolTierStyle(theme, "macro").color} theme={theme} />
         <MetricCard label="Total Views" value={kol.views > 0 ? formatNumber(kol.views) : "N/A"} color={getKolTierStyle(theme, "mid").color} theme={theme} />
@@ -382,7 +389,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   theme, onClose, onNavigate,
 }) => (
   <div style={{
-    position: "absolute", top: 48, right: 0, width: 340, height: "calc(100vh - 48px)",
+    position: "absolute", top: 48, right: 0, width: 340, bottom: 0,
     background: "rgba(8,10,16,0.97)", borderLeft: `1px solid ${theme.border}`,
     backdropFilter: "blur(20px)", zIndex: 25,
     transform: isOpen ? "translateX(0)" : "translateX(340px)",
