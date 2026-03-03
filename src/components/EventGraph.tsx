@@ -200,6 +200,8 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           onTogglePlatform={graphFilters.togglePlatform}
           onToggleCategory={graphFilters.toggleCategory}
           onToggleSignal={graphFilters.toggleSignal}
+          hasMarket={graphFilters.filters.hasMarket}
+          onToggleHasMarket={graphFilters.toggleHasMarket}
         />
       )}
 

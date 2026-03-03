@@ -268,10 +268,14 @@ export function useGraphFilters(
     setFilters((prev) => ({ ...prev, searchQuery: query }));
   }, []);
 
+  const toggleHasMarket = useCallback(() => {
+    setFilters((prev) => ({ ...prev, hasMarket: !prev.hasMarket }));
+  }, []);
+
   return {
     filters, setFilters,
     toggleEventType, toggleTier, togglePlatform, toggleCategory, toggleSignal,
-    resetEventTypes, resetCategories, setSortField, setSearchQuery,
+    resetEventTypes, resetCategories, setSortField, setSearchQuery, toggleHasMarket,
   };
 }
 

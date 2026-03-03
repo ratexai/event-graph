@@ -43,9 +43,10 @@ export {
   getEventChain, getKolChain, getNarrativeChain, getEventChainList,
   computeKolStats, computeNarrativeStats,
   filterEvents, filterKols, filterNarratives,
-  streamPath, formatNumber, truncateLabel, sentimentLabel, sentimentArrow,
-  nodeRadius, kolRadius, narrativeNodeRadius,
+  streamPath, formatNumber, truncateLabel, wrapLabel, sentimentLabel, sentimentArrow,
+  nodeRadius, kolRadius, narrativeNodeRadius, narrativeSizeTier,
   streamWidth, kolStreamWidth, narrativeStreamWidth,
+  getNodeEmojis, getSourceAbbr,
 } from "./utils";
 
 // Hooks

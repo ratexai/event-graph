@@ -353,6 +353,8 @@ export interface FilterState {
   timeRange?: { start: string; end: string };
   minWeight?: number;
   minImpact?: number;
+  /** If true, only show narrative nodes that have a market probability reading */
+  hasMarket?: boolean;
 }
 
 export interface BrandingConfig {
