@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState, useCallback } from "react";
 import { createRoot } from "react-dom/client";
 import { EventGraph } from "../src";
-import type { EventFlowData, KolFlowData, NarrativeFlowData } from "../src";
+import type { EventFlowData, KolFlowData } from "../src";
+import {
+  narrativeCatalogue,
+  narrativeList,
+  defaultNarrativeId,
+} from "./data";
 
-// ─── Mock Event Data ────────────────────────────────────────
+// ─── Mock Event Data (crypto demo — kept for events tab) ────
 
 const eventData: EventFlowData = {
   timeSlots: [
@@ -103,44 +108,66 @@ const kolData: KolFlowData = {
   ],
 };
 
-// ─── Mock Narrative Data ────────────────────────────────────
-
-const narrativeData: NarrativeFlowData = {
-  timeSlots: [
-    { index: 0, label: "Jan W1", startDate: "2025-01-06", endDate: "2025-01-12" },
-    { index: 1, label: "Jan W2", startDate: "2025-01-13", endDate: "2025-01-19" },
-    { index: 2, label: "Jan W3", startDate: "2025-01-20", endDate: "2025-01-26" },
-    { index: 3, label: "Feb W1", startDate: "2025-02-03", endDate: "2025-02-09" },
-  ],
-  narrative: {
-    id: "nar-1", title: "AI Regulation Bill", category: "regulation",
-    status: "active", sentimentTrend: "neg", currentProb: 62, startProb: 45,
-    probHistory: [45, 52, 58, 62],
-    markets: [{ platform: "Polymarket", question: "Will US pass AI regulation by 2025?", url: "https://polymarket.com", prob: 62 }],
-  },
-  nodes: [
-    { id: "n1", col: 0, label: "Senate Draft Leaked", category: "regulation", signal: "catalyst", sentiment: "neg", desc: "Draft of comprehensive AI regulation bill leaked to media", weight: 0.7, oddsDelta: 8, marketProb: 53, sourceAuthority: 85, momentum: 3, volume: 4200 },
-    { id: "n2", col: 0, label: "Tech Lobby Response", category: "regulation", signal: "noise", sentiment: "neg", desc: "Major tech companies issue joint statement opposing bill", weight: 0.4, oddsDelta: -2, marketProb: 51, sourceAuthority: 70, momentum: 1, volume: 2800 },
-    { id: "n3", col: 1, label: "Committee Hearing", category: "regulation", signal: "escalation", sentiment: "neg", desc: "Senate committee holds public hearing on AI risks", weight: 0.85, oddsDelta: 7, marketProb: 58, sourceAuthority: 95, momentum: 4, volume: 8500, from: ["n1", "n2"] },
-    { id: "n4", col: 2, label: "EU Coordination", category: "regulation", signal: "catalyst", sentiment: "neg", desc: "US and EU announce joint AI regulation framework talks", weight: 0.6, oddsDelta: 4, marketProb: 62, sourceAuthority: 90, momentum: 2, volume: 3100, from: ["n3"] },
-    { id: "n5", col: 2, label: "Industry Compromise", category: "regulation", signal: "resolution", sentiment: "pos", desc: "Tech industry proposes self-regulation framework", weight: 0.5, oddsDelta: -3, marketProb: 59, sourceAuthority: 65, momentum: -1, volume: 2200, from: ["n3"] },
-    { id: "n6", col: 3, label: "Bipartisan Support", category: "regulation", signal: "escalation", sentiment: "neg", desc: "Both parties signal support for modified bill", weight: 0.9, oddsDelta: 6, marketProb: 65, sourceAuthority: 92, momentum: 5, volume: 12000, from: ["n4", "n5"], extra: "+6pp" },
-  ],
-};
-
 // ─── App ────────────────────────────────────────────────────
 
 function App() {
+  const [activeNarrative, setActiveNarrative] = useState(defaultNarrativeId);
+
+  const narrativeData = narrativeCatalogue[activeNarrative];
+
+  // Inject full narrative list into the data so the component can show a switcher
+  const enrichedNarrativeData = narrativeData
+    ? { ...narrativeData, narratives: narrativeList }
+    : undefined;
+
+  const handleNodeSelect = useCallback((id: string, mode: string) => {
+    console.log(`Selected [${mode}]:`, id);
+  }, []);
+
+  const handleModeChange = useCallback((mode: string) => {
+    console.log("Mode:", mode);
+  }, []);
+
   return (
-    <EventGraph
-      eventData={eventData}
-      kolData={kolData}
-      narrativeData={narrativeData}
-      defaultMode="events"
-      branding={{ name: "RateXAI", accentColor: "#00e5a0" }}
-      onNodeSelect={(id, mode) => console.log(`Selected [${mode}]:`, id)}
-      onModeChange={(mode) => console.log("Mode:", mode)}
-    />
+    <div style={{ width: "100vw", height: "100vh", position: "relative" }}>
+      {/* Narrative switcher (top-right) */}
+      {Object.keys(narrativeCatalogue).length > 1 && (
+        <select
+          value={activeNarrative}
+          onChange={(e) => setActiveNarrative(e.target.value)}
+          style={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            zIndex: 1000,
+            background: "#1a1a2e",
+            color: "#e0e0e0",
+            border: "1px solid #333",
+            borderRadius: 6,
+            padding: "4px 8px",
+            fontSize: 12,
+          }}
+        >
+          {narrativeList
+            .filter((n) => narrativeCatalogue[n.id])
+            .map((n) => (
+              <option key={n.id} value={n.id}>
+                {n.title}
+              </option>
+            ))}
+        </select>
+      )}
+
+      <EventGraph
+        eventData={eventData}
+        kolData={kolData}
+        narrativeData={enrichedNarrativeData}
+        defaultMode="narratives"
+        branding={{ name: "RateXAI", accentColor: "#00e5a0" }}
+        onNodeSelect={handleNodeSelect}
+        onModeChange={handleModeChange}
+      />
+    </div>
   );
 }
 

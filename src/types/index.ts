@@ -193,8 +193,8 @@ export interface NarrativeNode {
   weight: number;
   /** How much this event changed prediction market odds (e.g., +12.5 means +12.5pp) */
   oddsDelta: number;
-  /** Current market probability after this event, 0..100 */
-  marketProb: number;
+  /** Current market probability after this event, 0..100 (null if no reading) */
+  marketProb: number | null;
   /** Source credibility score 0..100 */
   sourceAuthority: number;
   /** Narrative momentum: positive = accelerating, negative = decelerating */
@@ -246,6 +246,8 @@ export interface Narrative {
   probHistory?: number[];
   /** Related prediction market URLs */
   markets?: Array<{ platform: string; question: string; url: string; prob: number }>;
+  /** Named branches / sub-storylines within this narrative */
+  branches?: string[];
 }
 
 /** Complete narrative flow dataset */

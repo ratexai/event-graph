@@ -376,10 +376,10 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
       <div style={{ padding: 16, borderRadius: 12, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
           <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase" }}>Market Probability</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: theme.accent }}>{node.marketProb.toFixed(1)}%</div>
+          <div style={{ fontSize: 20, fontWeight: 800, color: theme.accent }}>{node.marketProb != null ? `${node.marketProb.toFixed(1)}%` : "\u2014"}</div>
         </div>
         <div style={{ height: 6, borderRadius: 3, background: theme.border, overflow: "hidden" }}>
-          <div style={{ height: 6, borderRadius: 3, background: theme.accent, width: `${node.marketProb}%`, transition: "width 0.3s" }} />
+          <div style={{ height: 6, borderRadius: 3, background: theme.accent, width: `${node.marketProb ?? 0}%`, transition: "width 0.3s" }} />
         </div>
         {node.marketQuestion && (
           <div style={{ fontSize: 10, color: theme.textSecondary, marginTop: 10, fontStyle: "italic" }}>
@@ -563,7 +563,7 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         <SentimentBadge sentiment={narrative.sentiment} theme={theme} />
         <div style={{ display: "flex", gap: 12 }}>
           <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: deltaColor }}>{deltaText}</div><div style={{ fontSize: 7, color: theme.muted }}>ODDS</div></div>
-          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.accent }}>{narrative.marketProb.toFixed(0)}%</div><div style={{ fontSize: 7, color: theme.muted }}>PROB</div></div>
+          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.accent }}>{narrative.marketProb != null ? `${narrative.marketProb.toFixed(0)}%` : "\u2014"}</div><div style={{ fontSize: 7, color: theme.muted }}>PROB</div></div>
         </div>
         <div style={{ fontSize: 9, color: theme.muted, padding: "3px 8px", background: theme.bgAlt, borderRadius: 8 }}>Click →</div>
       </div>
