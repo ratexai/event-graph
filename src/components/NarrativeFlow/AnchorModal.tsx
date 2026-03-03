@@ -5,7 +5,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useMemo } from "react";
-import type { NarrativeNode, GraphTheme, AnchorInfluenceLink } from "../../types";
+import type { NarrativeNode, GraphTheme, AnchorInfluenceLink, DualProbPoint, AnchorFactor } from "../../types";
 import { Sparkline } from "../Shared/SvgPrimitives";
 
 export interface AnchorModalProps {
@@ -143,6 +143,179 @@ const ScenarioCard: React.FC<{
   );
 };
 
+/** Dual sparkline: two overlaid lines (PM purple, RX green) with date labels */
+const DualSparkline: React.FC<{
+  data: DualProbPoint[]; width: number; height: number;
+}> = ({ data, width, height }) => {
+  if (data.length < 2) return null;
+  const allVals = data.flatMap((d) => [d.polymarket, d.rateX]);
+  const max = Math.max(...allVals, 100);
+  const min = Math.min(...allVals, 0);
+  const range = max - min || 1;
+  const xStep = width / Math.max(data.length - 1, 1);
+
+  const toY = (v: number) => height - ((v - min) / range) * height;
+  const pmPts = data.map((d, i) => `${i * xStep},${toY(d.polymarket)}`).join(" ");
+  const rxPts = data.map((d, i) => `${i * xStep},${toY(d.rateX)}`).join(" ");
+
+  // Find divergence point: where |pm - rx| first exceeds 3pp
+  const divIdx = data.findIndex((d) => Math.abs(d.rateX - d.polymarket) > 3);
+
+  return (
+    <svg width={width} height={height + 16} style={{ overflow: "visible" }}>
+      {/* Grid lines */}
+      {[0, 25, 50, 75, 100].filter((v) => v >= min && v <= max).map((v) => (
+        <g key={v}>
+          <line x1={0} y1={toY(v)} x2={width} y2={toY(v)} stroke="#ffffff08" strokeWidth={0.5} />
+          <text x={-4} y={toY(v) + 3} textAnchor="end" fill="#ffffff30" fontSize={6}
+            fontFamily="'JetBrains Mono',monospace">{v}%</text>
+        </g>
+      ))}
+      {/* PM line */}
+      <polyline points={pmPts} fill="none" stroke={PURPLE} strokeWidth={1.5}
+        strokeLinecap="round" opacity={0.7} />
+      {/* RX line */}
+      <polyline points={rxPts} fill="none" stroke="#22c55e" strokeWidth={2}
+        strokeLinecap="round" opacity={0.9} />
+      {/* Divergence annotation */}
+      {divIdx > 0 && (
+        <g transform={`translate(${divIdx * xStep},${toY(data[divIdx].rateX)})`}>
+          <circle r={3} fill="#22c55e" opacity={0.8} />
+          <text x={6} y={-4} fill="#22c55e" fontSize={6.5} fontWeight={700}
+            fontFamily="'JetBrains Mono',monospace">divergence</text>
+        </g>
+      )}
+      {/* Endpoint dots */}
+      <circle cx={width} cy={toY(data[data.length - 1].polymarket)} r={3} fill={PURPLE} />
+      <circle cx={width} cy={toY(data[data.length - 1].rateX)} r={3} fill="#22c55e" />
+      {/* Endpoint labels */}
+      <text x={width + 6} y={toY(data[data.length - 1].polymarket) + 3} fill={PURPLE}
+        fontSize={7} fontWeight={700} fontFamily="'JetBrains Mono',monospace">
+        PM {data[data.length - 1].polymarket}%
+      </text>
+      <text x={width + 6} y={toY(data[data.length - 1].rateX) + 3} fill="#22c55e"
+        fontSize={7} fontWeight={700} fontFamily="'JetBrains Mono',monospace">
+        RX {data[data.length - 1].rateX}%
+      </text>
+      {/* Date labels */}
+      {data.filter((_, i) => i === 0 || i === data.length - 1 || i === Math.floor(data.length / 2)).map((d, _, arr) => {
+        const idx = data.indexOf(d);
+        const label = d.date.replace(/^\d{4}-/, "").replace("-", "/");
+        return (
+          <text key={idx} x={idx * xStep} y={height + 12} textAnchor="middle"
+            fill="#ffffff40" fontSize={6} fontFamily="'JetBrains Mono',monospace">
+            {label}
+          </text>
+        );
+      })}
+    </svg>
+  );
+};
+
+/** Waterfall chart showing factor decomposition */
+const WaterfallChart: React.FC<{
+  factors: AnchorFactor[];
+  nodeMap: Map<string, NarrativeNode>;
+  startProb: number;
+  endProb: number;
+  theme: GraphTheme;
+}> = ({ factors, nodeMap, startProb, endProb, theme }) => {
+  const barWidth = 520;
+  const rowHeight = 22;
+  const labelWidth = 180;
+
+  // Sort factors: negative (biggest impact first), then positive
+  const sorted = useMemo(() => {
+    return [...factors].sort((a, b) => a.influence - b.influence);
+  }, [factors]);
+
+  // Build waterfall positions
+  const rows = useMemo(() => {
+    let running = startProb;
+    const result: Array<{
+      label: string; influence: number; from: number; to: number; color: string;
+    }> = [];
+    for (const f of sorted) {
+      const next = running + f.influence;
+      const node = nodeMap.get(f.nodeId);
+      result.push({
+        label: node?.label || f.nodeId,
+        influence: f.influence,
+        from: running,
+        to: next,
+        color: f.influence > 0 ? theme.positive : theme.negative,
+      });
+      running = next;
+    }
+    return result;
+  }, [sorted, startProb, nodeMap, theme]);
+
+  const allValues = [startProb, endProb, ...rows.flatMap((r) => [r.from, r.to])];
+  const minVal = Math.min(...allValues) - 5;
+  const maxVal = Math.max(...allValues) + 5;
+  const range = maxVal - minVal || 1;
+  const toX = (v: number) => ((v - minVal) / range) * barWidth;
+  const totalHeight = (rows.length + 2) * rowHeight + 8;
+
+  return (
+    <svg width={barWidth + labelWidth + 60} height={totalHeight} style={{ overflow: "visible", fontSize: 8 }}>
+      {/* Start bar */}
+      <text x={0} y={12} fill={theme.muted} fontSize={8} fontWeight={700}
+        fontFamily="'JetBrains Mono',monospace">Base probability</text>
+      <rect x={labelWidth} y={2} width={toX(startProb)} height={14} rx={3} fill={PURPLE} opacity={0.5} />
+      <text x={labelWidth + toX(startProb) + 6} y={12} fill={theme.text} fontSize={8} fontWeight={700}
+        fontFamily="'JetBrains Mono',monospace">{startProb}%</text>
+
+      {/* Factor bars */}
+      {rows.map((row, i) => {
+        const y = (i + 1) * rowHeight + 2;
+        const barFrom = toX(Math.min(row.from, row.to));
+        const barTo = toX(Math.max(row.from, row.to));
+        const barW = Math.max(barTo - barFrom, 1);
+        const sign = row.influence > 0 ? "+" : "";
+        return (
+          <g key={i}>
+            {/* Connector line from previous */}
+            <line x1={labelWidth + toX(row.from)} y1={y - 4} x2={labelWidth + toX(row.from)} y2={y + 2}
+              stroke={theme.border} strokeWidth={0.5} strokeDasharray="2 2" />
+            {/* Label */}
+            <text x={0} y={y + 10} fill={theme.textSecondary} fontSize={7.5}
+              fontFamily="'JetBrains Mono',monospace" style={{ overflow: "hidden" }}>
+              {row.label.length > 30 ? row.label.slice(0, 28) + "…" : row.label}
+            </text>
+            {/* Bar */}
+            <rect x={labelWidth + barFrom} y={y} width={barW} height={14} rx={3}
+              fill={row.color} opacity={0.6} />
+            {/* Delta label */}
+            <text x={labelWidth + barTo + 6} y={y + 10} fill={row.color} fontSize={8} fontWeight={800}
+              fontFamily="'JetBrains Mono',monospace">
+              {sign}{row.influence}pp → {row.to.toFixed(0)}%
+            </text>
+          </g>
+        );
+      })}
+
+      {/* End bars: PM and RX */}
+      {(() => {
+        const lastY = (rows.length + 1) * rowHeight + 2;
+        const pmProb = rows.length > 0 ? rows[rows.length - 1].to : startProb;
+        return (
+          <g>
+            <line x1={labelWidth + toX(pmProb)} y1={lastY - 4} x2={labelWidth + toX(pmProb)} y2={lastY + 2}
+              stroke={theme.border} strokeWidth={0.5} strokeDasharray="2 2" />
+            <text x={0} y={lastY + 10} fill="#22c55e" fontSize={8} fontWeight={800}
+              fontFamily="'JetBrains Mono',monospace">RateXAI estimate</text>
+            <rect x={labelWidth} y={lastY} width={toX(endProb)} height={14} rx={3}
+              fill="#22c55e" opacity={0.5} />
+            <text x={labelWidth + toX(endProb) + 6} y={lastY + 10} fill="#22c55e" fontSize={9} fontWeight={800}
+              fontFamily="'JetBrains Mono',monospace">{endProb}%</text>
+          </g>
+        );
+      })()}
+    </svg>
+  );
+};
+
 export const AnchorModal: React.FC<AnchorModalProps> = ({
   anchor, allNodes, theme, onClose, onNavigate,
 }) => {
@@ -160,10 +333,25 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
     return anchor.scenarios.map((id) => nodeMap.get(id)).filter(Boolean) as NarrativeNode[];
   }, [anchor.scenarios, nodeMap]);
 
-  const probText = anchor.marketProb != null ? `${anchor.marketProb}%` : "—";
+  const pmProb = anchor.marketProb;
+  const rxProb = anchor.rateXProb;
+  const alpha = anchor.alpha ?? (rxProb != null && pmProb != null ? rxProb - pmProb : undefined);
+  const probText = pmProb != null ? `${pmProb}%` : "—";
+  const rxText = rxProb != null ? `${rxProb}%` : null;
   const expiryLabel = anchor.resolvesAt
     ? new Date(anchor.resolvesAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : "";
+
+  // Alpha styling
+  const alphaInfo = useMemo(() => {
+    if (alpha == null) return null;
+    const abs = Math.abs(alpha);
+    let color = "#888"; let signal = "≈ in line"; let icon = "≈";
+    if (abs > 10) { color = alpha > 0 ? "#22c55e" : "#ef4444"; signal = alpha > 0 ? "▲▲ major opportunity" : "▼▼ major overpriced"; icon = alpha > 0 ? "▲▲" : "▼▼"; }
+    else if (abs > 5) { color = alpha > 0 ? "#22c55e" : "#ef4444"; signal = alpha > 0 ? "▲ underpriced" : "▼ overpriced"; icon = alpha > 0 ? "▲" : "▼"; }
+    else if (abs > 2) { color = "#eab308"; signal = alpha > 0 ? "△ mild divergence" : "▽ mild divergence"; icon = alpha > 0 ? "△" : "▽"; }
+    return { color, signal, icon, text: `${alpha > 0 ? "+" : ""}${alpha}pp` };
+  }, [alpha]);
 
   // Aggregated influence
   let posTotal = 0;
@@ -172,6 +360,18 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
     if (link.influence > 0) posTotal += link.influence;
     else negTotal += Math.abs(link.influence);
   }
+
+  // Factors for waterfall chart (use anchor.factors if present, else derive from influenceLinks)
+  const factors = useMemo<AnchorFactor[]>(() => {
+    if (anchor.factors?.length) return anchor.factors;
+    if (!anchor.influenceLinks?.length) return [];
+    return anchor.influenceLinks.map((l) => ({
+      nodeId: l.id,
+      direction: l.influence > 0 ? "up" as const : "down" as const,
+      influence: l.influence,
+      mechanism: l.mechanism,
+    }));
+  }, [anchor.factors, anchor.influenceLinks]);
 
   return (
     <div style={{
@@ -224,11 +424,40 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
           </div>
         </div>
 
-        {/* Key metrics row */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
-          <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, textAlign: "center" }}>
-            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>Current Prob</div>
-            <div style={{ fontSize: 22, fontWeight: 800, color: PURPLE }}>{probText}</div>
+        {/* Key metrics row — dual probability display */}
+        <div style={{ display: "grid", gridTemplateColumns: rxText ? "2fr 1fr 1fr 1fr" : "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
+          {/* Dual probability card */}
+          <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${alphaInfo?.color ?? theme.border}30`, textAlign: "center" }}>
+            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 6 }}>Probability</div>
+            <div style={{ display: "flex", justifyContent: "center", gap: 12, alignItems: "baseline" }}>
+              <div>
+                <div style={{ fontSize: 8, color: theme.muted, marginBottom: 2 }}>PM</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: PURPLE }}>{probText}</div>
+              </div>
+              {rxText && (
+                <>
+                  <div style={{ fontSize: 12, color: theme.muted }}>vs</div>
+                  <div>
+                    <div style={{ fontSize: 8, color: "#22c55e", marginBottom: 2, fontWeight: 700 }}>RateXAI</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#22c55e" }}>{rxText}</div>
+                  </div>
+                </>
+              )}
+            </div>
+            {/* Alpha badge */}
+            {alphaInfo && (
+              <div style={{ marginTop: 8, display: "flex", justifyContent: "center", gap: 6, alignItems: "center" }}>
+                <span style={{
+                  fontSize: 11, fontWeight: 800, color: alphaInfo.color,
+                  padding: "2px 10px", borderRadius: 6,
+                  background: `${alphaInfo.color}18`,
+                  fontFamily: "'JetBrains Mono',monospace",
+                }}>
+                  α {alphaInfo.text} {alphaInfo.icon}
+                </span>
+                <span style={{ fontSize: 8, color: alphaInfo.color }}>{alphaInfo.signal}</span>
+              </div>
+            )}
           </div>
           <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, textAlign: "center" }}>
             <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>Expiry</div>
@@ -239,13 +468,33 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
             <div style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>{anchor.tradingVolume || "—"}</div>
           </div>
           <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, textAlign: "center" }}>
-            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>Liquidity</div>
-            <div style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>{anchor.liquidity || "—"}</div>
+            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>
+              {anchor.rateXConfidence != null ? "Confidence" : "Liquidity"}
+            </div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>
+              {anchor.rateXConfidence != null ? `${(anchor.rateXConfidence * 100).toFixed(0)}%` : anchor.liquidity || "—"}
+            </div>
           </div>
         </div>
 
-        {/* Probability History Sparkline */}
-        {anchor.probHistory && anchor.probHistory.length > 2 && (
+        {/* Dual Probability History Sparkline (PM vs RX) */}
+        {anchor.dualProbHistory && anchor.dualProbHistory.length > 2 ? (
+          <div style={{
+            padding: 16, borderRadius: 12, background: theme.card,
+            border: `1px solid ${theme.border}`, marginBottom: 24,
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+              <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase" }}>
+                Probability History
+              </div>
+              <div style={{ display: "flex", gap: 12, fontSize: 8 }}>
+                <span style={{ color: PURPLE }}>━ Polymarket</span>
+                <span style={{ color: "#22c55e" }}>━ RateXAI</span>
+              </div>
+            </div>
+            <DualSparkline data={anchor.dualProbHistory} width={580} height={60} />
+          </div>
+        ) : anchor.probHistory && anchor.probHistory.length > 2 ? (
           <div style={{
             padding: 16, borderRadius: 12, background: theme.card,
             border: `1px solid ${theme.border}`, marginBottom: 24,
@@ -254,6 +503,34 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
               Probability History
             </div>
             <Sparkline data={anchor.probHistory} color={PURPLE} width={580} height={50} />
+          </div>
+        ) : null}
+
+        {/* RateXAI Reasoning */}
+        {anchor.rateXReasoning && (
+          <div style={{
+            padding: 14, borderRadius: 10, background: theme.card,
+            border: `1px solid #22c55e30`, marginBottom: 24,
+          }}>
+            <div style={{ fontSize: 8, color: "#22c55e", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>
+              RateXAI Analysis
+            </div>
+            <div style={{ fontSize: 10, color: theme.textSecondary, lineHeight: 1.6, fontStyle: "italic" }}>
+              "{anchor.rateXReasoning}"
+            </div>
+          </div>
+        )}
+
+        {/* Factor Decomposition Waterfall */}
+        {factors.length > 0 && (
+          <div style={{
+            padding: 16, borderRadius: 12, background: theme.card,
+            border: `1px solid ${theme.border}`, marginBottom: 24,
+          }}>
+            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 10 }}>
+              Factor Decomposition (Waterfall)
+            </div>
+            <WaterfallChart factors={factors} nodeMap={nodeMap} startProb={45} endProb={rxProb ?? pmProb ?? 0} theme={theme} />
           </div>
         )}
 

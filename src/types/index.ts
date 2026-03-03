@@ -253,6 +253,24 @@ export interface NarrativeNode {
   /** For anchors: child scenario IDs (YES/NO branches) */
   scenarios?: string[];
 
+  // ─── RateXAI Probability Engine fields ──────────────────
+  /** RateXAI computed probability (0..100) */
+  rateXProb?: number;
+  /** Alpha = rateXProb − marketProb (positive = market underprices) */
+  alpha?: number;
+  /** Alpha signal level */
+  alphaSignal?: "underpriced" | "overpriced" | "in_line";
+  /** RateXAI confidence score (0..1) */
+  rateXConfidence?: number;
+  /** Human-readable reasoning for the RateXAI estimate */
+  rateXReasoning?: string;
+  /** Structured outcomes with per-outcome PM vs RX probs */
+  outcomes?: AnchorOutcome[];
+  /** Detailed factors driving RateXAI's probability estimate */
+  factors?: AnchorFactor[];
+  /** Dual probability history: PM vs RateXAI over time */
+  dualProbHistory?: DualProbPoint[];
+
   // ─── Scenario node fields (YES/NO branches from anchors) ───
   /** For scenarios: parent anchor node ID */
   parentAnchor?: string;
@@ -277,6 +295,35 @@ export interface AnchorInfluenceLink {
   influence: number;
   /** Short explanation of the causal mechanism */
   mechanism: string;
+}
+
+/** Structured outcome for an anchor node (e.g., YES/NO) */
+export interface AnchorOutcome {
+  label: "YES" | "NO" | "PARTIAL";
+  polymarketProb: number;
+  rateXProb: number;
+  alpha: number;
+  alphaSignal: "underpriced" | "overpriced" | "in_line";
+  scenarioId?: string;
+}
+
+/** A causal factor contributing to RateXAI's probability estimate */
+export interface AnchorFactor {
+  nodeId: string;
+  direction: "up" | "down";
+  influence: number;
+  /** Node weight (0..1) used in the calculation */
+  weight?: number;
+  mechanism: string;
+  /** Extended reasoning for this factor's influence */
+  reasoning?: string;
+}
+
+/** A single point in dual probability history (PM vs RateXAI) */
+export interface DualProbPoint {
+  date: string;
+  polymarket: number;
+  rateX: number;
 }
 
 // ─── Cui Bono Types ─────────────────────────────────────────

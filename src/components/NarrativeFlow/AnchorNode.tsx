@@ -64,10 +64,26 @@ export const AnchorNodeComponent = memo<Props>(({
   }, [node.id, onSelect]);
 
   const lines = useMemo(() => wrapLabel(node.label, 22), [node.label]);
-  const probText = node.marketProb != null ? `${node.marketProb}%` : "—";
+  const pmProb = node.marketProb;
+  const rxProb = node.rateXProb;
+  const alpha = node.alpha ?? (rxProb != null && pmProb != null ? rxProb - pmProb : undefined);
+  const probText = pmProb != null ? `${pmProb}%` : "—";
+  const rxText = rxProb != null ? `${rxProb}%` : null;
   const expiryLabel = node.resolvesAt
     ? new Date(node.resolvesAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
     : "";
+
+  // Alpha badge styling
+  const alphaInfo = useMemo(() => {
+    if (alpha == null || alpha === 0) return null;
+    const abs = Math.abs(alpha);
+    let color = "#888";
+    let icon = "≈";
+    if (abs > 10) { color = alpha > 0 ? "#22c55e" : "#ef4444"; icon = alpha > 0 ? "▲▲" : "▼▼"; }
+    else if (abs > 5) { color = alpha > 0 ? "#22c55e" : "#ef4444"; icon = alpha > 0 ? "▲" : "▼"; }
+    else if (abs > 2) { color = "#eab308"; icon = alpha > 0 ? "△" : "▽"; }
+    return { color, icon, text: `${alpha > 0 ? "+" : ""}${alpha}pp` };
+  }, [alpha]);
 
   // Aggregated influence bar data
   const influenceData = useMemo(() => {
@@ -115,19 +131,42 @@ export const AnchorNodeComponent = memo<Props>(({
         stroke={PURPLE} strokeWidth={isHovered || isSelected ? 3 : 2}
         style={{ transition: "stroke-width 0.2s" }} />
 
-      {/* 📊 Probability text — large, centered */}
-      <text y={-4} textAnchor="middle" fill="#fff" fontSize={16} fontWeight={800}
-        fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
-        {probText}
-      </text>
+      {/* Dual probability display: PM (small gray) + RX (large green bold) */}
+      {rxText ? (
+        <>
+          {/* PM prob — small, muted, top */}
+          <text y={-10} textAnchor="middle" fill={theme.muted} fontSize={8} fontWeight={600}
+            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            PM: {probText}
+          </text>
+          {/* RX prob — large, green, bold, center */}
+          <text y={5} textAnchor="middle" fill="#22c55e" fontSize={14} fontWeight={800}
+            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            RX: {rxText}
+          </text>
+          {/* Alpha badge — bottom */}
+          {alphaInfo && (
+            <text y={16} textAnchor="middle" fill={alphaInfo.color} fontSize={7.5} fontWeight={800}
+              fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+              α {alphaInfo.text}
+            </text>
+          )}
+        </>
+      ) : (
+        /* Fallback: single probability */
+        <text y={-1} textAnchor="middle" fill="#fff" fontSize={16} fontWeight={800}
+          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          {probText}
+        </text>
+      )}
 
       {/* 📊 icon badge */}
       <text y={-r + 8} textAnchor="middle" fontSize={10} style={{ pointerEvents: "none" }}>
         📊
       </text>
 
-      {/* probHistory sparkline inside node (bottom half) */}
-      {node.probHistory && node.probHistory.length > 2 && (
+      {/* probHistory sparkline inside node (only when no RateXAI data, as dual display uses the space) */}
+      {!rxText && node.probHistory && node.probHistory.length > 2 && (
         <g transform={`translate(${-r * 0.6},${6})`}>
           <MiniSparkline data={node.probHistory} width={r * 1.2} height={r * 0.45} />
         </g>
