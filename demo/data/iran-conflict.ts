@@ -54,6 +54,27 @@ export const iranConflictData: NarrativeFlowData = {
         prob: 12,
       },
     ],
+    cuiBono: {
+      countryScores: { "Israel": 8, "USA": 6, "Russia": 7, "Saudi Arabia": 7, "Iran": -18, "UAE": -5, "Japan": -3, "India": -4, "Qatar": 5, "EU": -3 },
+      companyWinners: [
+        { name: "Lockheed Martin", code: "LMT", delta: 12.4, reason: "Defense contracts surge" },
+        { name: "Raytheon", code: "RTX", delta: 9.2, reason: "Missile defense demand" },
+        { name: "ExxonMobil", code: "XOM", delta: 7.8, reason: "Oil price windfall" },
+        { name: "Northrop Grumman", code: "NOC", delta: 6.1, reason: "Aerospace/defense" },
+      ],
+      companyLosers: [
+        { name: "Emirates Airlines", code: "EK", delta: -15.3, reason: "Route disruptions" },
+        { name: "Carnival Corp", code: "CCL", delta: -8.7, reason: "Cruise cancellations" },
+        { name: "Delta Air Lines", code: "DAL", delta: -6.2, reason: "Fuel cost spike" },
+      ],
+      indexChanges: [
+        { name: "Brent Crude", code: "BZ", delta: 34.5, reason: "$71 → $105" },
+        { name: "Gold", code: "GC", delta: 12.8, reason: "Safe haven flow" },
+        { name: "S&P 500", code: "SPX", delta: -4.3, reason: "Risk-off" },
+        { name: "VIX", code: "VIX", delta: 68.0, reason: "Fear index spike" },
+        { name: "TASE-35", code: "TA35", delta: -8.2, reason: "Israel market stress" },
+      ],
+    },
   },
 
   nodes: [
@@ -271,6 +292,25 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran",
       timestamp: "2026-02-28T06:35:00Z",
       tags: ["strikes", "epic-fury", "roaring-lion"],
+      cuiBono: {
+        winners: [
+          { name: "Israel", delta: 3, reason: "Deterrence" },
+          { name: "USA", delta: 1, reason: "Arms sales" },
+        ],
+        losers: [
+          { name: "Iran", delta: -5, reason: "Infrastructure destroyed" },
+          { name: "UAE", delta: -2, reason: "Collateral risk" },
+        ],
+        indices: [
+          { name: "Brent Crude", code: "BZ", delta: 8.3 },
+          { name: "TASE-35", code: "TA35", delta: -2.1 },
+          { name: "Gold", code: "GC", delta: 3.4 },
+        ],
+        hiddenMotives: [
+          "Lockheed Martin & Raytheon benefit from sustained conflict",
+          "Netanyahu gains domestic approval ahead of coalition vote",
+        ],
+      },
     },
     {
       id: "n5_khamenei",
@@ -478,6 +518,25 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://www.aljazeera.com/economy/2026/3/3/shutdown-of-hormuz-strait-raises-fears-of-soaring-oil-prices",
       timestamp: "2026-03-01T12:00:00Z",
       tags: ["hormuz", "shipping", "oil"],
+      cuiBono: {
+        winners: [
+          { name: "Russia", delta: 4, reason: "Gas revenue surge" },
+          { name: "Saudi Arabia", delta: 3, reason: "Oil price boost" },
+        ],
+        losers: [
+          { name: "Japan", delta: -3, reason: "Import dependency" },
+          { name: "India", delta: -2, reason: "Fuel costs" },
+          { name: "EU", delta: -3, reason: "Energy crisis" },
+        ],
+        indices: [
+          { name: "Brent Crude", code: "BZ", delta: 12.1 },
+          { name: "Nikkei", code: "NI225", delta: -3.5 },
+          { name: "Gold", code: "GC", delta: 5.2 },
+        ],
+        hiddenMotives: [
+          "IRGC hardliners consolidate power via economic blockade",
+        ],
+      },
     },
     {
       id: "n9_larijani",
@@ -812,6 +871,23 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://www.cnn.com/2026/03/02/investing/oil-us-stock-market-iran",
       timestamp: "2026-03-02T20:00:00Z",
       tags: ["markets", "oil", "gold"],
+      cuiBono: {
+        winners: [
+          { name: "Saudi Arabia", delta: 4, reason: "Revenue surge" },
+          { name: "Russia", delta: 3, reason: "Energy windfall" },
+          { name: "ExxonMobil", code: "XOM", delta: 2, reason: "Oil price windfall" },
+        ],
+        losers: [
+          { name: "US consumers", delta: -2, reason: "Fuel costs" },
+          { name: "Airlines", delta: -3, reason: "Fuel cost spike" },
+          { name: "India", delta: -2, reason: "Energy import costs" },
+        ],
+        indices: [
+          { name: "Brent Crude", code: "BZ", delta: 8.5 },
+          { name: "XLE", code: "XLE", delta: 6.2 },
+          { name: "IATA", code: "IATA", delta: -4.1 },
+        ],
+      },
     },
     {
       id: "n12c_rubio_imminent",
@@ -957,6 +1033,20 @@ export const iranConflictData: NarrativeFlowData = {
       sourceName: "IAEA / Vantor / Wikipedia",
       timestamp: "2026-03-03T12:00:00Z",
       tags: ["nuclear", "natanz"],
+      cuiBono: {
+        winners: [
+          { name: "Israel", delta: 4, reason: "Nuclear program delay" },
+          { name: "USA", delta: 2, reason: "Non-proliferation" },
+        ],
+        losers: [
+          { name: "Iran", delta: -5, reason: "Nuclear program set back" },
+          { name: "IAEA", delta: -1, reason: "Credibility undermined" },
+        ],
+        indices: [
+          { name: "Uranium futures", code: "UX", delta: 8 },
+          { name: "Elbit Systems", code: "TLV:ELBT", delta: 5.3 },
+        ],
+      },
     },
     {
       id: "n18b_uae_defense_stats",
@@ -1079,6 +1169,22 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://www.deseret.com/politics/2026/03/03/gas-prices-impacted-stock-market-oil-iran-war/",
       timestamp: "2026-03-03T20:00:00Z",
       tags: ["markets", "dow", "gas"],
+      cuiBono: {
+        winners: [
+          { name: "Gold traders", delta: 3, reason: "Safe haven flow" },
+          { name: "VIX traders", delta: 2, reason: "Volatility spike" },
+        ],
+        losers: [
+          { name: "S&P 500", code: "SPX", delta: -2.1, reason: "Risk-off selling" },
+          { name: "Airlines", delta: -5, reason: "Fuel + route disruption" },
+          { name: "Tourism", delta: -3, reason: "Travel collapse" },
+        ],
+        indices: [
+          { name: "S&P 500", code: "SPX", delta: -2.1 },
+          { name: "VIX", code: "VIX", delta: 35 },
+          { name: "Gold", code: "GC", delta: 4.2 },
+        ],
+      },
     },
     {
       id: "n25_rubio_hardest_hits",
@@ -1181,6 +1287,20 @@ export const iranConflictData: NarrativeFlowData = {
       sourceName: "MarketTwits / IRGC",
       timestamp: "2026-03-03T06:34:00Z",
       tags: ["iran", "gulf", "branded"],
+      cuiBono: {
+        winners: [
+          { name: "IRGC", delta: -1, reason: "Rhetoric only, no action" },
+        ],
+        losers: [
+          { name: "UAE", delta: -3, reason: "Investor confidence shaken" },
+          { name: "Dubai markets", delta: -2, reason: "Capital flight risk" },
+        ],
+        indices: [
+          { name: "DFM", code: "DFM", delta: -2.8 },
+          { name: "ADX", code: "ADX", delta: -1.9 },
+          { name: "Gold", code: "GC", delta: 1.2 },
+        ],
+      },
     },
     {
       id: "n37_uae_strikes_iran",
@@ -1201,6 +1321,19 @@ export const iranConflictData: NarrativeFlowData = {
       sourceName: "Axios / MarketTwits",
       timestamp: "2026-03-03T06:53:00Z",
       tags: ["uae", "military", "gulf"],
+      cuiBono: {
+        winners: [
+          { name: "UAE", delta: 2, reason: "Deterrence posture" },
+          { name: "USA", delta: 1, reason: "Ally credibility" },
+        ],
+        losers: [
+          { name: "Iran", delta: -2, reason: "Encirclement" },
+        ],
+        indices: [
+          { name: "ADX", code: "ADX", delta: 1.5 },
+          { name: "Lockheed Martin", code: "LMT", delta: 2.1 },
+        ],
+      },
     },
     {
       id: "n38_irgc_no_unanswered",
@@ -1262,6 +1395,19 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://www.politico.com/news/2026/03/03/iran-oil-energy-military-trump-hormuz-00808825",
       timestamp: "2026-03-03T07:35:00Z",
       tags: ["trump", "hormuz", "oil", "military"],
+      cuiBono: {
+        winners: [
+          { name: "USA", delta: 3, reason: "Force projection" },
+          { name: "US Navy", delta: 2, reason: "Operational relevance" },
+        ],
+        losers: [
+          { name: "Iran", delta: -3, reason: "Isolation deepens" },
+        ],
+        indices: [
+          { name: "Lockheed Martin", code: "LMT", delta: 3.2 },
+          { name: "Huntington Ingalls", code: "HII", delta: 2.8 },
+        ],
+      },
     },
     {
       id: "n41_oil_interventions",
@@ -1302,6 +1448,20 @@ export const iranConflictData: NarrativeFlowData = {
       sourceName: "MarketTwits",
       timestamp: "2026-03-03T08:03:00Z",
       tags: ["iran", "strikes", "retaliation"],
+      cuiBono: {
+        winners: [
+          { name: "IRGC", delta: 2, reason: "Demonstrated capability" },
+        ],
+        losers: [
+          { name: "Israel", delta: -3, reason: "Defense costs surge" },
+          { name: "USA", delta: -2, reason: "Escalation risk" },
+        ],
+        indices: [
+          { name: "Brent Crude", code: "BZ", delta: 5.1 },
+          { name: "Gold", code: "GC", delta: 2.8 },
+          { name: "TASE-35", code: "TA35", delta: -1.9 },
+        ],
+      },
     },
     {
       id: "n43_macron_solidarity",

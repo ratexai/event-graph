@@ -3,7 +3,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useMemo } from "react";
-import type { EventNode, KolNode, NarrativeNode, GraphTheme, Sentiment } from "../../types";
+import type { EventNode, KolNode, NarrativeNode, GraphTheme, Sentiment, CuiBono } from "../../types";
 import { getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, getNarrativeSignalStyle, EVENT_TYPE_META, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META, NARRATIVE_SIGNAL_META } from "../../styles/theme";
 import { formatNumber, sentimentLabel, sentimentArrow } from "../../utils";
 import { Sparkline } from "../Shared/SvgPrimitives";
@@ -302,6 +302,60 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
   );
 };
 
+// ─── Cui Bono Section (per-event) ────────────────────────────────
+
+const CuiBonoSection: React.FC<{ cuiBono: CuiBono; theme: GraphTheme }> = ({ cuiBono, theme }) => (
+  <div style={{ marginBottom: 20 }}>
+    <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+      {"\uD83D\uDD75\uFE0F"} Cui Bono
+    </div>
+    {cuiBono.winners.length > 0 && (
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 9, color: theme.positive, fontWeight: 700, marginBottom: 6 }}>Winners</div>
+        {cuiBono.winners.map((e, i) => (
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.positiveDim, marginBottom: 3 }}>
+            <span style={{ fontSize: 10, color: theme.text }}>{e.name}</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: theme.positive }}>+{e.delta}</span>
+          </div>
+        ))}
+      </div>
+    )}
+    {cuiBono.losers.length > 0 && (
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 9, color: theme.negative, fontWeight: 700, marginBottom: 6 }}>Losers</div>
+        {cuiBono.losers.map((e, i) => (
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.negativeDim, marginBottom: 3 }}>
+            <span style={{ fontSize: 10, color: theme.text }}>{e.name}</span>
+            <span style={{ fontSize: 10, fontWeight: 700, color: theme.negative }}>{e.delta}</span>
+          </div>
+        ))}
+      </div>
+    )}
+    {cuiBono.indices && cuiBono.indices.length > 0 && (
+      <div style={{ marginBottom: 10 }}>
+        <div style={{ fontSize: 9, color: theme.accent, fontWeight: 700, marginBottom: 6 }}>Indices</div>
+        {cuiBono.indices.map((e, i) => {
+          const color = e.delta >= 0 ? theme.positive : theme.negative;
+          return (
+            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 3 }}>
+              <span style={{ fontSize: 10, color: theme.text }}>{e.name} <span style={{ color: theme.muted, fontSize: 8 }}>{e.code}</span></span>
+              <span style={{ fontSize: 10, fontWeight: 700, color }}>{e.delta > 0 ? "+" : ""}{e.delta}%</span>
+            </div>
+          );
+        })}
+      </div>
+    )}
+    {cuiBono.hiddenMotives && cuiBono.hiddenMotives.length > 0 && (
+      <div style={{ padding: 10, borderRadius: 8, background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)" }}>
+        <div style={{ fontSize: 9, color: "#fbbf24", fontWeight: 700, marginBottom: 4 }}>{"\uD83D\uDD75\uFE0F"} Hidden Motives</div>
+        {cuiBono.hiddenMotives.map((m, i) => (
+          <div key={i} style={{ fontSize: 9, color: theme.textSecondary, lineHeight: 1.5, marginBottom: 2 }}>• {m}</div>
+        ))}
+      </div>
+    )}
+  </div>
+);
+
 // ─── Narrative Detail ────────────────────────────────────────────
 
 interface NarrativeDetailProps {
@@ -433,6 +487,9 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
           ))}
         </div>
       )}
+
+      {/* Cui Bono (per-event) */}
+      {node.cuiBono && <CuiBonoSection cuiBono={node.cuiBono} theme={theme} />}
 
       {/* Upstream chain */}
       {upstream.length > 0 && (

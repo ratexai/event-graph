@@ -23,14 +23,16 @@ import {
 } from "../hooks";
 import { DetailPanel, HoverTooltip } from "./Panel/DetailPanel";
 import { GraphCanvas } from "./EventGraph/GraphCanvas";
-import { StatusOverlay, ZoomControls } from "./EventGraph/Overlays";
+import { StatusOverlay, ZoomControls, NarrativeLegend } from "./EventGraph/Overlays";
 import { FilterBar, HeaderBar, KolStatsBar, NarrativeStatsBar } from "./EventGraph/TopBars";
 import { GraphErrorBoundary } from "./Shared/ErrorBoundary";
+import { CuiBonoPanel } from "./CuiBono/CuiBonoPanel";
 
 const HEADER_HEIGHT = 48;
 const FILTER_HEIGHT = 38;
 const KOL_STATS_HEIGHT = 52;
 const DETAIL_PANEL_WIDTH = 340;
+const CUI_BONO_WIDTH = 300;
 
 const EMPTY_EVENT_NODES: EventNode[] = [];
 const EMPTY_KOL_NODES: KolNode[] = [];
@@ -92,8 +94,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
 
   const statsHeight = mode === "kols" && showKolStats ? KOL_STATS_HEIGHT : mode === "narratives" && showNarrativeStats ? NARRATIVE_STATS_HEIGHT : 0;
   const topOffset = HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0) + statsHeight;
-  const panelWidth = selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : 0;
-  const svgWidth = Math.max(0, dims.w - panelWidth);
+  const hasCuiBono = mode === "narratives" && !!narrativeData?.narrative?.cuiBono;
+  const cuiBonoWidth = hasCuiBono ? CUI_BONO_WIDTH : 0;
+  const panelWidth = selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : cuiBonoWidth;
+  const svgWidth = Math.max(0, dims.w - (hasCuiBono && !(selection.panelOpen && showDetailPanel) ? cuiBonoWidth : 0) - (selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : 0));
   const svgHeight = Math.max(0, dims.h - topOffset);
 
   const evGraph = useEventFlowGraph(eventData, svgWidth, svgHeight, graphFilters.filters, selection.hovered, layoutOverrides);
@@ -264,6 +268,22 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           onZoomIn={panZoom.zoomIn}
           onZoomOut={panZoom.zoomOut}
           onReset={panZoom.reset}
+        />
+      )}
+
+      {mode === "narratives" && (
+        <NarrativeLegend theme={theme} panelOffset={panelWidth} />
+      )}
+
+      {/* Cui Bono sidebar — always visible in narrative mode when data exists */}
+      {hasCuiBono && (
+        <CuiBonoPanel
+          isOpen={hasCuiBono}
+          narrativeCuiBono={narrativeData?.narrative?.cuiBono}
+          selectedNodeCuiBono={selectedNarrative?.cuiBono}
+          selectedNodeLabel={selectedNarrative?.label}
+          theme={theme}
+          topOffset={topOffset}
         />
       )}
 

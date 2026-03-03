@@ -225,6 +225,45 @@ export interface NarrativeNode {
   tags?: string[];
   /** Extensible metadata */
   meta?: Record<string, unknown>;
+
+  /** Cui Bono — who benefits / who loses from this event */
+  cuiBono?: CuiBono;
+}
+
+// ─── Cui Bono Types ─────────────────────────────────────────
+
+/** Single entity affected by an event (state, company, or index) */
+export interface CuiBonoEntry {
+  /** Entity name (e.g., "Israel", "Lockheed Martin", "Brent Crude") */
+  name: string;
+  /** Country ISO code or ticker symbol */
+  code?: string;
+  /** Delta value (e.g., +2.5 for sentiment, +3.1% for stock price) */
+  delta: number;
+  /** Brief reason */
+  reason?: string;
+}
+
+/** Who benefits / who loses from a specific event */
+export interface CuiBono {
+  winners: CuiBonoEntry[];
+  losers: CuiBonoEntry[];
+  /** Market indices affected */
+  indices?: CuiBonoEntry[];
+  /** Hidden motives — "who really gains behind the scenes" */
+  hiddenMotives?: string[];
+}
+
+/** Aggregated Cui Bono scoreboard for an entire narrative */
+export interface NarrativeCuiBono {
+  /** Country → cumulative score (positive = benefits, negative = loses) */
+  countryScores: Record<string, number>;
+  /** Company winners across the narrative */
+  companyWinners: CuiBonoEntry[];
+  /** Company losers across the narrative */
+  companyLosers: CuiBonoEntry[];
+  /** Index changes from start → now */
+  indexChanges: CuiBonoEntry[];
 }
 
 /** A narrative is a tracked story that evolves over time */
@@ -248,6 +287,8 @@ export interface Narrative {
   markets?: Array<{ platform: string; question: string; url: string; prob: number }>;
   /** Named branches / sub-storylines within this narrative */
   branches?: string[];
+  /** Aggregated cui bono scoreboard for the whole narrative */
+  cuiBono?: NarrativeCuiBono;
 }
 
 /** Complete narrative flow dataset */

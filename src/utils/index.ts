@@ -484,22 +484,22 @@ export function computeNarrativeStats(nodes: NarrativeNode[]): NarrativeAggregat
 
 /** Narrative node radius — 5 discrete size tiers based on weight, plus oddsDelta boost */
 export function narrativeNodeRadius(weight: number, oddsDelta: number, _layout?: LayoutConfig): number {
-  // 5 tiers: XS(16) S(20) M(25) L(30) XL(36)
-  const base = weight >= 0.9 ? 36
-    : weight >= 0.75 ? 30
-    : weight >= 0.6 ? 25
-    : weight >= 0.4 ? 20
-    : 16;
-  const boost = Math.min(Math.abs(oddsDelta) * 0.25, 6);
+  // 5 tiers per spec v2: XS(13) S(16) M(19) L(22) XL(26)
+  const base = weight >= 0.92 ? 26
+    : weight >= 0.80 ? 22
+    : weight >= 0.65 ? 19
+    : weight >= 0.50 ? 16
+    : 13;
+  const boost = Math.min(Math.abs(oddsDelta) * 0.2, 4);
   return base + boost;
 }
 
 /** Size tier label for display */
 export function narrativeSizeTier(weight: number): "XS" | "S" | "M" | "L" | "XL" {
-  if (weight >= 0.9) return "XL";
-  if (weight >= 0.75) return "L";
-  if (weight >= 0.6) return "M";
-  if (weight >= 0.4) return "S";
+  if (weight >= 0.92) return "XL";
+  if (weight >= 0.80) return "L";
+  if (weight >= 0.65) return "M";
+  if (weight >= 0.50) return "S";
   return "XS";
 }
 
@@ -529,13 +529,14 @@ const TAG_FLAGS: Record<string, string> = {
 const TAG_CONTEXT_ICONS: Record<string, string> = {
   strikes: "\u2694\uFE0F", military: "\u{1F3AF}", navy: "\u2693",
   oil: "\u{1F6E2}\uFE0F", hormuz: "\u{1F6A2}", shipping: "\u{1F6A2}",
-  markets: "\u{1F4C9}", dow: "\u{1F4C9}", gold: "\u{1F4B0}",
+  markets: "\u{1F4C9}", dow: "\u{1F4C9}", gold: "\u{1FA99}",
   nuclear: "\u2622\uFE0F", iaea: "\u2622\uFE0F", natanz: "\u2622\uFE0F",
-  diplomacy: "\u{1F91D}", "prediction": "\u{1F52E}", polymarket: "\u{1F52E}",
+  diplomacy: "\u{1F54A}\uFE0F", "prediction": "\u{1F4CA}", polymarket: "\u{1F4CA}",
   casualties: "\u{1F480}", leadership: "\u{1F451}", succession: "\u{1F451}",
   protests: "\u270A", branded: "\u{1F3E2}", tech: "\u{1F4BB}",
   amazon: "\u2601\uFE0F", opec: "\u{1F6E2}\uFE0F", musk: "\u{1D54F}",
-  gas: "\u26FD", retaliation: "\u{1F4A5}", "ground-invasion": "\u{1F6A9}",
+  gas: "\u26FD", retaliation: "\u{1F680}", "ground-invasion": "\u{1FA96}",
+  aerial: "\u2708\uFE0F", sanctions: "\u{1F6AB}",
 };
 
 /** Extract up to 2 emojis for a node: [flag, contextIcon] */

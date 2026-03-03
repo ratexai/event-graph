@@ -14,6 +14,7 @@ export type {
   EventNode, EventEdge, EventFlowData, TimeSlot,
   KolNode, KolPost, KolFlowData, KolAggregateStats,
   NarrativeNode, Narrative, NarrativeFlowData, NarrativeAggregateStats,
+  CuiBonoEntry, CuiBono, NarrativeCuiBono,
   ProjectInfo, Point2D, NodePosition, LayoutConfig,
   FilterState, BrandingConfig, GraphTheme,
   EventFlowRequest, EventFlowResponse,
@@ -68,4 +69,7 @@ export {
   StreamPath, GridColumn, FlowArrow, SentimentRing, Sparkline,
   GlowRings, ImpactRing, TierBadge,
 } from "./components/Shared/SvgPrimitives";
+export { CuiBonoPanel } from "./components/CuiBono/CuiBonoPanel";
+export type { CuiBonoPanelProps } from "./components/CuiBono/CuiBonoPanel";
 export { GraphErrorBoundary } from "./components/Shared/ErrorBoundary";
+export { NarrativeLegend } from "./components/EventGraph/Overlays";

@@ -498,18 +498,23 @@ function makeNarrative(overrides: Partial<NarrativeNode> & { id: string; col: nu
 // ─── narrativeNodeRadius / narrativeStreamWidth ─────────────────
 
 describe("narrativeNodeRadius", () => {
-  it("computes base radius from weight using 5 tiers", () => {
-    // XS tier (weight < 0.4)
-    expect(narrativeNodeRadius(0, 0)).toBe(16);
-    expect(narrativeNodeRadius(0.3, 0)).toBe(16);
-    // S tier
-    expect(narrativeNodeRadius(0.5, 0)).toBe(20);
-    // M tier
-    expect(narrativeNodeRadius(0.65, 0)).toBe(25);
-    // L tier
-    expect(narrativeNodeRadius(0.8, 0)).toBe(30);
-    // XL tier
-    expect(narrativeNodeRadius(1, 0)).toBe(36);
+  it("computes base radius from weight using 5 tiers (spec v2)", () => {
+    // XS tier (weight < 0.50)
+    expect(narrativeNodeRadius(0, 0)).toBe(13);
+    expect(narrativeNodeRadius(0.3, 0)).toBe(13);
+    expect(narrativeNodeRadius(0.49, 0)).toBe(13);
+    // S tier (0.50–0.64)
+    expect(narrativeNodeRadius(0.5, 0)).toBe(16);
+    expect(narrativeNodeRadius(0.64, 0)).toBe(16);
+    // M tier (0.65–0.79)
+    expect(narrativeNodeRadius(0.65, 0)).toBe(19);
+    expect(narrativeNodeRadius(0.79, 0)).toBe(19);
+    // L tier (0.80–0.91)
+    expect(narrativeNodeRadius(0.8, 0)).toBe(22);
+    expect(narrativeNodeRadius(0.91, 0)).toBe(22);
+    // XL tier (0.92–1.00)
+    expect(narrativeNodeRadius(0.92, 0)).toBe(26);
+    expect(narrativeNodeRadius(1, 0)).toBe(26);
   });
 
   it("adds boost from oddsDelta magnitude", () => {
@@ -518,11 +523,11 @@ describe("narrativeNodeRadius", () => {
     expect(boosted).toBeGreaterThan(base);
   });
 
-  it("caps boost at 6", () => {
+  it("caps boost at 4", () => {
     const r1 = narrativeNodeRadius(0, 100);
     const r2 = narrativeNodeRadius(0, 200);
     expect(r1).toBe(r2); // both capped
-    expect(r1).toBe(16 + 6); // XS base + max boost
+    expect(r1).toBe(13 + 4); // XS base + max boost
   });
 });
 
