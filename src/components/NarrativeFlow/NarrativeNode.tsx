@@ -64,22 +64,28 @@ function getSignalShapePath(signal: NarrativeSignal, r: number): string | null {
   }
 }
 
-// ─── Polymarket badge SVG (top-left) ────────────────────────
+// ─── Polymarket dot (bottom, small, solid purple) ────────────
 
-const PolymarketBadge = memo<{ x: number; y: number; prob: number }>(
-  ({ x, y, prob }) => (
+const PolymarketDot = memo<{ x: number; y: number; prob: number; isHovered: boolean }>(
+  ({ x, y, prob, isHovered }) => (
     <g transform={`translate(${x},${y})`}>
-      <rect x={-22} y={-8} width={44} height={16} rx={8}
-        fill="rgba(27,20,100,0.9)" stroke="#6366f1" strokeWidth={0.8} />
-      <text x={-11} y={3.5} fontSize={7} fontWeight={800} fill="#a78bfa"
-        fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
-        {"\uD83D\uDCCA"}</text>
-      <text x={8} y={3.5} fontSize={7.5} fontWeight={700} fill="#e8e6e0"
-        fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>{prob}%</text>
+      <circle r={isHovered ? 8 : 5} fill="#6366f1" opacity={0.9} />
+      {isHovered && (
+        <text y={3} textAnchor="middle" fontSize={6} fontWeight={700} fill="#fff"
+          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          {prob}%
+        </text>
+      )}
+      {!isHovered && (
+        <text y={2} textAnchor="middle" fontSize={5.5} fontWeight={700} fill="rgba(255,255,255,0.9)"
+          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          PM
+        </text>
+      )}
     </g>
   ),
 );
-PolymarketBadge.displayName = "PolymarketBadge";
+PolymarketDot.displayName = "PolymarketDot";
 
 // ─── Source badge colors ────────────────────────────────────
 
@@ -229,34 +235,34 @@ export const NarrativeNodeComponent = memo<Props>(({
         );
       })}
 
-      {/* Signal badge (top-left) — always visible */}
-      <g transform={`translate(${-r * 0.75},${-r * 0.85})`}>
-        <circle r={8} fill={sigStyle.bg} stroke={sigStyle.color} strokeWidth={0.8} />
-        <text textAnchor="middle" y={3} fill={sigStyle.color} fontSize={8}
+      {/* Signal badge (top-left, small) */}
+      <g transform={`translate(${-r * 0.8},${-r * 0.8})`}>
+        <circle r={6} fill={sigStyle.bg} stroke={sigStyle.color} strokeWidth={0.6} />
+        <text textAnchor="middle" y={2.5} fill={sigStyle.color} fontSize={6.5}
           style={{ pointerEvents: "none" }}>{sigMeta?.icon || "\u25CF"}</text>
       </g>
 
-      {/* Polymarket badge (top-left below signal badge) */}
-      {!isDimmed && node.marketProb != null && (
-        <PolymarketBadge x={-r * 0.75} y={-r * 0.85 + 20} prob={node.marketProb} />
-      )}
-
-      {/* Odds delta badge (top-right) */}
-      {deltaText && !isDimmed && (
-        <g transform={`translate(${r * 0.65},${-r * 0.85})`}>
-          <rect x={-2} y={-8} width={deltaText.length * 5.5 + 8} height={14} rx={7}
-            fill={theme.bgAlt} stroke={deltaColor} strokeWidth={0.8} />
-          <text x={deltaText.length * 2.75 + 2} y={2} textAnchor="middle" fill={deltaColor} fontSize={6.5}
+      {/* Odds delta badge (top-right, only on hover) */}
+      {deltaText && !isDimmed && (isHovered || isSelected) && (
+        <g transform={`translate(${r * 0.6},${-r * 0.85})`}>
+          <rect x={-2} y={-7} width={deltaText.length * 5 + 6} height={12} rx={6}
+            fill={theme.bgAlt} stroke={deltaColor} strokeWidth={0.6} />
+          <text x={deltaText.length * 2.5 + 1} y={1.5} textAnchor="middle" fill={deltaColor} fontSize={6}
             fontFamily="'JetBrains Mono',monospace" fontWeight={600}
             style={{ pointerEvents: "none" }}>{deltaText}</text>
         </g>
       )}
 
-      {/* 🕵️ Cui Bono marker (bottom-right) */}
+      {/* Polymarket dot (bottom-center, small solid purple) */}
+      {!isDimmed && node.marketProb != null && (
+        <PolymarketDot x={0} y={r + (isHovered ? 10 : 8)} prob={node.marketProb} isHovered={isHovered || isSelected} />
+      )}
+
+      {/* 🕵️ Cui Bono marker (bottom-right, small) */}
       {!isDimmed && hasCuiBono && (
-        <g transform={`translate(${r * 0.7},${r * 0.6})`}>
-          <circle r={7} fill="rgba(251,191,36,0.2)" stroke="#fbbf24" strokeWidth={0.6} />
-          <text textAnchor="middle" y={3.5} fontSize={9}
+        <g transform={`translate(${r * 0.75},${r * 0.65})`}>
+          <circle r={5} fill="rgba(251,191,36,0.25)" stroke="#fbbf24" strokeWidth={0.5} />
+          <text textAnchor="middle" y={3} fontSize={7}
             style={{ pointerEvents: "none" }}>{"\uD83D\uDD75\uFE0F"}</text>
         </g>
       )}
@@ -265,7 +271,7 @@ export const NarrativeNodeComponent = memo<Props>(({
       {(isHovered || isSelected) && !isDimmed && node.sourceName && (
         <SourceBadge
           x={0}
-          y={r + 14}
+          y={r + (node.marketProb != null ? 24 : 14)}
           sourceName={node.sourceName}
           theme={theme}
         />

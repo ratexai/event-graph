@@ -314,17 +314,21 @@ const StatesTab: React.FC<{
     return { winners, losers };
   }, [selectedNodeCuiBono]);
 
-  // Sorted country scores
-  const sortedCountries = useMemo(() => {
-    if (!narrativeCuiBono?.countryScores) return [];
-    return Object.entries(narrativeCuiBono.countryScores)
-      .sort(([, a], [, b]) => Math.abs(b) - Math.abs(a));
+  // Sorted country scores: winners (descending) then losers (ascending by magnitude)
+  const { winners: countryWinners, losers: countryLosers } = useMemo(() => {
+    if (!narrativeCuiBono?.countryScores) return { winners: [] as [string, number][], losers: [] as [string, number][] };
+    const entries = Object.entries(narrativeCuiBono.countryScores);
+    const w = entries.filter(([, s]) => s > 0).sort(([, a], [, b]) => b - a);
+    const l = entries.filter(([, s]) => s < 0).sort(([, a], [, b]) => a - b); // most negative first
+    return { winners: w, losers: l };
   }, [narrativeCuiBono]);
 
+  const allCountries = useMemo(() => [...countryWinners, ...countryLosers], [countryWinners, countryLosers]);
+
   const maxAbsScore = useMemo(() => {
-    if (sortedCountries.length === 0) return 1;
-    return Math.max(...sortedCountries.map(([, s]) => Math.abs(s)), 0.1);
-  }, [sortedCountries]);
+    if (allCountries.length === 0) return 1;
+    return Math.max(...allCountries.map(([, s]) => Math.abs(s)), 0.1);
+  }, [allCountries]);
 
   return (
     <div>
@@ -360,13 +364,24 @@ const StatesTab: React.FC<{
         </div>
       )}
 
-      {/* Narrative-wide country scores */}
-      <SectionLabel text="Narrative Country Scores" theme={theme} />
-      {sortedCountries.length > 0 ? (
-        sortedCountries.map(([name, score]) => (
-          <CountryRow key={name} name={name} score={score} maxAbsScore={maxAbsScore} theme={theme} />
-        ))
-      ) : (
+      {/* Narrative-wide country scores — winners then losers */}
+      {countryWinners.length > 0 && (
+        <>
+          <SectionLabel text="Benefiting Countries" theme={theme} />
+          {countryWinners.map(([name, score]) => (
+            <CountryRow key={name} name={name} score={score} maxAbsScore={maxAbsScore} theme={theme} />
+          ))}
+        </>
+      )}
+      {countryLosers.length > 0 && (
+        <>
+          <SectionLabel text="Losing Countries" theme={theme} />
+          {countryLosers.map(([name, score]) => (
+            <CountryRow key={name} name={name} score={score} maxAbsScore={maxAbsScore} theme={theme} />
+          ))}
+        </>
+      )}
+      {allCountries.length === 0 && (
         <div style={{ fontSize: 10, color: theme.muted, padding: "20px 0", textAlign: "center" }}>
           No country data available
         </div>
@@ -415,7 +430,13 @@ const IndicesTab: React.FC<{
   narrativeCuiBono?: NarrativeCuiBono;
   theme: GraphTheme;
 }> = ({ narrativeCuiBono, theme }) => {
-  const indices = narrativeCuiBono?.indexChanges || [];
+  const rawIndices = narrativeCuiBono?.indexChanges || [];
+  // Sort: positive (descending) then negative (ascending)
+  const indices = useMemo(() => {
+    const pos = rawIndices.filter((e) => e.delta >= 0).sort((a, b) => b.delta - a.delta);
+    const neg = rawIndices.filter((e) => e.delta < 0).sort((a, b) => a.delta - b.delta);
+    return [...pos, ...neg];
+  }, [rawIndices]);
   const maxAbsDelta = useMemo(() => {
     if (indices.length === 0) return 1;
     return Math.max(...indices.map((e) => Math.abs(e.delta)), 0.1);
