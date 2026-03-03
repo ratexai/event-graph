@@ -462,7 +462,7 @@ export function computeNarrativeStats(nodes: NarrativeNode[]): NarrativeAggregat
     sentimentBreakdown[n.sentiment] = (sentimentBreakdown[n.sentiment] || 0) + 1;
     if (n.weight > topByImpact.weight) topByImpact = n;
     if (Math.abs(n.oddsDelta) > Math.abs(topByOddsDelta.oddsDelta)) topByOddsDelta = n;
-    lastProb = n.marketProb;
+    if (n.marketProb != null) lastProb = n.marketProb;
   }
 
   return {

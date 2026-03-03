@@ -77,7 +77,7 @@ export const NarrativeNodeComponent = memo<Props>(({
         </g>
       )}
       {/* Market probability below node */}
-      {!isDimmed && (
+      {!isDimmed && node.marketProb != null && (
         <g transform={`translate(0,${r + 14})`}>
           <text textAnchor="middle" fill={theme.muted} fontSize={8} fontFamily="'JetBrains Mono',monospace"
             style={{ pointerEvents: "none" }}>{node.marketProb.toFixed(0)}% prob</text>
