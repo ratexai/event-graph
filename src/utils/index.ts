@@ -522,6 +522,8 @@ const TAG_FLAGS: Record<string, string> = {
   pakistan: "\u{1F1F5}\u{1F1F0}", cyprus: "\u{1F1E8}\u{1F1FE}", uk: "\u{1F1EC}\u{1F1E7}",
   kuwait: "\u{1F1F0}\u{1F1FC}", russia: "\u{1F1F7}\u{1F1FA}",
   china: "\u{1F1E8}\u{1F1F3}", gcc: "\u{1F30D}",
+  france: "\u{1F1EB}\u{1F1F7}", jordan: "\u{1F1EF}\u{1F1F4}",
+  germany: "\u{1F1E9}\u{1F1EA}", japan: "\u{1F1EF}\u{1F1F5}", india: "\u{1F1EE}\u{1F1F3}",
 };
 
 const TAG_CONTEXT_ICONS: Record<string, string> = {
@@ -533,6 +535,7 @@ const TAG_CONTEXT_ICONS: Record<string, string> = {
   casualties: "\u{1F480}", leadership: "\u{1F451}", succession: "\u{1F451}",
   protests: "\u270A", branded: "\u{1F3E2}", tech: "\u{1F4BB}",
   amazon: "\u2601\uFE0F", opec: "\u{1F6E2}\uFE0F", musk: "\u{1D54F}",
+  gas: "\u26FD", retaliation: "\u{1F4A5}", "ground-invasion": "\u{1F6A9}",
 };
 
 /** Extract up to 2 emojis for a node: [flag, contextIcon] */
