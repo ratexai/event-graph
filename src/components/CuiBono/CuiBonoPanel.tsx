@@ -5,7 +5,8 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useState, useMemo, useCallback } from "react";
-import type { GraphTheme, NarrativeCuiBono, CuiBono, CuiBonoEntry } from "../../types";
+import type { GraphTheme, NarrativeCuiBono, CuiBono, CuiBonoEntry, NarrativeNode } from "../../types";
+import { isAnchorNode } from "../../utils";
 
 // ─── Props ───────────────────────────────────────────────────────
 
@@ -16,11 +17,15 @@ export interface CuiBonoPanelProps {
   selectedNodeLabel?: string;
   theme: GraphTheme;
   topOffset: number;
+  /** All narrative nodes — used to extract anchor nodes for Markets tab */
+  narrativeNodes?: NarrativeNode[];
+  /** Callback when user clicks a market card to highlight anchor on graph */
+  onMarketSelect?: (anchorId: string) => void;
 }
 
 // ─── Tab Type ────────────────────────────────────────────────────
 
-type TabKey = "states" | "corps" | "indices";
+type TabKey = "states" | "corps" | "indices" | "markets";
 
 interface TabDef {
   key: TabKey;
@@ -31,6 +36,7 @@ const TABS: TabDef[] = [
   { key: "states", label: "\u{1F30D} States" },
   { key: "corps", label: "\u{1F3E2} Corps" },
   { key: "indices", label: "\u{1F4CA} Indices" },
+  { key: "markets", label: "\u{1F3AF} Markets" },
 ];
 
 // ─── Country Code to Flag Emoji ─────────────────────────────────
@@ -458,6 +464,226 @@ const IndicesTab: React.FC<{
   );
 };
 
+// ─── Alpha Helpers ──────────────────────────────────────────────
+
+function alphaLevel(alpha: number): { signal: string; color: string; icon: string } {
+  const abs = Math.abs(alpha);
+  if (abs <= 2) return { signal: "≈ in line", color: "#888", icon: "≈" };
+  if (abs <= 5) return { signal: alpha > 0 ? "△ mild" : "▽ mild", color: "#eab308", icon: alpha > 0 ? "△" : "▽" };
+  if (abs <= 10) return { signal: alpha > 0 ? "▲ underpriced" : "▼ overpriced", color: alpha > 0 ? "#22c55e" : "#ef4444", icon: alpha > 0 ? "▲" : "▼" };
+  return { signal: alpha > 0 ? "▲▲ major opportunity" : "▼▼ major overpriced", color: alpha > 0 ? "#22c55e" : "#ef4444", icon: alpha > 0 ? "▲▲" : "▼▼" };
+}
+
+/** Dual probability bar (Polymarket vs RateXAI) */
+const DualProbBar: React.FC<{
+  label: string; pmProb: number; rxProb: number; alpha: number; theme: GraphTheme;
+}> = ({ label, pmProb, rxProb, alpha, theme }) => {
+  const al = alphaLevel(alpha);
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <div style={{ fontSize: 9, fontWeight: 700, color: theme.text, marginBottom: 4 }}>{label}</div>
+      {/* Polymarket bar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+        <span style={{ fontSize: 7, color: theme.muted, width: 28, flexShrink: 0 }}>PM</span>
+        <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
+          <div style={{ height: 6, borderRadius: 3, background: "#6366f1", width: `${pmProb}%`, transition: "width 0.3s" }} />
+        </div>
+        <span style={{ fontSize: 8, fontWeight: 700, color: theme.muted, width: 28, textAlign: "right", fontFamily: "'JetBrains Mono',monospace" }}>{pmProb}%</span>
+      </div>
+      {/* RateXAI bar */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
+        <span style={{ fontSize: 7, color: "#22c55e", width: 28, flexShrink: 0, fontWeight: 700 }}>RX</span>
+        <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
+          <div style={{ height: 6, borderRadius: 3, background: "#22c55e", width: `${rxProb}%`, transition: "width 0.3s" }} />
+        </div>
+        <span style={{ fontSize: 8, fontWeight: 800, color: "#22c55e", width: 28, textAlign: "right", fontFamily: "'JetBrains Mono',monospace" }}>{rxProb}%</span>
+      </div>
+      {/* Alpha badge */}
+      <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
+        <span style={{ fontSize: 7, color: theme.muted, width: 28, flexShrink: 0 }}>Alpha</span>
+        <span style={{
+          fontSize: 8, fontWeight: 800, color: al.color,
+          fontFamily: "'JetBrains Mono',monospace",
+          padding: "1px 6px", borderRadius: 4,
+          background: `${al.color}18`,
+        }}>
+          {alpha > 0 ? "+" : ""}{alpha}pp {al.icon}
+        </span>
+        <span style={{ fontSize: 7, color: al.color }}>{al.signal}</span>
+      </div>
+    </div>
+  );
+};
+
+/** Single market card in the Markets tab */
+const MarketCard: React.FC<{
+  anchor: NarrativeNode; theme: GraphTheme; onClick: () => void;
+}> = ({ anchor, theme, onClick }) => {
+  const pmProb = anchor.marketProb ?? 0;
+  const rxProb = anchor.rateXProb ?? pmProb;
+  const alpha = anchor.alpha ?? (rxProb - pmProb);
+  const al = alphaLevel(alpha);
+  const expiryLabel = anchor.resolvesAt
+    ? new Date(anchor.resolvesAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
+    : "";
+  const confidence = anchor.rateXConfidence ?? 0;
+  const causalCount = anchor.influenceLinks?.length ?? 0;
+
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        padding: 12, borderRadius: 10,
+        background: theme.card, border: `1px solid ${al.color}30`,
+        marginBottom: 8, cursor: "pointer",
+        transition: "border-color 0.2s, background 0.2s",
+      }}
+    >
+      {/* Question header */}
+      <div style={{
+        fontSize: 10, fontWeight: 700, color: theme.text,
+        marginBottom: 10, lineHeight: 1.4,
+        display: "flex", gap: 6, alignItems: "flex-start",
+      }}>
+        <span style={{ flexShrink: 0 }}>📊</span>
+        <span>{anchor.marketQuestion || anchor.label}</span>
+      </div>
+
+      {/* YES outcome */}
+      {anchor.outcomes ? (
+        anchor.outcomes.map((oc) => (
+          <DualProbBar
+            key={oc.label}
+            label={oc.label}
+            pmProb={oc.polymarketProb}
+            rxProb={oc.rateXProb}
+            alpha={oc.alpha}
+            theme={theme}
+          />
+        ))
+      ) : (
+        <DualProbBar label="YES" pmProb={pmProb} rxProb={rxProb} alpha={alpha} theme={theme} />
+      )}
+
+      {/* Footer: expiry, volume, confidence */}
+      <div style={{
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        marginTop: 8, paddingTop: 8, borderTop: `1px solid ${theme.border}`,
+      }}>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {expiryLabel && (
+            <span style={{ fontSize: 7, color: theme.muted }}>⏰ {expiryLabel}</span>
+          )}
+          {anchor.tradingVolume && (
+            <span style={{ fontSize: 7, color: theme.muted }}>Vol: {anchor.tradingVolume}</span>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+          <span style={{
+            fontSize: 7, color: theme.muted,
+            fontFamily: "'JetBrains Mono',monospace",
+          }}>
+            conf: {(confidence * 100).toFixed(0)}%
+          </span>
+          <span style={{ fontSize: 7, color: theme.muted }}>
+            {causalCount} nodes
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/** Aggregated Alpha Signals section */
+const AlphaSignals: React.FC<{
+  anchors: NarrativeNode[]; theme: GraphTheme;
+}> = ({ anchors, theme }) => {
+  const sorted = useMemo(() => {
+    return [...anchors]
+      .map((a) => ({
+        id: a.id,
+        label: a.marketQuestion || a.label,
+        pm: a.marketProb ?? 0,
+        rx: a.rateXProb ?? (a.marketProb ?? 0),
+        alpha: a.alpha ?? ((a.rateXProb ?? (a.marketProb ?? 0)) - (a.marketProb ?? 0)),
+      }))
+      .filter((a) => Math.abs(a.alpha) > 2)
+      .sort((a, b) => Math.abs(b.alpha) - Math.abs(a.alpha));
+  }, [anchors]);
+
+  if (sorted.length === 0) return null;
+
+  return (
+    <div style={{
+      padding: 10, borderRadius: 8, background: theme.bgAlt,
+      border: `1px solid ${theme.border}`, marginBottom: 12,
+    }}>
+      <div style={{
+        fontSize: 8, fontWeight: 700, color: theme.accent,
+        letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8,
+        fontFamily: "'JetBrains Mono',monospace",
+      }}>
+        🎯 Alpha Signals
+      </div>
+      {sorted.map((s) => {
+        const al = alphaLevel(s.alpha);
+        return (
+          <div key={s.id} style={{
+            display: "flex", alignItems: "center", gap: 6,
+            padding: "4px 0",
+            borderBottom: `1px solid ${theme.border}`,
+            fontSize: 8, fontFamily: "'JetBrains Mono',monospace",
+          }}>
+            <span style={{ color: al.color, fontWeight: 800, width: 16 }}>{al.icon}</span>
+            <span style={{ flex: 1, color: theme.textSecondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 8 }}>
+              {s.label.replace(/^PM:\s*/, "").slice(0, 35)}
+            </span>
+            <span style={{ color: theme.muted, flexShrink: 0 }}>PM {s.pm}%</span>
+            <span style={{ color: "#22c55e", fontWeight: 700, flexShrink: 0 }}>RX {s.rx}%</span>
+            <span style={{ color: al.color, fontWeight: 800, flexShrink: 0 }}>
+              {s.alpha > 0 ? "+" : ""}{s.alpha}pp
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const MarketsTab: React.FC<{
+  narrativeNodes?: NarrativeNode[];
+  theme: GraphTheme;
+  onMarketSelect?: (anchorId: string) => void;
+}> = ({ narrativeNodes, theme, onMarketSelect }) => {
+  const anchors = useMemo(() => {
+    if (!narrativeNodes) return [];
+    return narrativeNodes.filter(isAnchorNode);
+  }, [narrativeNodes]);
+
+  if (anchors.length === 0) {
+    return (
+      <div style={{ fontSize: 10, color: theme.muted, padding: "20px 0", textAlign: "center" }}>
+        No prediction markets available
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <AlphaSignals anchors={anchors} theme={theme} />
+      <SectionLabel text={`Active Markets (${anchors.length})`} theme={theme} />
+      {anchors.map((anchor) => (
+        <MarketCard
+          key={anchor.id}
+          anchor={anchor}
+          theme={theme}
+          onClick={() => onMarketSelect?.(anchor.id)}
+        />
+      ))}
+    </div>
+  );
+};
+
 // ─── Main Panel ─────────────────────────────────────────────────
 
 const PANEL_WIDTH = 300;
@@ -469,6 +695,8 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
   selectedNodeLabel,
   theme,
   topOffset,
+  narrativeNodes,
+  onMarketSelect,
 }) => {
   const [activeTab, setActiveTab] = useState<TabKey>("states");
 
@@ -572,6 +800,13 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
           <IndicesTab
             narrativeCuiBono={narrativeCuiBono}
             theme={theme}
+          />
+        )}
+        {activeTab === "markets" && (
+          <MarketsTab
+            narrativeNodes={narrativeNodes}
+            theme={theme}
+            onMarketSelect={onMarketSelect}
           />
         )}
       </div>

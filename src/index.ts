@@ -15,6 +15,7 @@ export type {
   KolNode, KolPost, KolFlowData, KolAggregateStats,
   NarrativeNode, Narrative, NarrativeFlowData, NarrativeAggregateStats,
   CuiBonoEntry, CuiBono, NarrativeCuiBono, AnchorInfluenceLink,
+  AnchorOutcome, AnchorFactor, DualProbPoint,
   ProjectInfo, Point2D, NodePosition, LayoutConfig,
   FilterState, BrandingConfig, GraphTheme,
   EventFlowRequest, EventFlowResponse,

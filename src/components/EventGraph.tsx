@@ -98,9 +98,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const statsHeight = mode === "kols" && showKolStats ? KOL_STATS_HEIGHT : mode === "narratives" && showNarrativeStats ? NARRATIVE_STATS_HEIGHT : 0;
   const topOffset = HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0) + statsHeight;
   const hasCuiBono = mode === "narratives" && !!narrativeData?.narrative?.cuiBono;
-  const cuiBonoWidth = hasCuiBono ? CUI_BONO_WIDTH : 0;
+  const hasNarrativeSidebar = mode === "narratives" && (hasCuiBono || narrativeNodes.length > 0);
+  const cuiBonoWidth = hasNarrativeSidebar ? CUI_BONO_WIDTH : 0;
   const panelWidth = selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : cuiBonoWidth;
-  const svgWidth = Math.max(0, dims.w - (hasCuiBono && !(selection.panelOpen && showDetailPanel) ? cuiBonoWidth : 0) - (selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : 0));
+  const svgWidth = Math.max(0, dims.w - (hasNarrativeSidebar && !(selection.panelOpen && showDetailPanel) ? cuiBonoWidth : 0) - (selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : 0));
   const svgHeight = Math.max(0, dims.h - topOffset);
 
   const evGraph = useEventFlowGraph(eventData, svgWidth, svgHeight, graphFilters.filters, selection.hovered, layoutOverrides);
@@ -152,6 +153,12 @@ export const EventGraph: React.FC<EventGraphProps> = ({
     selection.setSelected(id);
     onNodeSelectRef.current?.(id, modeRef.current);
   }, [selection.setSelected, narrativeById]);
+
+  const handleMarketSelect = useCallback((anchorId: string) => {
+    // Highlight the anchor on the graph + all causal chains
+    selection.setHovered(anchorId);
+    setAnchorModalId(anchorId);
+  }, [selection.setHovered]);
 
   const selectedEvent = mode === "events" && selection.selected ? eventById.get(selection.selected) ?? null : null;
   const selectedKol = mode === "kols" && selection.selected ? kolById.get(selection.selected) ?? null : null;
@@ -286,15 +293,17 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         <NarrativeLegend theme={theme} panelOffset={panelWidth} />
       )}
 
-      {/* Cui Bono sidebar — always visible in narrative mode when data exists */}
-      {hasCuiBono && (
+      {/* Cui Bono + Markets sidebar — visible in narrative mode */}
+      {hasNarrativeSidebar && (
         <CuiBonoPanel
-          isOpen={hasCuiBono}
+          isOpen={hasNarrativeSidebar}
           narrativeCuiBono={narrativeData?.narrative?.cuiBono}
           selectedNodeCuiBono={selectedNarrative?.cuiBono}
           selectedNodeLabel={selectedNarrative?.label}
           theme={theme}
           topOffset={topOffset}
+          narrativeNodes={narrativeNodes}
+          onMarketSelect={handleMarketSelect}
         />
       )}
 
