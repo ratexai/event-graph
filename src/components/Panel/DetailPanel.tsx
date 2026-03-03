@@ -604,10 +604,11 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
     const deltaText = narrative.oddsDelta > 0 ? `+${narrative.oddsDelta.toFixed(1)}pp` : `${narrative.oddsDelta.toFixed(1)}pp`;
     return (
       <div style={{
-        position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)",
+        position: "absolute", bottom: 42, left: "50%", transform: "translateX(-50%)",
         background: theme.surface, border: `1px solid ${catStyle.color}25`, borderRadius: 12,
         padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
-        backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "0 12px 48px rgba(0,0,0,.7)", maxWidth: "92%",
+        backdropFilter: "blur(20px)", zIndex: 35, boxShadow: "0 12px 48px rgba(0,0,0,.7)", maxWidth: "85%",
+        pointerEvents: "none",
       }}>
         <span style={{ fontSize: 22 }}>{catMeta?.icon}</span>
         <div>

@@ -101,6 +101,7 @@ export const NarrativeLegend = memo<LegendBarProps>(({ theme, panelOffset }) => 
       border: `1px solid ${theme.border}`, zIndex: 20,
       fontSize: 9, fontFamily: "'JetBrains Mono',monospace",
       color: theme.textSecondary, opacity: 0.85,
+      pointerEvents: "none",
     }}>
       <span style={{ fontWeight: 700, fontSize: 8, letterSpacing: 1, textTransform: "uppercase", color: theme.muted }}>Shapes</span>
       {signals.map((sig) => {
