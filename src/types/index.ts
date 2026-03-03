@@ -226,6 +226,11 @@ export interface NarrativeNode {
   /** Extensible metadata */
   meta?: Record<string, unknown>;
 
+  /** Temporal status: past (confirmed), present (unfolding now), future (prediction/scenario) */
+  temporal?: "past" | "present" | "future";
+  /** ISO date when this prediction market question resolves/expires */
+  resolvesAt?: string;
+
   /** Cui Bono — who benefits / who loses from this event */
   cuiBono?: CuiBono;
 }

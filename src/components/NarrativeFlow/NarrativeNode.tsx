@@ -154,6 +154,10 @@ export const NarrativeNodeComponent = memo<Props>(({
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(node.id); }
   }, [node.id, onSelect]);
 
+  // Temporal status
+  const isFuture = node.temporal === "future";
+  const isPredictionEndpoint = isFuture && !!node.resolvesAt;
+
   // Emojis from tags (action + flags, up to 3)
   const [flag, ctxIcon] = useMemo(() => getNodeEmojis(node.tags), [node.tags]);
   const emojiLine = ctxIcon && flag ? `${ctxIcon}${flag}` : ctxIcon || flag || "";
@@ -183,26 +187,38 @@ export const NarrativeNodeComponent = memo<Props>(({
       opacity={isDimmed ? 0.08 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
       onFocus={handleEnter} onBlur={onHoverEnd} onClick={handleClick}>
 
-      {/* Glow rings */}
-      <GlowRings radius={r} color={catStyle.color} time={time} isActive={isHovered || isSelected} />
+      {/* Glow rings — future nodes get a pulsing outer glow */}
+      {isFuture && !isDimmed && (
+        <circle r={outerR + 6} fill="none" stroke={isPredictionEndpoint ? "#6366f1" : catStyle.color}
+          strokeWidth={1.5} opacity={0.3} strokeDasharray="4 6">
+          <animate attributeName="opacity" values="0.15;0.4;0.15" dur="3s" repeatCount="indefinite" />
+          <animate attributeName="r" values={`${outerR + 4};${outerR + 8};${outerR + 4}`} dur="3s" repeatCount="indefinite" />
+        </circle>
+      )}
+
+      <GlowRings radius={r} color={isFuture ? (isPredictionEndpoint ? "#6366f1" : catStyle.color) : catStyle.color} time={time} isActive={isHovered || isSelected} />
 
       {/* Impact ring */}
       <ImpactRing radius={r} impact={node.weight * 100} color={catStyle.color} />
 
-      {/* Momentum ring — dashed for deceleration */}
-      <circle r={outerR} fill="none" stroke={sigStyle.color} strokeWidth={1}
-        opacity={isDimmed ? 0.05 : 0.25}
-        strokeDasharray={node.momentum < 0 ? "3 4" : "none"}
+      {/* Momentum ring — dashed for deceleration, always dashed for future */}
+      <circle r={outerR} fill="none" stroke={isFuture ? "#6366f1" : sigStyle.color} strokeWidth={1}
+        opacity={isDimmed ? 0.05 : isFuture ? 0.4 : 0.25}
+        strokeDasharray={isFuture || node.momentum < 0 ? "3 4" : "none"}
         strokeLinecap="round" />
 
-      {/* Main shape */}
+      {/* Main shape — future nodes: dashed border, semi-transparent fill */}
       {isCircle ? (
-        <circle r={r} fill={catStyle.bg} stroke={catStyle.color}
-          strokeWidth={isHovered || isSelected ? 2.5 : 1.2} />
+        <circle r={r} fill={isFuture ? `${catStyle.bg}` : catStyle.bg}
+          stroke={isPredictionEndpoint ? "#6366f1" : catStyle.color}
+          strokeWidth={isHovered || isSelected ? 2.5 : isFuture ? 1.8 : 1.2}
+          strokeDasharray={isFuture ? "5 3" : "none"} />
       ) : (
-        <path d={shapePath} fill={catStyle.bg} stroke={catStyle.color}
-          strokeWidth={isHovered || isSelected ? 2.5 : 1.2}
-          strokeLinejoin="round" />
+        <path d={shapePath} fill={isFuture ? `${catStyle.bg}` : catStyle.bg}
+          stroke={isPredictionEndpoint ? "#6366f1" : catStyle.color}
+          strokeWidth={isHovered || isSelected ? 2.5 : isFuture ? 1.8 : 1.2}
+          strokeLinejoin="round"
+          strokeDasharray={isFuture ? "5 3" : "none"} />
       )}
 
       {/* Sentiment dot — top-right corner (3-4px) */}
@@ -237,10 +253,23 @@ export const NarrativeNodeComponent = memo<Props>(({
 
       {/* Signal badge (top-left, small) */}
       <g transform={`translate(${-r * 0.8},${-r * 0.8})`}>
-        <circle r={6} fill={sigStyle.bg} stroke={sigStyle.color} strokeWidth={0.6} />
-        <text textAnchor="middle" y={2.5} fill={sigStyle.color} fontSize={6.5}
-          style={{ pointerEvents: "none" }}>{sigMeta?.icon || "\u25CF"}</text>
+        <circle r={6} fill={isFuture ? "rgba(99,102,241,0.25)" : sigStyle.bg}
+          stroke={isFuture ? "#6366f1" : sigStyle.color} strokeWidth={0.6} />
+        <text textAnchor="middle" y={2.5} fill={isFuture ? "#a78bfa" : sigStyle.color} fontSize={6.5}
+          style={{ pointerEvents: "none" }}>{isFuture ? "\u{1F52E}" : (sigMeta?.icon || "\u25CF")}</text>
       </g>
+
+      {/* Expiry date badge for prediction endpoints */}
+      {isPredictionEndpoint && !isDimmed && (
+        <g transform={`translate(${-r * 0.8},${-r * 0.8 + 15})`}>
+          <rect x={-14} y={-6} width={28} height={12} rx={6}
+            fill="rgba(99,102,241,0.3)" stroke="#6366f1" strokeWidth={0.5} />
+          <text textAnchor="middle" y={2} fill="#a78bfa" fontSize={5.5} fontWeight={700}
+            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            {node.resolvesAt ? new Date(node.resolvesAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "EXP"}
+          </text>
+        </g>
+      )}
 
       {/* Odds delta badge (top-right, only on hover) */}
       {deltaText && !isDimmed && (isHovered || isSelected) && (
