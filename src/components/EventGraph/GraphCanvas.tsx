@@ -132,6 +132,7 @@ export function GraphCanvas({
         {timeSlots.map((slot, i) => {
           if (i > maxCol) return null;
           const x = layoutPadding.left + (graphWidth / maxCol) * i;
+          const slotIsFuture = isNarrativeMode && (slot.label.includes("(fut)") || slot.label.includes("(prog)"));
           return (
             <GridColumn
               key={`${slot.label}-${i}`}
@@ -140,6 +141,7 @@ export function GraphCanvas({
               bottomY={layoutPadding.top + graphHeight}
               label={isEventsMode ? slot.label : isNarrativeMode ? slot.label : `Wave ${i + 1}`}
               theme={theme}
+              isFuture={slotIsFuture}
             />
           );
         })}
@@ -157,6 +159,9 @@ export function GraphCanvas({
           if (!from || !to) return null;
 
           const active = !!hoveredId && activeChain.has(edge.from) && activeChain.has(edge.to);
+          const toNode = isNarrativeMode ? narrativeById?.get(edge.to) : null;
+          const fromNode = isNarrativeMode ? narrativeById?.get(edge.from) : null;
+          const edgeIsFuture = isNarrativeMode && (toNode?.temporal === "future" || fromNode?.temporal === "future");
 
           return (
             <StreamPath
@@ -165,10 +170,11 @@ export function GraphCanvas({
               from={from}
               to={to}
               width={streamWidthResolver(edge.to)}
-              fromColor={colorResolver(edge.from)}
-              toColor={colorResolver(edge.to)}
+              fromColor={edgeIsFuture ? "#6366f1" : colorResolver(edge.from)}
+              toColor={edgeIsFuture ? "#6366f1" : colorResolver(edge.to)}
               isActive={active}
               isDimmed={!!hoveredId && !active}
+              isFuture={edgeIsFuture}
             />
           );
         })}
