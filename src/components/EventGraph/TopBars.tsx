@@ -94,6 +94,8 @@ interface FilterBarProps {
   onTogglePlatform: (platform: Platform) => void;
   onToggleCategory?: (category: NarrativeCategory) => void;
   onToggleSignal?: (signal: NarrativeSignal) => void;
+  hasMarket?: boolean;
+  onToggleHasMarket?: () => void;
 }
 
 export function FilterBar(props: FilterBarProps) {
@@ -106,6 +108,7 @@ export function FilterBar(props: FilterBarProps) {
     onResetEventTypes, onResetCategories,
     onToggleEventType, onToggleTier, onTogglePlatform,
     onToggleCategory, onToggleSignal,
+    hasMarket, onToggleHasMarket,
   } = props;
 
   return (
@@ -177,6 +180,17 @@ export function FilterBar(props: FilterBarProps) {
               }}>{meta?.icon} {meta?.label}</button>
             );
           })}
+        </>)}
+        {onToggleHasMarket && (<>
+          <div style={{ width: 1, height: 18, background: theme.border, margin: "0 6px" }} />
+          <button onClick={onToggleHasMarket} style={{
+            padding: "3px 10px", borderRadius: 12,
+            border: `1px solid ${hasMarket ? "#6366f1" + "80" : theme.border}`,
+            background: hasMarket ? "rgba(99,102,241,0.15)" : "transparent",
+            color: hasMarket ? "#a78bfa" : theme.muted,
+            fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+            display: "flex", alignItems: "center", gap: 4,
+          }}>{"\uD83D\uDD2E"} Has Market</button>
         </>)}
       </>) : (<>
         <span style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginRight: 4 }}>TIER:</span>

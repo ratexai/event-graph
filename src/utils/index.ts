@@ -425,6 +425,9 @@ export function filterNarratives(nodes: NarrativeNode[], filters: Partial<Filter
   if (filters.minWeight != null) {
     result = result.filter((n) => n.weight >= filters.minWeight!);
   }
+  if (filters.hasMarket) {
+    result = result.filter((n) => n.marketProb != null);
+  }
   if (filters.searchQuery) {
     const q = filters.searchQuery.toLowerCase();
     result = result.filter((n) => n.label.toLowerCase().includes(q) || n.desc.toLowerCase().includes(q));
@@ -479,11 +482,25 @@ export function computeNarrativeStats(nodes: NarrativeNode[]): NarrativeAggregat
   };
 }
 
-/** Narrative node radius based on weight and oddsDelta */
-export function narrativeNodeRadius(weight: number, oddsDelta: number, layout: LayoutConfig = DEFAULT_LAYOUT): number {
-  const base = layout.nodeBaseRadius + weight * layout.nodeWeightScale;
-  const boost = Math.min(Math.abs(oddsDelta) * 0.3, 8);
+/** Narrative node radius — 5 discrete size tiers based on weight, plus oddsDelta boost */
+export function narrativeNodeRadius(weight: number, oddsDelta: number, _layout?: LayoutConfig): number {
+  // 5 tiers per spec v2: XS(13) S(16) M(19) L(22) XL(26)
+  const base = weight >= 0.92 ? 26
+    : weight >= 0.80 ? 22
+    : weight >= 0.65 ? 19
+    : weight >= 0.50 ? 16
+    : 13;
+  const boost = Math.min(Math.abs(oddsDelta) * 0.2, 4);
   return base + boost;
+}
+
+/** Size tier label for display */
+export function narrativeSizeTier(weight: number): "XS" | "S" | "M" | "L" | "XL" {
+  if (weight >= 0.92) return "XL";
+  if (weight >= 0.80) return "L";
+  if (weight >= 0.65) return "M";
+  if (weight >= 0.50) return "S";
+  return "XS";
 }
 
 /** Narrative stream width based on weight + oddsDelta magnitude */
@@ -491,4 +508,96 @@ export function narrativeStreamWidth(weight: number, oddsDelta: number, layout: 
   const base = Math.max(layout.streamMinWidth, weight * layout.streamWidthScale);
   const boost = Math.min(Math.abs(oddsDelta) * 0.2, 4);
   return base + boost;
+}
+
+// ─── Tag-based emoji helpers ───────────────────────────────────
+
+const TAG_FLAGS: Record<string, string> = {
+  trump: "\u{1F1FA}\u{1F1F8}", "us-politics": "\u{1F1FA}\u{1F1F8}", "us-gov": "\u{1F1FA}\u{1F1F8}", "us-casualties": "\u{1F1FA}\u{1F1F8}",
+  israel: "\u{1F1EE}\u{1F1F1}", iran: "\u{1F1EE}\u{1F1F7}",
+  uae: "\u{1F1E6}\u{1F1EA}", dubai: "\u{1F1E6}\u{1F1EA}",
+  qatar: "\u{1F1F6}\u{1F1E6}", bahrain: "\u{1F1E7}\u{1F1ED}",
+  lebanon: "\u{1F1F1}\u{1F1E7}", beirut: "\u{1F1F1}\u{1F1E7}", hezbollah: "\u{1F1F1}\u{1F1E7}",
+  iraq: "\u{1F1EE}\u{1F1F6}", saudi: "\u{1F1F8}\u{1F1E6}",
+  pakistan: "\u{1F1F5}\u{1F1F0}", cyprus: "\u{1F1E8}\u{1F1FE}", uk: "\u{1F1EC}\u{1F1E7}",
+  kuwait: "\u{1F1F0}\u{1F1FC}", russia: "\u{1F1F7}\u{1F1FA}",
+  china: "\u{1F1E8}\u{1F1F3}", gcc: "\u{1F30D}",
+  france: "\u{1F1EB}\u{1F1F7}", jordan: "\u{1F1EF}\u{1F1F4}",
+  germany: "\u{1F1E9}\u{1F1EA}", japan: "\u{1F1EF}\u{1F1F5}", india: "\u{1F1EE}\u{1F1F3}",
+};
+
+const TAG_CONTEXT_ICONS: Record<string, string> = {
+  strikes: "\u2694\uFE0F", military: "\u{1F3AF}", navy: "\u2693",
+  oil: "\u{1F6E2}\uFE0F", hormuz: "\u{1F6A2}", shipping: "\u{1F6A2}",
+  markets: "\u{1F4C9}", dow: "\u{1F4C9}", gold: "\u{1FA99}",
+  nuclear: "\u2622\uFE0F", iaea: "\u2622\uFE0F", natanz: "\u2622\uFE0F",
+  diplomacy: "\u{1F54A}\uFE0F", "prediction": "\u{1F4CA}", polymarket: "\u{1F4CA}",
+  casualties: "\u{1F480}", leadership: "\u{1F451}", succession: "\u{1F451}",
+  protests: "\u270A", branded: "\u{1F3E2}", tech: "\u{1F4BB}",
+  amazon: "\u2601\uFE0F", opec: "\u{1F6E2}\uFE0F", musk: "\u{1D54F}",
+  gas: "\u26FD", retaliation: "\u{1F680}", "ground-invasion": "\u{1FA96}",
+  aerial: "\u2708\uFE0F", sanctions: "\u{1F6AB}",
+};
+
+/** Extract up to 2 emojis for a node: [flag, contextIcon] */
+export function getNodeEmojis(tags?: string[]): [string, string] {
+  if (!tags?.length) return ["", ""];
+  let flag = "";
+  let ctx = "";
+  for (const t of tags) {
+    if (!flag && TAG_FLAGS[t]) flag = TAG_FLAGS[t];
+    if (!ctx && TAG_CONTEXT_ICONS[t]) ctx = TAG_CONTEXT_ICONS[t];
+    if (flag && ctx) break;
+  }
+  return [flag, ctx];
+}
+
+/** Wrap a label into up to 2 lines of maxCharsPerLine each */
+export function wrapLabel(label: string, maxCharsPerLine = 16): string[] {
+  if (label.length <= maxCharsPerLine) return [label];
+  const words = label.split(" ");
+  const line1: string[] = [];
+  const line2: string[] = [];
+  let len = 0;
+  let onLine2 = false;
+  for (const w of words) {
+    if (!onLine2 && len + w.length + (line1.length ? 1 : 0) > maxCharsPerLine && line1.length > 0) {
+      onLine2 = true;
+      len = 0;
+    }
+    if (onLine2) {
+      line2.push(w);
+    } else {
+      line1.push(w);
+    }
+    len += w.length + 1;
+  }
+  const l1 = line1.join(" ");
+  const l2 = line2.join(" ");
+  if (!l2) return [l1.length > maxCharsPerLine ? l1.slice(0, maxCharsPerLine - 1) + "\u2026" : l1];
+  return [l1, l2.length > maxCharsPerLine ? l2.slice(0, maxCharsPerLine - 1) + "\u2026" : l2];
+}
+
+/** Known source abbreviations for mini-badges */
+const SOURCE_ABBR: Record<string, string> = {
+  reuters: "R", "al jazeera": "AJ", cnbc: "CNBC", cnn: "CNN", bbc: "BBC",
+  bloomberg: "BB", "washington post": "WP", washpost: "WP", npr: "NPR",
+  "new york times": "NYT", "wall street journal": "WSJ", wsj: "WSJ",
+  iaea: "IAEA", "times of israel": "ToI", haaretz: "HA", isw: "ISW",
+  wikipedia: "W", polymarket: "PM", "fox business": "FOX",
+  "white house": "WH", centcom: "CC", idf: "IDF",
+  "iran state media": "IR", presstv: "IR", "press tv": "IR",
+  cfr: "CFR", csis: "CSIS",
+};
+
+/** Get short source abbreviation from sourceName */
+export function getSourceAbbr(sourceName?: string): string {
+  if (!sourceName) return "";
+  const lower = sourceName.toLowerCase();
+  // Try each key as a substring match
+  for (const [key, abbr] of Object.entries(SOURCE_ABBR)) {
+    if (lower.includes(key)) return abbr;
+  }
+  // Fallback: first 2-3 chars uppercase
+  return sourceName.slice(0, 3).toUpperCase();
 }

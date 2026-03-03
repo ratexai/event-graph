@@ -2,7 +2,7 @@ import type { NarrativeFlowData } from "../../src";
 
 /**
  * 2026 Iran Conflict: Expanded Timeline
- * 55 nodes, 6 branches, 10 time slots
+ * 63 nodes, 6 branches, 10 time slots
  *
  * Branches:
  *   main   — escalation chain (strikes -> retaliation -> waves)
@@ -31,7 +31,7 @@ export const iranConflictData: NarrativeFlowData = {
 
   narrative: {
     id: "iran-2026-conflict-expanded",
-    title: "2026 Iran Conflict: Expanded Timeline \u2014 55 nodes, 6 branches",
+    title: "2026 Iran Conflict: Expanded Timeline \u2014 63 nodes, 6 branches",
     category: "war",
     status: "active",
     sentimentTrend: "neg",
@@ -54,6 +54,27 @@ export const iranConflictData: NarrativeFlowData = {
         prob: 12,
       },
     ],
+    cuiBono: {
+      countryScores: { "Israel": 8, "USA": 6, "Russia": 7, "Saudi Arabia": 7, "Iran": -18, "UAE": -5, "Japan": -3, "India": -4, "Qatar": 5, "EU": -3 },
+      companyWinners: [
+        { name: "Lockheed Martin", code: "LMT", delta: 12.4, reason: "Defense contracts surge" },
+        { name: "Raytheon", code: "RTX", delta: 9.2, reason: "Missile defense demand" },
+        { name: "ExxonMobil", code: "XOM", delta: 7.8, reason: "Oil price windfall" },
+        { name: "Northrop Grumman", code: "NOC", delta: 6.1, reason: "Aerospace/defense" },
+      ],
+      companyLosers: [
+        { name: "Emirates Airlines", code: "EK", delta: -15.3, reason: "Route disruptions" },
+        { name: "Carnival Corp", code: "CCL", delta: -8.7, reason: "Cruise cancellations" },
+        { name: "Delta Air Lines", code: "DAL", delta: -6.2, reason: "Fuel cost spike" },
+      ],
+      indexChanges: [
+        { name: "Brent Crude", code: "BZ", delta: 34.5, reason: "$71 → $105" },
+        { name: "Gold", code: "GC", delta: 12.8, reason: "Safe haven flow" },
+        { name: "S&P 500", code: "SPX", delta: -4.3, reason: "Risk-off" },
+        { name: "VIX", code: "VIX", delta: 68.0, reason: "Fear index spike" },
+        { name: "TASE-35", code: "TA35", delta: -8.2, reason: "Israel market stress" },
+      ],
+    },
   },
 
   nodes: [
@@ -271,6 +292,25 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran",
       timestamp: "2026-02-28T06:35:00Z",
       tags: ["strikes", "epic-fury", "roaring-lion"],
+      cuiBono: {
+        winners: [
+          { name: "Israel", delta: 3, reason: "Deterrence" },
+          { name: "USA", delta: 1, reason: "Arms sales" },
+        ],
+        losers: [
+          { name: "Iran", delta: -5, reason: "Infrastructure destroyed" },
+          { name: "UAE", delta: -2, reason: "Collateral risk" },
+        ],
+        indices: [
+          { name: "Brent Crude", code: "BZ", delta: 8.3 },
+          { name: "TASE-35", code: "TA35", delta: -2.1 },
+          { name: "Gold", code: "GC", delta: 3.4 },
+        ],
+        hiddenMotives: [
+          "Lockheed Martin & Raytheon benefit from sustained conflict",
+          "Netanyahu gains domestic approval ahead of coalition vote",
+        ],
+      },
     },
     {
       id: "n5_khamenei",
@@ -478,6 +518,25 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://www.aljazeera.com/economy/2026/3/3/shutdown-of-hormuz-strait-raises-fears-of-soaring-oil-prices",
       timestamp: "2026-03-01T12:00:00Z",
       tags: ["hormuz", "shipping", "oil"],
+      cuiBono: {
+        winners: [
+          { name: "Russia", delta: 4, reason: "Gas revenue surge" },
+          { name: "Saudi Arabia", delta: 3, reason: "Oil price boost" },
+        ],
+        losers: [
+          { name: "Japan", delta: -3, reason: "Import dependency" },
+          { name: "India", delta: -2, reason: "Fuel costs" },
+          { name: "EU", delta: -3, reason: "Energy crisis" },
+        ],
+        indices: [
+          { name: "Brent Crude", code: "BZ", delta: 12.1 },
+          { name: "Nikkei", code: "NI225", delta: -3.5 },
+          { name: "Gold", code: "GC", delta: 5.2 },
+        ],
+        hiddenMotives: [
+          "IRGC hardliners consolidate power via economic blockade",
+        ],
+      },
     },
     {
       id: "n9_larijani",
@@ -812,6 +871,23 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://www.cnn.com/2026/03/02/investing/oil-us-stock-market-iran",
       timestamp: "2026-03-02T20:00:00Z",
       tags: ["markets", "oil", "gold"],
+      cuiBono: {
+        winners: [
+          { name: "Saudi Arabia", delta: 4, reason: "Revenue surge" },
+          { name: "Russia", delta: 3, reason: "Energy windfall" },
+          { name: "ExxonMobil", code: "XOM", delta: 2, reason: "Oil price windfall" },
+        ],
+        losers: [
+          { name: "US consumers", delta: -2, reason: "Fuel costs" },
+          { name: "Airlines", delta: -3, reason: "Fuel cost spike" },
+          { name: "India", delta: -2, reason: "Energy import costs" },
+        ],
+        indices: [
+          { name: "Brent Crude", code: "BZ", delta: 8.5 },
+          { name: "XLE", code: "XLE", delta: 6.2 },
+          { name: "IATA", code: "IATA", delta: -4.1 },
+        ],
+      },
     },
     {
       id: "n12c_rubio_imminent",
@@ -957,6 +1033,20 @@ export const iranConflictData: NarrativeFlowData = {
       sourceName: "IAEA / Vantor / Wikipedia",
       timestamp: "2026-03-03T12:00:00Z",
       tags: ["nuclear", "natanz"],
+      cuiBono: {
+        winners: [
+          { name: "Israel", delta: 4, reason: "Nuclear program delay" },
+          { name: "USA", delta: 2, reason: "Non-proliferation" },
+        ],
+        losers: [
+          { name: "Iran", delta: -5, reason: "Nuclear program set back" },
+          { name: "IAEA", delta: -1, reason: "Credibility undermined" },
+        ],
+        indices: [
+          { name: "Uranium futures", code: "UX", delta: 8 },
+          { name: "Elbit Systems", code: "TLV:ELBT", delta: 5.3 },
+        ],
+      },
     },
     {
       id: "n18b_uae_defense_stats",
@@ -1079,6 +1169,22 @@ export const iranConflictData: NarrativeFlowData = {
       sourceUrl: "https://www.deseret.com/politics/2026/03/03/gas-prices-impacted-stock-market-oil-iran-war/",
       timestamp: "2026-03-03T20:00:00Z",
       tags: ["markets", "dow", "gas"],
+      cuiBono: {
+        winners: [
+          { name: "Gold traders", delta: 3, reason: "Safe haven flow" },
+          { name: "VIX traders", delta: 2, reason: "Volatility spike" },
+        ],
+        losers: [
+          { name: "S&P 500", code: "SPX", delta: -2.1, reason: "Risk-off selling" },
+          { name: "Airlines", delta: -5, reason: "Fuel + route disruption" },
+          { name: "Tourism", delta: -3, reason: "Travel collapse" },
+        ],
+        indices: [
+          { name: "S&P 500", code: "SPX", delta: -2.1 },
+          { name: "VIX", code: "VIX", delta: 35 },
+          { name: "Gold", code: "GC", delta: 4.2 },
+        ],
+      },
     },
     {
       id: "n25_rubio_hardest_hits",
@@ -1161,6 +1267,223 @@ export const iranConflictData: NarrativeFlowData = {
       tags: ["gcc", "diplomacy"],
     },
 
+    // ─── Col 7 (cont.): Mar 3 — MarketTwits live feed ──────
+    {
+      id: "n36_irgc_econ_threat",
+      col: 7,
+      label: "IRGC: strikes on 'all economic centers' of ME",
+      category: "war",
+      signal: "escalation",
+      sentiment: "neg",
+      desc: "IRGC threatens to hit 'all economic centers' across the Middle East if Iran's 'main centers' are attacked. Broadest threat scope yet — implies Dubai, Riyadh, Doha financial districts.",
+      weight: 0.88,
+      oddsDelta: -3,
+      marketProb: null,
+      sourceAuthority: 88,
+      momentum: -5,
+      volume: 34000,
+      from: ["n6_retaliation1", "n8_hormuz"],
+      extra: "econ threat",
+      sourceName: "MarketTwits / IRGC",
+      timestamp: "2026-03-03T06:34:00Z",
+      tags: ["iran", "gulf", "branded"],
+      cuiBono: {
+        winners: [
+          { name: "IRGC", delta: -1, reason: "Rhetoric only, no action" },
+        ],
+        losers: [
+          { name: "UAE", delta: -3, reason: "Investor confidence shaken" },
+          { name: "Dubai markets", delta: -2, reason: "Capital flight risk" },
+        ],
+        indices: [
+          { name: "DFM", code: "DFM", delta: -2.8 },
+          { name: "ADX", code: "ADX", delta: -1.9 },
+          { name: "Gold", code: "GC", delta: 1.2 },
+        ],
+      },
+    },
+    {
+      id: "n37_uae_strikes_iran",
+      col: 7,
+      label: "UAE considers strikes on Iranian military",
+      category: "war",
+      signal: "escalation",
+      sentiment: "neg",
+      desc: "UAE considering retaliatory strikes on Iranian military targets after missile/drone attacks hit Dubai, Abu Dhabi airports, and AWS data centers. First GCC offensive action discussed openly.",
+      weight: 0.92,
+      oddsDelta: -4,
+      marketProb: null,
+      sourceAuthority: 92,
+      momentum: -5,
+      volume: 45000,
+      from: ["n7_gulf_hits", "n23_losses_gulf", "n28_branded_amazon"],
+      extra: "UAE retaliation",
+      sourceName: "Axios / MarketTwits",
+      timestamp: "2026-03-03T06:53:00Z",
+      tags: ["uae", "military", "gulf"],
+      cuiBono: {
+        winners: [
+          { name: "UAE", delta: 2, reason: "Deterrence posture" },
+          { name: "USA", delta: 1, reason: "Ally credibility" },
+        ],
+        losers: [
+          { name: "Iran", delta: -2, reason: "Encirclement" },
+        ],
+        indices: [
+          { name: "ADX", code: "ADX", delta: 1.5 },
+          { name: "Lockheed Martin", code: "LMT", delta: 2.1 },
+        ],
+      },
+    },
+    {
+      id: "n38_irgc_no_unanswered",
+      col: 7,
+      label: "IRGC: 'No crime left unanswered'",
+      category: "war",
+      signal: "noise",
+      sentiment: "neg",
+      desc: "IRGC statement: Iran will not leave unanswered any of the 'crimes' committed by US and Israel. Rhetoric escalation.",
+      weight: 0.6,
+      oddsDelta: 0,
+      marketProb: null,
+      sourceAuthority: 85,
+      momentum: -3,
+      volume: 18000,
+      from: ["n32_opinion_iran_no_negotiate"],
+      extra: "IRGC rhetoric",
+      sourceName: "MarketTwits / IRGC",
+      timestamp: "2026-03-03T06:54:00Z",
+      tags: ["iran", "military"],
+    },
+    {
+      id: "n39_diesel_2yr_high",
+      col: 7,
+      label: "US diesel at 2-year high, gas >$3/gal",
+      category: "macro",
+      signal: "catalyst",
+      sentiment: "neg",
+      desc: "US diesel futures surge to 2-year highs on ME supply disruption. Gasoline above $3/gallon for first time since November 2025. Direct consumer impact begins.",
+      weight: 0.82,
+      oddsDelta: 0,
+      marketProb: null,
+      sourceAuthority: 95,
+      momentum: -4,
+      volume: 28000,
+      from: ["n24_markets_tuesday", "n8_hormuz"],
+      extra: "gas >$3",
+      sourceName: "Reuters / MarketTwits",
+      timestamp: "2026-03-03T07:21:00Z",
+      tags: ["oil", "markets", "gas"],
+    },
+    {
+      id: "n40_trump_hormuz_escort",
+      col: 7,
+      label: "Trump: military escorts for tankers through Hormuz",
+      category: "war",
+      signal: "resolution",
+      sentiment: "neu",
+      desc: "Trump admin considers using armed forces to escort oil/gas tankers through Strait of Hormuz. Would challenge Iran's de-facto blockade directly.",
+      weight: 0.88,
+      oddsDelta: 3,
+      marketProb: null,
+      sourceAuthority: 95,
+      momentum: 2,
+      volume: 42000,
+      from: ["n8_hormuz"],
+      extra: "escort convoys",
+      sourceName: "Politico / MarketTwits",
+      sourceUrl: "https://www.politico.com/news/2026/03/03/iran-oil-energy-military-trump-hormuz-00808825",
+      timestamp: "2026-03-03T07:35:00Z",
+      tags: ["trump", "hormuz", "oil", "military"],
+      cuiBono: {
+        winners: [
+          { name: "USA", delta: 3, reason: "Force projection" },
+          { name: "US Navy", delta: 2, reason: "Operational relevance" },
+        ],
+        losers: [
+          { name: "Iran", delta: -3, reason: "Isolation deepens" },
+        ],
+        indices: [
+          { name: "Lockheed Martin", code: "LMT", delta: 3.2 },
+          { name: "Huntington Ingalls", code: "HII", delta: 2.8 },
+        ],
+      },
+    },
+    {
+      id: "n41_oil_interventions",
+      col: 7,
+      label: "IEA + Bessent: oil intervention package",
+      category: "macro",
+      signal: "resolution",
+      sentiment: "pos",
+      desc: "Triple oil intervention: (1) IEA ready to deploy strategic reserves; (2) Treasury Sec Bessent + Energy Sec Wright to announce price measures; (3) military escort through Hormuz. Coordinated response to oil spike.",
+      weight: 0.85,
+      oddsDelta: 3,
+      marketProb: null,
+      sourceAuthority: 96,
+      momentum: 3,
+      volume: 38000,
+      from: ["n39_diesel_2yr_high", "n40_trump_hormuz_escort"],
+      extra: "IEA + Treasury",
+      sourceName: "Reuters / MarketTwits",
+      timestamp: "2026-03-03T07:56:00Z",
+      tags: ["oil", "markets", "diplomacy"],
+    },
+    {
+      id: "n42_iran_wave3",
+      col: 7,
+      label: "Iran Wave 3: new missiles at Israel + US bases",
+      category: "war",
+      signal: "escalation",
+      sentiment: "neg",
+      desc: "Iran launches another wave of missiles targeting Israel and US facilities across the Middle East. Third retaliatory wave since Feb 28.",
+      weight: 0.92,
+      oddsDelta: -5,
+      marketProb: null,
+      sourceAuthority: 90,
+      momentum: -6,
+      volume: 52000,
+      from: ["n6_retaliation1", "n10_wave2"],
+      extra: "Wave 3",
+      sourceName: "MarketTwits",
+      timestamp: "2026-03-03T08:03:00Z",
+      tags: ["iran", "strikes", "retaliation"],
+      cuiBono: {
+        winners: [
+          { name: "IRGC", delta: 2, reason: "Demonstrated capability" },
+        ],
+        losers: [
+          { name: "Israel", delta: -3, reason: "Defense costs surge" },
+          { name: "USA", delta: -2, reason: "Escalation risk" },
+        ],
+        indices: [
+          { name: "Brent Crude", code: "BZ", delta: 5.1 },
+          { name: "Gold", code: "GC", delta: 2.8 },
+          { name: "TASE-35", code: "TA35", delta: -1.9 },
+        ],
+      },
+    },
+    {
+      id: "n43_macron_solidarity",
+      col: 7,
+      label: "Macron: France to defend Gulf allies, ship to Cyprus",
+      category: "war",
+      signal: "noise",
+      sentiment: "neu",
+      desc: "Macron invokes defense agreements with Qatar, Kuwait, UAE — pledges solidarity. France deploying air-defense warship to Cyprus. First NATO-adjacent state military commitment beyond US/UK.",
+      weight: 0.78,
+      oddsDelta: 0,
+      marketProb: null,
+      sourceAuthority: 95,
+      momentum: -2,
+      volume: 29000,
+      from: ["n23_losses_gulf", "n11e_cyprus_akrotiri"],
+      extra: "\u{1F1EB}\u{1F1F7} solidarity",
+      sourceName: "MarketTwits / Macron",
+      timestamp: "2026-03-03T08:06:00Z",
+      tags: ["diplomacy", "cyprus", "gulf"],
+    },
+
     // ─── Col 8: Mar 4-5 — Prognoses ─────────────────────────
     {
       id: "n34_pred_iran_capacity",
@@ -1176,7 +1499,7 @@ export const iranConflictData: NarrativeFlowData = {
       sourceAuthority: 80,
       momentum: 2,
       volume: 12000,
-      from: ["n10_wave2", "n5b_navy_sunk"],
+      from: ["n10_wave2", "n5b_navy_sunk", "n42_iran_wave3"],
       extra: "capacity \u2193 (prog)",
       sourceName: "ISW / CSIS analysis",
       timestamp: "2026-03-04T00:00:00Z",
@@ -1216,7 +1539,7 @@ export const iranConflictData: NarrativeFlowData = {
       sourceAuthority: 82,
       momentum: 1,
       volume: 18000,
-      from: ["n8_hormuz", "n24_markets_tuesday"],
+      from: ["n8_hormuz", "n24_markets_tuesday", "n40_trump_hormuz_escort", "n41_oil_interventions"],
       extra: "convoy test (prog)",
       sourceName: "Bloomberg / Al Jazeera / Kpler",
       sourceUrl: "https://www.bloomberg.com/news/features/2026-03-03/why-oil-price-surge-is-limited-after-trump-s-iran-strikes",
@@ -1259,7 +1582,7 @@ export const iranConflictData: NarrativeFlowData = {
       sourceAuthority: 85,
       momentum: 5,
       volume: 22000,
-      from: ["n28_branded_amazon", "n20_losses_iran", "n24_markets_tuesday", "n34c_pred_hormuz_test"],
+      from: ["n28_branded_amazon", "n20_losses_iran", "n24_markets_tuesday", "n34c_pred_hormuz_test", "n37_uae_strikes_iran", "n41_oil_interventions"],
       extra: "+8pp (prog)",
       sourceName: "Polymarket / Bloomberg / Kpler / analysis",
       timestamp: "2026-03-08T00:00:00Z",
