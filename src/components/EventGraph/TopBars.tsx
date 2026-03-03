@@ -1,6 +1,6 @@
 import React from "react";
-import type { EventType, GraphTheme, KolTier, Platform, ViewMode } from "../../types";
-import { EVENT_TYPE_META, getEventTypeStyle, getKolTierStyle, KOL_TIER_META, PLATFORM_META } from "../../styles/theme";
+import type { EventType, GraphTheme, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../../types";
+import { EVENT_TYPE_META, getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, getNarrativeSignalStyle, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META, NARRATIVE_SIGNAL_META } from "../../styles/theme";
 import { formatNumber } from "../../utils";
 
 interface HeaderBarProps {
@@ -12,6 +12,8 @@ interface HeaderBarProps {
   eventEdgeCount: number;
   kolCount: number;
   totalReach: number;
+  narrativeCount?: number;
+  currentProb?: number;
   zoom: number;
   onModeChange: (mode: ViewMode) => void;
 }
@@ -25,6 +27,8 @@ export function HeaderBar({
   eventEdgeCount,
   kolCount,
   totalReach,
+  narrativeCount = 0,
+  currentProb,
   zoom,
   onModeChange,
 }: HeaderBarProps) {
@@ -44,7 +48,7 @@ export function HeaderBar({
         <div style={{ width: 1, height: 20, background: theme.border }} />
         {showModeSwitcher && (
           <div style={{ display: "flex", borderRadius: 10, border: `1px solid ${theme.border}`, overflow: "hidden" }}>
-            {([ ["events", "🌊 Events Flow"], ["kols", "👥 KOLs"] ] as [ViewMode, string][]).map(([key, label]) => (
+            {([ ["events", "🌊 Events"], ["kols", "👥 KOLs"], ["narratives", "📊 Narratives"] ] as [ViewMode, string][]).map(([key, label]) => (
               <button key={key} onClick={() => onModeChange(key)} style={{
                 padding: "5px 14px", border: "none",
                 background: mode === key ? theme.accentDim : "transparent",
@@ -59,7 +63,9 @@ export function HeaderBar({
       <div style={{ display: "flex", gap: 10, alignItems: "center", fontSize: 9, color: theme.muted }}>
         {mode === "events"
           ? <>{eventCount} events · {eventEdgeCount} flows</>
-          : <>{kolCount} KOLs · {formatNumber(totalReach)} reach</>}
+          : mode === "narratives"
+            ? <>{narrativeCount} events{currentProb != null ? ` · ${currentProb.toFixed(0)}% prob` : ""}</>
+            : <>{kolCount} KOLs · {formatNumber(totalReach)} reach</>}
         <span>·</span><span>Zoom {(zoom * 100).toFixed(0)}%</span>
       </div>
     </div>
@@ -74,21 +80,32 @@ interface FilterBarProps {
   allEventTypes: EventType[];
   allTiers: KolTier[];
   allPlatforms: Platform[];
+  allCategories?: NarrativeCategory[];
+  allSignals?: NarrativeSignal[];
   activeEventTypes: Set<EventType>;
   activeTiers: Set<KolTier>;
   activePlatforms: Set<Platform>;
+  activeCategories?: Set<NarrativeCategory>;
+  activeSignals?: Set<NarrativeSignal>;
   onResetEventTypes: () => void;
+  onResetCategories?: () => void;
   onToggleEventType: (type: EventType) => void;
   onToggleTier: (tier: KolTier) => void;
   onTogglePlatform: (platform: Platform) => void;
+  onToggleCategory?: (category: NarrativeCategory) => void;
+  onToggleSignal?: (signal: NarrativeSignal) => void;
 }
 
 export function FilterBar(props: FilterBarProps) {
   const {
     mode, top, panelOffset, theme,
     allEventTypes, allTiers, allPlatforms,
+    allCategories = [], allSignals = [],
     activeEventTypes, activeTiers, activePlatforms,
-    onResetEventTypes, onToggleEventType, onToggleTier, onTogglePlatform,
+    activeCategories, activeSignals,
+    onResetEventTypes, onResetCategories,
+    onToggleEventType, onToggleTier, onTogglePlatform,
+    onToggleCategory, onToggleSignal,
   } = props;
 
   return (
@@ -120,6 +137,47 @@ export function FilterBar(props: FilterBarProps) {
             }}><span style={{ fontSize: 10 }}>{meta?.icon}</span>{meta?.label}</button>
           );
         })}
+      </>) : mode === "narratives" ? (<>
+        {onResetCategories && (
+          <button onClick={onResetCategories} style={{
+            padding: "3px 10px", borderRadius: 12,
+            border: `1px solid ${activeCategories?.size === allCategories.length ? theme.accent : theme.border}`,
+            background: activeCategories?.size === allCategories.length ? theme.accentDim : "transparent",
+            color: activeCategories?.size === allCategories.length ? theme.accent : theme.muted,
+            fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+          }}>All</button>
+        )}
+        {allCategories.map((cat) => {
+          const style = getNarrativeCategoryStyle(theme, cat);
+          const meta = NARRATIVE_CATEGORY_META[cat];
+          const on = activeCategories?.has(cat) ?? true;
+          return (
+            <button key={cat} onClick={() => onToggleCategory?.(cat)} style={{
+              padding: "3px 10px", borderRadius: 12,
+              border: `1px solid ${on ? style.color + "50" : theme.border}`,
+              background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
+              fontSize: 9, cursor: "pointer", fontFamily: "inherit",
+              display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", transition: "all .2s",
+            }}><span style={{ fontSize: 10 }}>{meta?.icon}</span>{meta?.label}</button>
+          );
+        })}
+        {allSignals.length > 0 && (<>
+          <div style={{ width: 1, height: 18, background: theme.border, margin: "0 6px" }} />
+          <span style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginRight: 4 }}>SIGNAL:</span>
+          {allSignals.map((sig) => {
+            const style = getNarrativeSignalStyle(theme, sig);
+            const meta = NARRATIVE_SIGNAL_META[sig];
+            const on = activeSignals?.has(sig) ?? true;
+            return (
+              <button key={sig} onClick={() => onToggleSignal?.(sig)} style={{
+                padding: "3px 10px", borderRadius: 12,
+                border: `1px solid ${on ? style.color + "50" : theme.border}`,
+                background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
+                fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+              }}>{meta?.icon} {meta?.label}</button>
+            );
+          })}
+        </>)}
       </>) : (<>
         <span style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginRight: 4 }}>TIER:</span>
         {allTiers.map((tier) => {
@@ -181,6 +239,45 @@ export function KolStatsBar({ top, height, panelOffset, theme, stats }: KolStats
         { l: "Mentions", v: String(stats.totalMentions), c: getKolTierStyle(theme, "macro").color },
         { l: "Avg Eng.", v: `${stats.avgEngRate.toFixed(1)}%`, c: getKolTierStyle(theme, "mid").color },
         { l: "Positive", v: `${stats.positiveRatio}%`, c: theme.positive },
+      ].map((item, i) => (
+        <div key={item.l} style={{ flex: 1, textAlign: "center", borderRight: i < 4 ? `1px solid ${theme.border}` : "none", padding: "4px 0" }}>
+          <div style={{ fontSize: 16, fontWeight: 800, color: item.c }}>{item.v}</div>
+          <div style={{ fontSize: 7.5, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>{item.l}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+interface NarrativeStatsBarProps {
+  top: number;
+  height: number;
+  panelOffset: number;
+  theme: GraphTheme;
+  stats: {
+    totalEvents: number;
+    totalVolume: number;
+    avgMomentum: number;
+    currentProb: number;
+    netOddsDelta: number;
+  };
+}
+
+export function NarrativeStatsBar({ top, height, panelOffset, theme, stats }: NarrativeStatsBarProps) {
+  const deltaColor = stats.netOddsDelta > 0 ? theme.positive : stats.netOddsDelta < 0 ? theme.negative : theme.neutral;
+  const momentumColor = stats.avgMomentum > 0 ? theme.positive : stats.avgMomentum < 0 ? theme.negative : theme.neutral;
+  return (
+    <div style={{
+      position: "absolute", top, left: 0, right: panelOffset,
+      height, display: "flex", alignItems: "center",
+      borderBottom: `1px solid ${theme.border}`, background: `${theme.bg}d8`, zIndex: 24,
+    }}>
+      {[
+        { l: "Events", v: String(stats.totalEvents), c: theme.accent },
+        { l: "Probability", v: `${stats.currentProb.toFixed(1)}%`, c: theme.accent },
+        { l: "Net Odds", v: `${stats.netOddsDelta > 0 ? "+" : ""}${stats.netOddsDelta.toFixed(1)}pp`, c: deltaColor },
+        { l: "Momentum", v: stats.avgMomentum > 0 ? `+${stats.avgMomentum.toFixed(1)}` : stats.avgMomentum.toFixed(1), c: momentumColor },
+        { l: "Volume", v: formatNumber(stats.totalVolume), c: getNarrativeCategoryStyle(theme, "ai").color },
       ].map((item, i) => (
         <div key={item.l} style={{ flex: 1, textAlign: "center", borderRight: i < 4 ? `1px solid ${theme.border}` : "none", padding: "4px 0" }}>
           <div style={{ fontSize: 16, fontWeight: 800, color: item.c }}>{item.v}</div>

@@ -27,10 +27,16 @@ export const EventNodeComponent = memo<Props>(({
   const meta = EVENT_TYPE_META[event.type];
   const handleEnter = useCallback(() => onHoverStart(event.id), [event.id, onHoverStart]);
   const handleClick = useCallback(() => onSelect(event.id), [event.id, onSelect]);
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(event.id); }
+  }, [event.id, onSelect]);
 
   return (
     <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s" }}
-      opacity={isDimmed ? 0.08 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd} onClick={handleClick}>
+      role="button" aria-label={`${meta?.label || event.type} event: ${event.label}, impact ${event.impact}`}
+      tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
+      opacity={isDimmed ? 0.08 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
+      onFocus={handleEnter} onBlur={onHoverEnd} onClick={handleClick}>
       <GlowRings radius={r} color={style.color} time={time} isActive={isHovered || isSelected} />
       <SentimentRing radius={r + 3} sentiment={event.sentiment} theme={theme} isDimmed={isDimmed} />
       <ImpactRing radius={r} impact={event.impact} color={style.color} />

@@ -6,7 +6,7 @@
 import type {
   EventFlowRequest, EventFlowResponse,
   KolFlowRequest, KolFlowResponse,
-  EventFlowData, KolFlowData,
+  NarrativeFlowRequest, NarrativeFlowResponse,
 } from "../types";
 
 // ─── Configuration ──────────────────────────────────────────────
@@ -174,6 +174,21 @@ export class EventGraphApiClient {
   /** GET /kol-flow/stats — Aggregate KOL stats for a project */
   async getKolStats(projectId: string): Promise<{ data: import("../types").KolAggregateStats }> {
     return apiFetch(this.config, `/kol-flow/stats?projectId=${projectId}`, undefined, "GET");
+  }
+
+  /** POST /narrative-flow/graph — Fetch narrative flow graph */
+  async getNarrativeFlow(request: NarrativeFlowRequest): Promise<NarrativeFlowResponse> {
+    return apiFetch<NarrativeFlowResponse>(this.config, "/narrative-flow/graph", request);
+  }
+
+  /** GET /narrative-flow/node/:id — Single narrative node detail */
+  async getNarrativeNode(nodeId: string): Promise<{ data: import("../types").NarrativeNode }> {
+    return apiFetch(this.config, `/narrative-flow/node/${nodeId}`, undefined, "GET");
+  }
+
+  /** GET /narrative-flow/stats — Aggregate narrative stats */
+  async getNarrativeStats(narrativeId: string): Promise<{ data: import("../types").NarrativeAggregateStats }> {
+    return apiFetch(this.config, `/narrative-flow/stats?narrativeId=${narrativeId}`, undefined, "GET");
   }
 
   /** GET /projects/:id */

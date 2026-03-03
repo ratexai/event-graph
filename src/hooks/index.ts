@@ -4,17 +4,18 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import type {
-  EventNode, KolNode, EventFlowData, KolFlowData,
+  EventNode, KolNode, NarrativeNode, EventFlowData, KolFlowData, NarrativeFlowData,
   ViewMode, FilterState, EventType, KolTier, Platform, SortField,
-  LayoutConfig, EventFlowRequest, KolFlowRequest,
+  NarrativeCategory, NarrativeSignal,
+  LayoutConfig, EventFlowRequest, KolFlowRequest, NarrativeFlowRequest,
 } from "../types";
 import { EventGraphApiClient } from "../api/client";
 import {
-  computeEventPositions, computeKolPositions,
-  deriveEventEdges, deriveKolEdges,
-  getEventChain, getKolChain,
-  filterEvents, filterKols,
-  computeKolStats, mergeLayout,
+  computeEventPositions, computeKolPositions, computeNarrativePositions,
+  deriveEventEdges, deriveKolEdges, deriveNarrativeEdges,
+  getEventChain, getKolChain, getNarrativeChain,
+  filterEvents, filterKols, filterNarratives,
+  computeKolStats, computeNarrativeStats, mergeLayout,
   type ComputedPositions,
 } from "../utils";
 
@@ -74,6 +75,9 @@ export interface PanZoomState {
     onMouseMove: (e: React.MouseEvent) => void;
     onMouseUp: () => void;
     onMouseLeave: () => void;
+    onTouchStart: (e: React.TouchEvent) => void;
+    onTouchMove: (e: React.TouchEvent) => void;
+    onTouchEnd: () => void;
   };
   zoomIn: () => void;
   zoomOut: () => void;
@@ -91,6 +95,10 @@ export function usePanZoom(opts?: {
   const dragStart = useRef<{ x: number; y: number } | null>(null);
   const panRef = useRef(pan);
   panRef.current = pan;
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
+  const pinchStartDist = useRef<number | null>(null);
+  const pinchStartZoom = useRef(1);
 
   const onWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -115,9 +123,60 @@ export function usePanZoom(opts?: {
     dragStart.current = null;
   }, []);
 
+  // Touch: compute distance between two fingers
+  const touchDist = (t: React.TouchList) => {
+    if (t.length < 2) return 0;
+    const dx = t[0].clientX - t[1].clientX;
+    const dy = t[0].clientY - t[1].clientY;
+    return Math.sqrt(dx * dx + dy * dy);
+  };
+
+  const onTouchStart = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2) {
+      // Pinch-to-zoom start
+      pinchStartDist.current = touchDist(e.touches);
+      pinchStartZoom.current = zoomRef.current;
+    } else if (e.touches.length === 1) {
+      if ((e.target as HTMLElement).closest(`.${nodeClassName}`)) return;
+      isPanningRef.current = true;
+      setIsPanning(true);
+      dragStart.current = {
+        x: e.touches[0].clientX - panRef.current.x,
+        y: e.touches[0].clientY - panRef.current.y,
+      };
+    }
+  }, [nodeClassName]);
+
+  const onTouchMove = useCallback((e: React.TouchEvent) => {
+    if (e.touches.length === 2 && pinchStartDist.current) {
+      // Pinch-to-zoom
+      const dist = touchDist(e.touches);
+      const scale = dist / pinchStartDist.current;
+      setZoom(Math.max(minZoom, Math.min(maxZoom, pinchStartZoom.current * scale)));
+    } else if (e.touches.length === 1 && isPanningRef.current && dragStart.current) {
+      // Pan
+      setPan({
+        x: e.touches[0].clientX - dragStart.current.x,
+        y: e.touches[0].clientY - dragStart.current.y,
+      });
+    }
+  }, [minZoom, maxZoom]);
+
+  const onTouchEnd = useCallback(() => {
+    isPanningRef.current = false;
+    setIsPanning(false);
+    dragStart.current = null;
+    pinchStartDist.current = null;
+  }, []);
+
+  const handlers = useMemo(() => ({
+    onWheel, onMouseDown, onMouseMove, onMouseUp, onMouseLeave: onMouseUp,
+    onTouchStart, onTouchMove, onTouchEnd,
+  }), [onWheel, onMouseDown, onMouseMove, onMouseUp, onTouchStart, onTouchMove, onTouchEnd]);
+
   return {
     zoom, pan, isPanning,
-    handlers: { onWheel, onMouseDown, onMouseMove, onMouseUp, onMouseLeave: onMouseUp },
+    handlers,
     zoomIn: useCallback(() => setZoom((z) => Math.min(maxZoom, z + zoomStep)), [maxZoom, zoomStep]),
     zoomOut: useCallback(() => setZoom((z) => Math.max(minZoom, z - zoomStep)), [minZoom, zoomStep]),
     reset: useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []),
@@ -126,11 +185,16 @@ export function usePanZoom(opts?: {
 
 // ─── useGraphFilters ────────────────────────────────────────────
 
-export function useGraphFilters(allEventTypes: EventType[], allTiers: KolTier[], allPlatforms: Platform[]) {
+export function useGraphFilters(
+  allEventTypes: EventType[], allTiers: KolTier[], allPlatforms: Platform[],
+  allCategories: NarrativeCategory[] = [], allSignals: NarrativeSignal[] = [],
+) {
   const [filters, setFilters] = useState<FilterState>({
     activeEventTypes: new Set(allEventTypes),
     activeTiers: new Set(allTiers),
     activePlatforms: new Set(allPlatforms),
+    activeCategories: new Set(allCategories),
+    activeSignals: new Set(allSignals),
     sortField: "followers",
     sortOrder: "desc",
     searchQuery: "",
@@ -143,8 +207,10 @@ export function useGraphFilters(allEventTypes: EventType[], allTiers: KolTier[],
       activeEventTypes: new Set(allEventTypes),
       activeTiers: new Set(allTiers),
       activePlatforms: new Set(allPlatforms),
+      activeCategories: new Set(allCategories),
+      activeSignals: new Set(allSignals),
     }));
-  }, [allEventTypes, allTiers, allPlatforms]);
+  }, [allEventTypes, allTiers, allPlatforms, allCategories, allSignals]);
 
   const toggleEventType = useCallback((type: EventType) => {
     setFilters((prev) => {
@@ -170,9 +236,29 @@ export function useGraphFilters(allEventTypes: EventType[], allTiers: KolTier[],
     });
   }, []);
 
+  const toggleCategory = useCallback((category: NarrativeCategory) => {
+    setFilters((prev) => {
+      const next = new Set(prev.activeCategories);
+      next.has(category) ? next.delete(category) : next.add(category);
+      return { ...prev, activeCategories: next };
+    });
+  }, []);
+
+  const toggleSignal = useCallback((signal: NarrativeSignal) => {
+    setFilters((prev) => {
+      const next = new Set(prev.activeSignals);
+      next.has(signal) ? next.delete(signal) : next.add(signal);
+      return { ...prev, activeSignals: next };
+    });
+  }, []);
+
   const resetEventTypes = useCallback(() => {
     setFilters((prev) => ({ ...prev, activeEventTypes: new Set(allEventTypes) }));
   }, [allEventTypes]);
+
+  const resetCategories = useCallback(() => {
+    setFilters((prev) => ({ ...prev, activeCategories: new Set(allCategories) }));
+  }, [allCategories]);
 
   const setSortField = useCallback((field: SortField) => {
     setFilters((prev) => ({ ...prev, sortField: field }));
@@ -182,7 +268,11 @@ export function useGraphFilters(allEventTypes: EventType[], allTiers: KolTier[],
     setFilters((prev) => ({ ...prev, searchQuery: query }));
   }, []);
 
-  return { filters, setFilters, toggleEventType, toggleTier, togglePlatform, resetEventTypes, setSortField, setSearchQuery };
+  return {
+    filters, setFilters,
+    toggleEventType, toggleTier, togglePlatform, toggleCategory, toggleSignal,
+    resetEventTypes, resetCategories, setSortField, setSearchQuery,
+  };
 }
 
 // ─── useGraphSelection ──────────────────────────────────────────
@@ -302,8 +392,7 @@ export function useEventGraphApi(client: EventGraphApiClient, request: EventFlow
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [client, serialized]); // eslint-disable-line react-hooks/exhaustive-deps
-
+  }, [client, serialized]); 
   return { data, loading, error, setData };
 }
 
@@ -325,7 +414,72 @@ export function useKolGraphApi(client: EventGraphApiClient, request: KolFlowRequ
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
-  }, [client, serialized]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [client, serialized]);
+  return { data, loading, error, setData };
+}
 
+// ─── useNarrativeFlowGraph ──────────────────────────────────────
+
+export function useNarrativeFlowGraph(
+  data: NarrativeFlowData | undefined,
+  graphWidth: number,
+  graphHeight: number,
+  filters: FilterState,
+  hoveredId: string | null,
+  layoutConfig?: Partial<LayoutConfig>,
+) {
+  const layout = useMemo(() => mergeLayout(layoutConfig), [layoutConfig]);
+
+  const filtered = useMemo(
+    () => (data ? filterNarratives(data.nodes, filters) : []),
+    [data, filters],
+  );
+
+  const edges = useMemo(
+    () => data?.edges ?? deriveNarrativeEdges(filtered),
+    [data?.edges, filtered],
+  );
+
+  const positions = useMemo(
+    () => computeNarrativePositions(filtered, graphWidth, graphHeight, layout),
+    [filtered, graphWidth, graphHeight, layout],
+  );
+
+  const activeChain = useMemo(
+    () => (hoveredId && data ? getNarrativeChain(hoveredId, data.nodes) : new Set<string>()),
+    [hoveredId, data],
+  );
+
+  const stats = useMemo(() => computeNarrativeStats(filtered), [filtered]);
+
+  const maxCol = useMemo(
+    () => Math.max(...(filtered.length ? filtered.map((n) => n.col) : [0]), 1),
+    [filtered],
+  );
+
+  return { filtered, edges, positions, activeChain, stats, maxCol, layout };
+}
+
+// ─── useNarrativeGraphApi ───────────────────────────────────────
+
+export function useNarrativeGraphApi(client: EventGraphApiClient, request: NarrativeFlowRequest | null) {
+  const [data, setData] = useState<NarrativeFlowData | undefined>();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const serialized = useStableRequest(request);
+
+  useEffect(() => {
+    if (!request || !serialized) return;
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+
+    client.getNarrativeFlow(request)
+      .then((res) => { if (!cancelled) setData(res.data); })
+      .catch((err) => { if (!cancelled) setError(err.message); })
+      .finally(() => { if (!cancelled) setLoading(false); });
+
+    return () => { cancelled = true; };
+  }, [client, serialized]);
   return { data, loading, error, setData };
 }
