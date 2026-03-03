@@ -14,7 +14,7 @@ export type {
   EventNode, EventEdge, EventFlowData, TimeSlot,
   KolNode, KolPost, KolFlowData, KolAggregateStats,
   NarrativeNode, Narrative, NarrativeFlowData, NarrativeAggregateStats,
-  CuiBonoEntry, CuiBono, NarrativeCuiBono,
+  CuiBonoEntry, CuiBono, NarrativeCuiBono, AnchorInfluenceLink,
   ProjectInfo, Point2D, NodePosition, LayoutConfig,
   FilterState, BrandingConfig, GraphTheme,
   EventFlowRequest, EventFlowResponse,
@@ -48,6 +48,7 @@ export {
   nodeRadius, kolRadius, narrativeNodeRadius, narrativeSizeTier,
   streamWidth, kolStreamWidth, narrativeStreamWidth,
   getNodeEmojis, getSourceAbbr,
+  influenceStreamWidth, ANCHOR_NODE_RADIUS, isAnchorNode, isScenarioNode,
 } from "./utils";
 
 // Hooks
@@ -63,6 +64,10 @@ export type { PanZoomState } from "./hooks";
 export { EventNodeComponent } from "./components/EventFlow/EventNode";
 export { KolNodeComponent } from "./components/KolFlow/KolNode";
 export { NarrativeNodeComponent } from "./components/NarrativeFlow/NarrativeNode";
+export { AnchorNodeComponent } from "./components/NarrativeFlow/AnchorNode";
+export { ScenarioNodeComponent } from "./components/NarrativeFlow/ScenarioNode";
+export { AnchorModal } from "./components/NarrativeFlow/AnchorModal";
+export type { AnchorModalProps } from "./components/NarrativeFlow/AnchorModal";
 export { DetailPanel, HoverTooltip } from "./components/Panel/DetailPanel";
 export type { DetailPanelProps } from "./components/Panel/DetailPanel";
 export {

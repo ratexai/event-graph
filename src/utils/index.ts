@@ -371,14 +371,36 @@ export function computeNarrativePositions(
   return computeColumnPositions(nodes, width, height, layout);
 }
 
-/** Derive edges from NarrativeNode.from[] fields */
+/** Derive edges from NarrativeNode.from[] fields + anchor influenceLinks */
 export function deriveNarrativeEdges(nodes: NarrativeNode[]): EventEdge[] {
   const idSet = new Set(nodes.map((n) => n.id));
-  return nodes.flatMap((node) =>
-    (node.from || [])
-      .filter((fid) => idSet.has(fid))
-      .map((fid) => ({ from: fid, to: node.id, type: "causal" as const })),
-  );
+  const edges: EventEdge[] = [];
+
+  for (const node of nodes) {
+    // Standard causal edges from .from[]
+    for (const fid of node.from || []) {
+      if (!idSet.has(fid)) continue;
+      // Check if this edge has detailed influence data from anchor's influenceLinks
+      const link = node.influenceLinks?.find((l) => l.id === fid);
+      if (link) {
+        edges.push({ from: fid, to: node.id, type: "influence", influence: link.influence, mechanism: link.mechanism });
+      } else {
+        edges.push({ from: fid, to: node.id, type: "causal" });
+      }
+    }
+    // Also derive edges from influenceLinks that may not be in .from[] (e.g., anchor nodes)
+    if (node.influenceLinks) {
+      for (const link of node.influenceLinks) {
+        if (!idSet.has(link.id)) continue;
+        // Only add if not already derived from .from[]
+        if (!(node.from || []).includes(link.id)) {
+          edges.push({ from: link.id, to: node.id, type: "influence", influence: link.influence, mechanism: link.mechanism });
+        }
+      }
+    }
+  }
+
+  return edges;
 }
 
 /** Collect full upstream + downstream chain from a narrative node */
@@ -508,6 +530,26 @@ export function narrativeStreamWidth(weight: number, oddsDelta: number, layout: 
   const base = Math.max(layout.streamMinWidth, weight * layout.streamWidthScale);
   const boost = Math.min(Math.abs(oddsDelta) * 0.2, 4);
   return base + boost;
+}
+
+/** Stream width for influence links to anchor nodes — proportional to |influence| */
+export function influenceStreamWidth(influence: number): number {
+  const absInf = Math.abs(influence);
+  // Range: 3px for tiny influence, up to 18px for massive (-25pp)
+  return Math.max(3, Math.min(18, absInf * 0.7 + 2));
+}
+
+/** Fixed anchor node radius — always XL per spec v2.1 */
+export const ANCHOR_NODE_RADIUS = 30;
+
+/** Check if a narrative node is an anchor (Polymarket future endpoint) */
+export function isAnchorNode(node: NarrativeNode): boolean {
+  return node.nodeType === "anchor" || (!!node.resolvesAt && !!node.marketPlatform && node.temporal === "future");
+}
+
+/** Check if a narrative node is a scenario (YES/NO branch) */
+export function isScenarioNode(node: NarrativeNode): boolean {
+  return node.nodeType === "scenario" || !!node.parentAnchor;
 }
 
 // ─── Tag-based emoji helpers ───────────────────────────────────

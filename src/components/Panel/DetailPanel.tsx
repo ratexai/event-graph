@@ -5,7 +5,7 @@
 import React, { useMemo } from "react";
 import type { EventNode, KolNode, NarrativeNode, GraphTheme, Sentiment, CuiBono } from "../../types";
 import { getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, getNarrativeSignalStyle, EVENT_TYPE_META, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META, NARRATIVE_SIGNAL_META } from "../../styles/theme";
-import { formatNumber, sentimentLabel, sentimentArrow } from "../../utils";
+import { formatNumber, sentimentLabel, sentimentArrow, isScenarioNode } from "../../utils";
 import { Sparkline } from "../Shared/SvgPrimitives";
 
 // ─── Helpers ────────────────────────────────────────────────────
@@ -374,6 +374,7 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
   const dayLabel = timeSlotLabels[node.col] || `Col ${node.col}`;
   const deltaColor = node.oddsDelta > 0 ? theme.positive : node.oddsDelta < 0 ? theme.negative : theme.neutral;
   const deltaText = node.oddsDelta > 0 ? `+${node.oddsDelta.toFixed(1)}pp` : `${node.oddsDelta.toFixed(1)}pp`;
+  const isScenario = isScenarioNode(node);
 
   const nodeMap = useMemo(() => new Map(allNodes.map((n) => [n.id, n])), [allNodes]);
 
@@ -484,6 +485,64 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
             <span key={tag} style={{ padding: "3px 10px", borderRadius: 10, background: theme.bgAlt, border: `1px solid ${theme.border}`, fontSize: 9, color: theme.textSecondary }}>
               #{tag}
             </span>
+          ))}
+        </div>
+      )}
+
+      {/* Scenario-specific sections */}
+      {isScenario && node.outcome && (
+        <div style={{
+          padding: 14, borderRadius: 10, marginBottom: 20,
+          background: node.outcome === "YES" ? theme.positiveDim : theme.negativeDim,
+          border: `1px solid ${node.outcome === "YES" ? theme.positive : theme.negative}30`,
+        }}>
+          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 6 }}>
+            Scenario Outcome
+          </div>
+          <div style={{
+            fontSize: 16, fontWeight: 800,
+            color: node.outcome === "YES" ? theme.positive : theme.negative,
+          }}>
+            {node.outcome === "YES" ? "✓" : "✗"} {node.outcome} — {node.outcomeProbability ?? "?"}%
+          </div>
+          {node.parentAnchor && (
+            <div style={{ fontSize: 9, color: theme.muted, marginTop: 4 }}>
+              Branch from: {node.parentAnchor}
+            </div>
+          )}
+        </div>
+      )}
+
+      {isScenario && node.conditions && node.conditions.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+            Conditions Required
+          </div>
+          {node.conditions.map((c, i) => (
+            <div key={i} style={{
+              padding: "6px 10px", borderRadius: 6, background: theme.card,
+              border: `1px solid ${theme.border}`, marginBottom: 4,
+              fontSize: 10, color: theme.textSecondary,
+            }}>
+              {i + 1}. {c}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {isScenario && node.nextEvents && node.nextEvents.length > 0 && (
+        <div style={{ marginBottom: 20 }}>
+          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
+            Next Events (if realized)
+          </div>
+          {node.nextEvents.map((ne, i) => (
+            <div key={i} style={{
+              padding: "6px 10px", borderRadius: 6, background: theme.card,
+              border: `1px solid ${theme.border}`, marginBottom: 4,
+              fontSize: 10, color: theme.text,
+            }}>
+              → {ne}
+            </div>
           ))}
         </div>
       )}
