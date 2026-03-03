@@ -21,12 +21,14 @@ import {
   useNarrativeFlowGraph,
   usePanZoom,
 } from "../hooks";
+import { isAnchorNode } from "../utils";
 import { DetailPanel, HoverTooltip } from "./Panel/DetailPanel";
 import { GraphCanvas } from "./EventGraph/GraphCanvas";
 import { StatusOverlay, ZoomControls, NarrativeLegend } from "./EventGraph/Overlays";
 import { FilterBar, HeaderBar, KolStatsBar, NarrativeStatsBar } from "./EventGraph/TopBars";
 import { GraphErrorBoundary } from "./Shared/ErrorBoundary";
 import { CuiBonoPanel } from "./CuiBono/CuiBonoPanel";
+import { AnchorModal } from "./NarrativeFlow/AnchorModal";
 
 const HEADER_HEIGHT = 48;
 const FILTER_HEIGHT = 38;
@@ -69,6 +71,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   height = "100vh",
 }) => {
   const [mode, setMode] = useState<ViewMode>(defaultMode);
+  const [anchorModalId, setAnchorModalId] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const dims = useContainerSize(containerRef);
   const time = useAnimationTime();
@@ -138,9 +141,17 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   }, [selection.setHovered]);
 
   const handleNodeSelect = useCallback((id: string) => {
+    // If clicking an anchor node, show the anchor modal instead of detail panel
+    if (modeRef.current === "narratives") {
+      const node = narrativeById.get(id);
+      if (node && isAnchorNode(node)) {
+        setAnchorModalId(id);
+        return;
+      }
+    }
     selection.setSelected(id);
     onNodeSelectRef.current?.(id, modeRef.current);
-  }, [selection.setSelected]);
+  }, [selection.setSelected, narrativeById]);
 
   const selectedEvent = mode === "events" && selection.selected ? eventById.get(selection.selected) ?? null : null;
   const selectedKol = mode === "kols" && selection.selected ? kolById.get(selection.selected) ?? null : null;
@@ -304,6 +315,20 @@ export const EventGraph: React.FC<EventGraphProps> = ({
       )}
 
       <HoverTooltip event={hoveredEvent} kol={hoveredKol} narrative={hoveredNarrative} theme={theme} />
+
+      {/* Anchor Modal — full overlay for Polymarket anchor nodes */}
+      {anchorModalId && narrativeById.get(anchorModalId) && (
+        <AnchorModal
+          anchor={narrativeById.get(anchorModalId)!}
+          allNodes={narrativeNodes}
+          theme={theme}
+          onClose={() => setAnchorModalId(null)}
+          onNavigate={(id) => {
+            setAnchorModalId(null);
+            handleNodeSelect(id);
+          }}
+        />
+      )}
     </div>
   );
 };

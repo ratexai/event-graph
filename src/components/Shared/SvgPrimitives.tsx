@@ -23,50 +23,81 @@ interface StreamProps {
   particles?: number;
   /** Future edge — dashed, purple-tinted */
   isFuture?: boolean;
+  /** Influence value for causal links to anchors (colors stream red/green) */
+  influence?: number;
+  /** Mechanism label shown on hover for influence edges */
+  mechanism?: string;
+  /** Is this edge going to a scenario node? */
+  isScenarioEdge?: boolean;
+  /** Scenario outcome — colors the edge green (YES) or red (NO) */
+  scenarioOutcome?: "YES" | "NO" | "PARTIAL";
 }
 
 export const StreamPath = memo<StreamProps>(({
-  from, to, width, fromColor, toColor, isActive, isDimmed, index = 0, particles = 3, isFuture,
+  from, to, width, fromColor, toColor, isActive, isDimmed, index = 0, particles = 3,
+  isFuture, influence, mechanism, isScenarioEdge, scenarioOutcome,
 }) => {
   const paths = streamPath(from, to, width);
   const gradId = `sg-${index}`;
+
+  // Influence-colored streams: red for negative, green for positive
+  const isInfluenceEdge = influence != null && influence !== 0;
+  const influenceColor = isInfluenceEdge
+    ? (influence! > 0 ? "#22c55e" : "#ef4444")
+    : toColor;
+
+  // Scenario edges: green for YES, red for NO
+  const scenarioColor = isScenarioEdge
+    ? (scenarioOutcome === "YES" || scenarioOutcome === "PARTIAL" ? "#22c55e" : "#ef4444")
+    : undefined;
+
+  const effectiveColor = scenarioColor || (isInfluenceEdge ? influenceColor : toColor);
+  const effectiveFromColor = scenarioColor || (isInfluenceEdge ? influenceColor : fromColor);
 
   return (
     <g opacity={isDimmed ? 0.04 : 1} style={{ transition: "opacity 0.3s" }}>
       <defs>
         <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor={fromColor} stopOpacity={isActive ? 0.5 : isFuture ? 0.12 : 0.08} />
-          <stop offset="100%" stopColor={toColor} stopOpacity={isActive ? 0.6 : isFuture ? 0.18 : 0.15} />
+          <stop offset="0%" stopColor={effectiveFromColor} stopOpacity={isActive ? 0.5 : isFuture ? 0.12 : 0.08} />
+          <stop offset="100%" stopColor={effectiveColor} stopOpacity={isActive ? 0.6 : isFuture ? 0.18 : 0.15} />
         </linearGradient>
       </defs>
-      {isFuture ? (
+      {isFuture || isScenarioEdge ? (
         <>
-          {/* Future edges: no filled shape, just dashed center + top/bottom lines */}
-          <path d={paths.center} fill="none" stroke={toColor} strokeWidth={isActive ? 1.5 : 0.8}
-            strokeDasharray="6 4" opacity={isActive ? 0.55 : 0.2} />
-          <path d={paths.top} fill="none" stroke={toColor} strokeWidth={0.4}
+          {/* Future/scenario edges: dashed center + top/bottom lines */}
+          <path d={paths.center} fill="none" stroke={effectiveColor}
+            strokeWidth={isActive ? 1.5 : isInfluenceEdge ? Math.max(0.8, Math.abs(influence!) * 0.05) : 0.8}
+            strokeDasharray={isScenarioEdge ? "8 4" : "6 4"} opacity={isActive ? 0.55 : 0.25} />
+          <path d={paths.top} fill="none" stroke={effectiveColor} strokeWidth={0.4}
             strokeDasharray="3 5" opacity={isActive ? 0.25 : 0.08} />
-          <path d={paths.bottom} fill="none" stroke={toColor} strokeWidth={0.4}
+          <path d={paths.bottom} fill="none" stroke={effectiveColor} strokeWidth={0.4}
             strokeDasharray="3 5" opacity={isActive ? 0.25 : 0.08} />
+        </>
+      ) : isInfluenceEdge ? (
+        <>
+          {/* Influence edges to anchors: colored shape + thicker center */}
+          <path d={paths.shape} fill={`url(#${gradId})`} />
+          <path d={paths.center} fill="none" stroke={influenceColor}
+            strokeWidth={isActive ? 1.5 : 0.8} opacity={isActive ? 0.6 : 0.2} />
         </>
       ) : (
         <>
           <path d={paths.shape} fill={`url(#${gradId})`} />
-          <path d={paths.center} fill="none" stroke={toColor} strokeWidth={isActive ? 1 : 0.4} opacity={isActive ? 0.4 : 0.08} />
+          <path d={paths.center} fill="none" stroke={effectiveColor} strokeWidth={isActive ? 1 : 0.4} opacity={isActive ? 0.4 : 0.08} />
         </>
       )}
       {isActive && (
         <>
-          {!isFuture && (
+          {!isFuture && !isScenarioEdge && (
             <>
-              <path d={paths.top} fill="none" stroke={toColor} strokeWidth={0.8} opacity={0.3} />
-              <path d={paths.bottom} fill="none" stroke={toColor} strokeWidth={0.8} opacity={0.3} />
+              <path d={paths.top} fill="none" stroke={effectiveColor} strokeWidth={0.8} opacity={0.3} />
+              <path d={paths.bottom} fill="none" stroke={effectiveColor} strokeWidth={0.8} opacity={0.3} />
             </>
           )}
           {Array.from({ length: particles }).map((_, i) => (
-            <circle key={i} r={2.5 - i * 0.4} fill={toColor} opacity={0.8 - i * 0.15}>
+            <circle key={i} r={2.5 - i * 0.4} fill={effectiveColor} opacity={0.8 - i * 0.15}>
               <animateMotion
-                dur={`${isFuture ? 2.5 + i * 0.5 : 1.5 + i * 0.3}s`}
+                dur={`${isFuture || isScenarioEdge ? 2.5 + i * 0.5 : 1.5 + i * 0.3}s`}
                 repeatCount="indefinite"
                 path={paths.center}
                 begin={`${i * 0.35}s`}
@@ -74,6 +105,16 @@ export const StreamPath = memo<StreamProps>(({
             </circle>
           ))}
         </>
+      )}
+      {/* Influence label on hover */}
+      {isActive && isInfluenceEdge && (
+        <text
+          x={(from.x + to.x) / 2}
+          y={(from.y + to.y) / 2 - 8}
+          textAnchor="middle" fill={influenceColor} fontSize={7} fontWeight={700}
+          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          {influence! > 0 ? "+" : ""}{influence}pp{mechanism ? `: ${mechanism}` : ""}
+        </text>
       )}
     </g>
   );
@@ -89,29 +130,47 @@ interface GridColumnProps {
   label: string;
   theme: GraphTheme;
   isFuture?: boolean;
+  /** Anchor date column — special purple treatment with 📊 icon */
+  isAnchorDate?: boolean;
 }
 
-export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, theme, isFuture }) => (
-  <g>
-    <line x1={x} y1={topY - 14} x2={x} y2={bottomY + 14}
-      stroke={isFuture ? "#6366f1" : theme.border}
-      strokeWidth={isFuture ? 1.2 : 1}
-      strokeDasharray={isFuture ? "4 8" : "1 6"}
-      opacity={isFuture ? 0.35 : 0.5} />
-    {isFuture && (
-      <rect x={x - 30} y={topY - 14} width={60} height={bottomY - topY + 28}
-        fill="rgba(99,102,241,0.03)" rx={4} />
-    )}
-    <rect x={x - 28} y={bottomY + 18} width={56} height={18} rx={9}
-      fill={isFuture ? "rgba(99,102,241,0.15)" : theme.bgAlt}
-      stroke={isFuture ? "#6366f1" : theme.border}
-      strokeWidth={isFuture ? 0.8 : 0.5} />
-    <text x={x} y={bottomY + 30} textAnchor="middle"
-      fill={isFuture ? "#a78bfa" : theme.muted}
-      fontSize={8.5} fontFamily="'JetBrains Mono',monospace"
-      fontWeight={isFuture ? 700 : 500}>{label}</text>
-  </g>
-));
+export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, theme, isFuture, isAnchorDate }) => {
+  const isSpecial = isFuture || isAnchorDate;
+  return (
+    <g>
+      <line x1={x} y1={topY - 14} x2={x} y2={bottomY + 14}
+        stroke={isSpecial ? "#6366f1" : theme.border}
+        strokeWidth={isAnchorDate ? 1.5 : isFuture ? 1.2 : 1}
+        strokeDasharray={isAnchorDate ? "6 6" : isFuture ? "4 8" : "1 6"}
+        opacity={isAnchorDate ? 0.5 : isFuture ? 0.35 : 0.5} />
+      {isSpecial && (
+        <rect x={x - 30} y={topY - 14} width={60} height={bottomY - topY + 28}
+          fill={isAnchorDate ? "rgba(99,102,241,0.06)" : "rgba(99,102,241,0.03)"} rx={4} />
+      )}
+      {isAnchorDate && (
+        <>
+          {/* Anchor date expiry marker at top */}
+          <text x={x} y={topY - 20} textAnchor="middle" fontSize={10}
+            style={{ pointerEvents: "none" }}>📊</text>
+        </>
+      )}
+      <rect x={x - 28} y={bottomY + 18} width={56} height={18} rx={9}
+        fill={isSpecial ? "rgba(99,102,241,0.15)" : theme.bgAlt}
+        stroke={isAnchorDate ? "#6366f1" : isFuture ? "#6366f1" : theme.border}
+        strokeWidth={isAnchorDate ? 1 : isFuture ? 0.8 : 0.5} />
+      <text x={x} y={bottomY + 30} textAnchor="middle"
+        fill={isSpecial ? "#a78bfa" : theme.muted}
+        fontSize={8.5} fontFamily="'JetBrains Mono',monospace"
+        fontWeight={isSpecial ? 700 : 500}>{label}</text>
+      {isAnchorDate && (
+        <text x={x} y={bottomY + 41} textAnchor="middle" fill="#a78bfa"
+          fontSize={6} fontWeight={600} fontFamily="'JetBrains Mono',monospace">
+          expiry
+        </text>
+      )}
+    </g>
+  );
+});
 GridColumn.displayName = "GridColumn";
 
 // ─── FlowArrow ──────────────────────────────────────────────────

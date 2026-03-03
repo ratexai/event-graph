@@ -1,10 +1,12 @@
 import React, { useCallback, useMemo } from "react";
 import type { EventEdge, EventNode, GraphTheme, KolNode, NarrativeNode, TimeSlot, ViewMode } from "../../types";
 import { getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle } from "../../styles/theme";
-import { kolStreamWidth, streamWidth, narrativeStreamWidth, type ComputedPositions } from "../../utils";
+import { kolStreamWidth, streamWidth, narrativeStreamWidth, influenceStreamWidth, isAnchorNode, isScenarioNode, type ComputedPositions } from "../../utils";
 import { EventNodeComponent } from "../EventFlow/EventNode";
 import { KolNodeComponent } from "../KolFlow/KolNode";
 import { NarrativeNodeComponent } from "../NarrativeFlow/NarrativeNode";
+import { AnchorNodeComponent } from "../NarrativeFlow/AnchorNode";
+import { ScenarioNodeComponent } from "../NarrativeFlow/ScenarioNode";
 import { FlowArrow, GridColumn, StreamPath } from "../Shared/SvgPrimitives";
 
 interface GraphCanvasProps {
@@ -102,16 +104,34 @@ export function GraphCanvas({
 
   const streamWidthResolver = useMemo(() => {
     if (isEventsMode) {
-      return (toId: string) => streamWidth(eventById.get(toId)?.weight ?? 0.5);
+      return (edge: EventEdge) => streamWidth(eventById.get(edge.to)?.weight ?? 0.5);
     }
     if (isNarrativeMode) {
-      return (toId: string) => {
-        const n = narrativeById?.get(toId);
+      return (edge: EventEdge) => {
+        // Influence edges: width proportional to |influence|
+        if (edge.influence != null && edge.influence !== 0) {
+          return influenceStreamWidth(edge.influence);
+        }
+        const n = narrativeById?.get(edge.to);
         return narrativeStreamWidth(n?.weight ?? 0.5, n?.oddsDelta ?? 0);
       };
     }
-    return (toId: string) => kolStreamWidth(kolById.get(toId)?.followers ?? 10000);
+    return (edge: EventEdge) => kolStreamWidth(kolById.get(edge.to)?.followers ?? 10000);
   }, [eventById, isEventsMode, isNarrativeMode, kolById, narrativeById]);
+
+  // Split narrative nodes into facts, anchors, scenarios
+  const { factNodes, anchorNodes, scenarioNodeList } = useMemo(() => {
+    if (!isNarrativeMode) return { factNodes: [] as NarrativeNode[], anchorNodes: [] as NarrativeNode[], scenarioNodeList: [] as NarrativeNode[] };
+    const facts: NarrativeNode[] = [];
+    const anchors: NarrativeNode[] = [];
+    const scenarios: NarrativeNode[] = [];
+    for (const node of narrativeNodes) {
+      if (isAnchorNode(node)) anchors.push(node);
+      else if (isScenarioNode(node)) scenarios.push(node);
+      else facts.push(node);
+    }
+    return { factNodes: facts, anchorNodes: anchors, scenarioNodeList: scenarios };
+  }, [isNarrativeMode, narrativeNodes]);
 
   return (
     <svg
@@ -132,7 +152,11 @@ export function GraphCanvas({
         {timeSlots.map((slot, i) => {
           if (i > maxCol) return null;
           const x = layoutPadding.left + (graphWidth / maxCol) * i;
-          const slotIsFuture = isNarrativeMode && (slot.label.includes("(fut)") || slot.label.includes("(prog)"));
+          const slotIsFuture = isNarrativeMode && (
+            slot.label.includes("(fut)") || slot.label.includes("(prog)") ||
+            slot.type === "near_future"
+          );
+          const slotIsAnchorDate = isNarrativeMode && slot.type === "anchor_date";
           return (
             <GridColumn
               key={`${slot.label}-${i}`}
@@ -142,6 +166,7 @@ export function GraphCanvas({
               label={isEventsMode ? slot.label : isNarrativeMode ? slot.label : `Wave ${i + 1}`}
               theme={theme}
               isFuture={slotIsFuture}
+              isAnchorDate={slotIsAnchorDate}
             />
           );
         })}
@@ -162,6 +187,9 @@ export function GraphCanvas({
           const toNode = isNarrativeMode ? narrativeById?.get(edge.to) : null;
           const fromNode = isNarrativeMode ? narrativeById?.get(edge.from) : null;
           const edgeIsFuture = isNarrativeMode && (toNode?.temporal === "future" || fromNode?.temporal === "future");
+          const edgeIsInfluence = edge.type === "influence" && edge.influence != null;
+          const edgeToAnchor = isNarrativeMode && toNode && isAnchorNode(toNode);
+          const edgeToScenario = isNarrativeMode && toNode && isScenarioNode(toNode);
 
           return (
             <StreamPath
@@ -169,12 +197,16 @@ export function GraphCanvas({
               index={i}
               from={from}
               to={to}
-              width={streamWidthResolver(edge.to)}
-              fromColor={edgeIsFuture ? "#6366f1" : colorResolver(edge.from)}
-              toColor={edgeIsFuture ? "#6366f1" : colorResolver(edge.to)}
+              width={streamWidthResolver(edge)}
+              fromColor={edgeToAnchor ? colorResolver(edge.from) : edgeIsFuture ? "#6366f1" : colorResolver(edge.from)}
+              toColor={edgeToAnchor ? "#6366f1" : edgeIsFuture ? "#6366f1" : colorResolver(edge.to)}
               isActive={active}
               isDimmed={!!hoveredId && !active}
-              isFuture={edgeIsFuture}
+              isFuture={edgeIsFuture && !edgeIsInfluence && !edgeToScenario}
+              influence={edgeIsInfluence ? edge.influence : undefined}
+              mechanism={edgeIsInfluence ? edge.mechanism : undefined}
+              isScenarioEdge={!!edgeToScenario}
+              scenarioOutcome={edgeToScenario ? toNode?.outcome : undefined}
             />
           );
         })}
@@ -201,26 +233,73 @@ export function GraphCanvas({
               );
             })
           : isNarrativeMode
-            ? narrativeNodes.map((narNode) => {
-                const pos = positions[narNode.id];
-                if (!pos) return null;
-                return (
-                  <NarrativeNodeComponent
-                    key={narNode.id}
-                    node={narNode}
-                    x={pos.x}
-                    y={pos.y}
-                    theme={theme}
-                    time={time}
-                    isHovered={hoveredId === narNode.id}
-                    isSelected={selectedId === narNode.id}
-                    isDimmed={!!hoveredId && !activeChain.has(narNode.id)}
-                    onHoverStart={onHover}
-                    onHoverEnd={handleHoverEnd}
-                    onSelect={onSelect}
-                  />
-                );
-              })
+            ? (
+              <>
+                {/* Layer 1: Fact nodes (standard narrative nodes) */}
+                {factNodes.map((narNode) => {
+                  const pos = positions[narNode.id];
+                  if (!pos) return null;
+                  return (
+                    <NarrativeNodeComponent
+                      key={narNode.id}
+                      node={narNode}
+                      x={pos.x}
+                      y={pos.y}
+                      theme={theme}
+                      time={time}
+                      isHovered={hoveredId === narNode.id}
+                      isSelected={selectedId === narNode.id}
+                      isDimmed={!!hoveredId && !activeChain.has(narNode.id)}
+                      onHoverStart={onHover}
+                      onHoverEnd={handleHoverEnd}
+                      onSelect={onSelect}
+                    />
+                  );
+                })}
+                {/* Layer 2: Anchor nodes (Polymarket future endpoints) */}
+                {anchorNodes.map((anchor) => {
+                  const pos = positions[anchor.id];
+                  if (!pos) return null;
+                  return (
+                    <AnchorNodeComponent
+                      key={anchor.id}
+                      node={anchor}
+                      x={pos.x}
+                      y={pos.y}
+                      theme={theme}
+                      time={time}
+                      isHovered={hoveredId === anchor.id}
+                      isSelected={selectedId === anchor.id}
+                      isDimmed={!!hoveredId && !activeChain.has(anchor.id)}
+                      onHoverStart={onHover}
+                      onHoverEnd={handleHoverEnd}
+                      onSelect={onSelect}
+                    />
+                  );
+                })}
+                {/* Layer 3: Scenario nodes (YES/NO branches) */}
+                {scenarioNodeList.map((sc) => {
+                  const pos = positions[sc.id];
+                  if (!pos) return null;
+                  return (
+                    <ScenarioNodeComponent
+                      key={sc.id}
+                      node={sc}
+                      x={pos.x}
+                      y={pos.y}
+                      theme={theme}
+                      time={time}
+                      isHovered={hoveredId === sc.id}
+                      isSelected={selectedId === sc.id}
+                      isDimmed={!!hoveredId && !activeChain.has(sc.id)}
+                      onHoverStart={onHover}
+                      onHoverEnd={handleHoverEnd}
+                      onSelect={onSelect}
+                    />
+                  );
+                })}
+              </>
+            )
             : kolNodes.map((kolNode) => {
                 const pos = positions[kolNode.id];
                 if (!pos) return null;

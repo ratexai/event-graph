@@ -82,6 +82,10 @@ export interface TimeSlot {
   label: string;
   startDate: string;
   endDate: string;
+  /** Visual type — controls column appearance */
+  type?: "past" | "present" | "near_future" | "anchor_date";
+  /** For anchor_date columns: the anchor node ID placed here */
+  anchorId?: string;
 }
 
 /** Directed edge between two event nodes */
@@ -90,6 +94,10 @@ export interface EventEdge {
   to: string;
   weight?: number;
   type?: "causal" | "temporal" | "reference" | "influence";
+  /** For influence edges to anchor nodes: how much this event shifted probability (in pp) */
+  influence?: number;
+  /** Short explanation of the causal mechanism */
+  mechanism?: string;
 }
 
 /** Complete event flow dataset returned by API */
@@ -231,8 +239,44 @@ export interface NarrativeNode {
   /** ISO date when this prediction market question resolves/expires */
   resolvesAt?: string;
 
+  // ─── Anchor node fields (Polymarket future endpoints) ───
+  /** Node role: "fact" (default), "anchor" (PM future endpoint), "scenario" (YES/NO branch) */
+  nodeType?: "fact" | "anchor" | "scenario";
+  /** For anchors: influence links from fact nodes (richer than simple from[]) */
+  influenceLinks?: AnchorInfluenceLink[];
+  /** For anchors: probability history for sparkline */
+  probHistory?: number[];
+  /** For anchors: trading volume (human-readable, e.g., "$2.4M") */
+  tradingVolume?: string;
+  /** For anchors: market liquidity (human-readable) */
+  liquidity?: string;
+  /** For anchors: child scenario IDs (YES/NO branches) */
+  scenarios?: string[];
+
+  // ─── Scenario node fields (YES/NO branches from anchors) ───
+  /** For scenarios: parent anchor node ID */
+  parentAnchor?: string;
+  /** For scenarios: which outcome this represents */
+  outcome?: "YES" | "NO" | "PARTIAL";
+  /** For scenarios: probability of this outcome (0..100) */
+  outcomeProbability?: number;
+  /** For scenarios: conditions that must be met */
+  conditions?: string[];
+  /** For scenarios: what happens next if this scenario plays out */
+  nextEvents?: string[];
+
   /** Cui Bono — who benefits / who loses from this event */
   cuiBono?: CuiBono;
+}
+
+/** Influence link from a fact node to an anchor node */
+export interface AnchorInfluenceLink {
+  /** Source fact node ID */
+  id: string;
+  /** How much this fact shifted the anchor's probability (in pp, e.g., -25) */
+  influence: number;
+  /** Short explanation of the causal mechanism */
+  mechanism: string;
 }
 
 // ─── Cui Bono Types ─────────────────────────────────────────
