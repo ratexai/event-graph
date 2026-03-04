@@ -476,6 +476,8 @@ export interface EventGraphProps {
   showKolStats?: boolean;
   showNarrativeStats?: boolean;
   branding?: BrandingConfig;
+  /** Radiant navigation — maps, projects, flyouts */
+  nav?: RadiantNavProps;
   onNodeSelect?: (nodeId: string, mode: ViewMode) => void;
   onNodeHover?: (nodeId: string | null, mode: ViewMode) => void;
   onModeChange?: (mode: ViewMode) => void;
@@ -617,3 +619,37 @@ export interface NarrativeFlowRequest {
 export type EventFlowResponse = ApiResponse<EventFlowData>;
 export type KolFlowResponse = ApiResponse<KolFlowData>;
 export type NarrativeFlowResponse = ApiResponse<NarrativeFlowData>;
+
+// ─── Radiant Navigation ──────────────────────────────────────
+
+export type MapStatus = "active" | "developing" | "monitoring";
+
+export interface MapItem {
+  id: string;
+  title: string;
+  emoji?: string;
+  status: MapStatus;
+  nodeCount: number;
+  headlineProb?: number;
+  trend?: "up" | "down" | "flat";
+}
+
+export interface ProjectItem {
+  id: string;
+  title: string;
+  category?: string;
+  eventCount: number;
+  rating?: string;
+  price?: string;
+  priceChange?: string;
+}
+
+export interface RadiantNavProps {
+  maps?: MapItem[];
+  projects?: ProjectItem[];
+  activeMapId?: string;
+  activeProjectId?: string;
+  onNavigateMap?: (mapId: string) => void;
+  onNavigateProject?: (projectId: string) => void;
+  onSearch?: (query: string) => void;
+}

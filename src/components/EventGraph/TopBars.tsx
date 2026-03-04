@@ -44,6 +44,7 @@ interface TopBarProps {
   branding: { name: string; logo?: React.ReactNode | string; accentColor?: string };
   showModeSwitcher: boolean;
   panelOffset: number;
+  topOffset?: number;
   onModeChange: (mode: ViewMode) => void;
   // Filters
   allEventTypes: EventType[];
@@ -69,7 +70,7 @@ interface TopBarProps {
 
 export function TopBar(props: TopBarProps) {
   const {
-    mode, theme, branding, showModeSwitcher, panelOffset, onModeChange,
+    mode, theme, branding, showModeSwitcher, panelOffset, topOffset = 0, onModeChange,
     allEventTypes, allTiers, allPlatforms,
     allCategories = [],
     activeEventTypes, activeTiers, activePlatforms,
@@ -82,7 +83,7 @@ export function TopBar(props: TopBarProps) {
 
   return (
     <div style={{
-      position: "absolute", top: 0, left: 0, right: panelOffset, height: 32,
+      position: "absolute", top: topOffset, left: 0, right: panelOffset, height: 32,
       display: "flex", alignItems: "center", gap: 8, padding: "0 12px",
       borderBottom: `1px solid ${theme.border}`, background: `${theme.bg}f0`,
       backdropFilter: "blur(16px)", zIndex: 30, overflowX: "auto",
@@ -108,7 +109,7 @@ export function TopBar(props: TopBarProps) {
       {/* Divider before filters */}
       <div style={{ width: 1, height: 16, background: theme.border, flexShrink: 0 }} />
 
-      {/* Filters — narrative filters moved to bottom-left overlay */}
+      {/* Filters */}
       {mode === "events" ? (<>
         <button onClick={onResetEventTypes} aria-pressed={activeEventTypes.size === allEventTypes.length}
           style={filterBtn(theme, activeEventTypes.size === allEventTypes.length)}>All</button>
@@ -121,6 +122,25 @@ export function TopBar(props: TopBarProps) {
               style={filterBtn(theme, on, style.color, style.color)}>{meta?.label}</button>
           );
         })}
+      </>) : mode === "narratives" ? (<>
+        {onResetCategories && (
+          <button onClick={onResetCategories} aria-pressed={activeCategories?.size === allCategories.length}
+            style={filterBtn(theme, activeCategories != null && activeCategories.size === allCategories.length)}>All</button>
+        )}
+        {allCategories.map((cat) => {
+          const style = getNarrativeCategoryStyle(theme, cat);
+          const meta = NARRATIVE_CATEGORY_META[cat];
+          const on = activeCategories?.has(cat) ?? true;
+          return (
+            <button key={cat} onClick={() => onToggleCategory?.(cat)} aria-pressed={on}
+              style={filterBtn(theme, on, style.color, style.color)}>{meta?.label || cat.charAt(0).toUpperCase() + cat.slice(1)}</button>
+          );
+        })}
+        {onToggleHasMarket && (<>
+          <div style={{ width: 1, height: 14, background: theme.border, margin: "0 2px", flexShrink: 0 }} />
+          <button onClick={onToggleHasMarket} aria-pressed={!!hasMarket}
+            style={filterBtn(theme, !!hasMarket, theme.complementUp, theme.complement)}>Prediction</button>
+        </>)}
       </>) : mode === "kols" ? (<>
         {allTiers.map((tier) => {
           const style = getKolTierStyle(theme, tier);
@@ -242,28 +262,19 @@ const SIZE_TIERS = [
   { key: "xl", label: "XL", min: 0.7, svgSize: 20 },
 ] as const;
 
-interface NarrativeFilterPanelProps {
+interface NarrativeLegendBarProps {
   theme: GraphTheme;
   panelOffset: number;
-  allCategories: NarrativeCategory[];
   allSignals: NarrativeSignal[];
-  activeCategories: Set<NarrativeCategory>;
   activeSignals: Set<NarrativeSignal>;
-  onResetCategories: () => void;
-  onToggleCategory: (category: NarrativeCategory) => void;
   onToggleSignal: (signal: NarrativeSignal) => void;
-  hasMarket?: boolean;
-  onToggleHasMarket?: () => void;
   minWeight?: number;
   onSetMinWeight?: (w: number) => void;
 }
 
-export function NarrativeFilterPanel(props: NarrativeFilterPanelProps) {
+export function NarrativeLegendBar(props: NarrativeLegendBarProps) {
   const {
-    theme, panelOffset, allCategories, allSignals,
-    activeCategories, activeSignals,
-    onResetCategories, onToggleCategory, onToggleSignal,
-    hasMarket, onToggleHasMarket,
+    theme, panelOffset, allSignals, activeSignals, onToggleSignal,
     minWeight = 0, onSetMinWeight,
   } = props;
 
@@ -276,34 +287,13 @@ export function NarrativeFilterPanel(props: NarrativeFilterPanelProps) {
   return (
     <div style={{
       position: "absolute", bottom: 8, left: 12, right: panelOffset + 12,
-      display: "flex", flexDirection: "column", gap: 6,
-      padding: "8px 12px", borderRadius: 10,
+      display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
+      padding: "5px 12px", borderRadius: 8,
       background: `${theme.bg}ee`, backdropFilter: "blur(12px)",
       border: `1px solid ${theme.border}`, zIndex: 25,
       fontFamily: theme.fontFamily, fontSize: 12, color: theme.textSecondary,
     }}>
-      {/* Row 1: Category filters */}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 3, alignItems: "center" }}>
-        <span style={{ fontWeight: 700, fontSize: 8, letterSpacing: 1, textTransform: "uppercase", color: theme.muted, marginRight: 2 }}>Category</span>
-        <button onClick={onResetCategories} aria-pressed={activeCategories.size === allCategories.length}
-          style={filterBtn(theme, activeCategories.size === allCategories.length)}>All</button>
-        {allCategories.map((cat) => {
-          const style = getNarrativeCategoryStyle(theme, cat);
-          const meta = NARRATIVE_CATEGORY_META[cat];
-          const on = activeCategories.has(cat);
-          return (
-            <button key={cat} onClick={() => onToggleCategory(cat)} aria-pressed={on}
-              style={filterBtn(theme, on, style.color, style.color)}>{meta?.label || cat.charAt(0).toUpperCase() + cat.slice(1)}</button>
-          );
-        })}
-        {onToggleHasMarket && (
-          <button onClick={onToggleHasMarket} aria-pressed={!!hasMarket}
-            style={filterBtn(theme, !!hasMarket, theme.complementUp, theme.complement)}>Prediction</button>
-        )}
-      </div>
-
-      {/* Row 2: Legend — Shapes (signal filters) | Size | Sentiment */}
-      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+      {/* Legend — Shapes (signal filters) | Size | Sentiment */}
         {/* Shapes = signal filters */}
         <span style={{ fontWeight: 700, fontSize: 8, letterSpacing: 1, textTransform: "uppercase", color: theme.muted }}>Shapes</span>
         {allSignals.map((sig) => {
@@ -356,7 +346,6 @@ export function NarrativeFilterPanel(props: NarrativeFilterPanelProps) {
         <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
           <svg width={8} height={8}><circle cx={4} cy={4} r={3} fill={theme.neutral} /></svg> neu
         </span>
-      </div>
     </div>
   );
 }
