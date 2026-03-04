@@ -21,6 +21,8 @@ export interface CuiBonoPanelProps {
   narrativeNodes?: NarrativeNode[];
   /** Callback when user clicks a market card to highlight anchor on graph */
   onMarketSelect?: (anchorId: string) => void;
+  /** Dynamic panel width — defaults to 300 */
+  panelWidth?: number;
 }
 
 // ─── Tab Type ────────────────────────────────────────────────────
@@ -36,7 +38,7 @@ const TABS: TabDef[] = [
   { key: "states", label: "\u{1F30D} States" },
   { key: "corps", label: "\u{1F3E2} Corps" },
   { key: "indices", label: "\u{1F4CA} Indices" },
-  { key: "markets", label: "\u{1F3AF} Markets" },
+  { key: "markets", label: "\u{1F3AF} Prediction" },
 ];
 
 // ─── Country Code to Flag Emoji ─────────────────────────────────
@@ -92,8 +94,8 @@ function getCountryCode(name: string): string {
 /** Section header label (small caps muted text) */
 const SectionLabel: React.FC<{ text: string; theme: GraphTheme }> = ({ text, theme }) => (
   <div style={{
-    fontSize: 12, fontWeight: 700, color: theme.muted, letterSpacing: 2,
-    textTransform: "uppercase", marginBottom: 8, marginTop: 16,
+    fontSize: 13, fontWeight: 700, color: theme.muted, letterSpacing: 2,
+    textTransform: "uppercase", marginBottom: 10, marginTop: 18,
   }}>
     {text}
   </div>
@@ -136,9 +138,9 @@ const CountryRow: React.FC<{
       padding: "6px 0",
       borderBottom: `1px solid ${theme.border}`,
     }}>
-      <span style={{ fontSize: 14, width: 22, textAlign: "center", flexShrink: 0 }}>{flag}</span>
+      <span style={{ fontSize: 18, width: 26, textAlign: "center", flexShrink: 0 }}>{flag}</span>
       <span style={{
-        fontSize: 10, fontWeight: 600, color: theme.text,
+        fontSize: 12, fontWeight: 600, color: theme.text,
         width: 80, flexShrink: 0, overflow: "hidden",
         textOverflow: "ellipsis", whiteSpace: "nowrap",
       }}>
@@ -146,9 +148,9 @@ const CountryRow: React.FC<{
       </span>
       <ScoreBar value={score} maxAbsValue={maxAbsScore} theme={theme} />
       <span style={{
-        fontSize: 9, fontWeight: 700, color,
+        fontSize: 11, fontWeight: 700, color,
         fontFamily: theme.fontFamily,
-        width: 42, textAlign: "right", flexShrink: 0,
+        width: 48, textAlign: "right", flexShrink: 0,
       }}>
         {sign}{score.toFixed(1)}
       </span>
@@ -170,19 +172,19 @@ const CuiBonoEntryRow: React.FC<{
       background: bgColor, marginBottom: 6,
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: theme.text }}>{entry.name}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>{entry.name}</span>
         <span style={{
-          fontSize: 9, fontWeight: 700, color,
+          fontSize: 11, fontWeight: 700, color,
           fontFamily: theme.fontFamily,
         }}>
           {sign}{entry.delta.toFixed(1)}
         </span>
       </div>
       {entry.code && (
-        <span style={{ fontSize: 8, color: theme.muted }}>{entry.code}</span>
+        <span style={{ fontSize: 10, color: theme.muted }}>{entry.code}</span>
       )}
       {entry.reason && (
-        <div style={{ fontSize: 9, color: theme.textSecondary, marginTop: 4, lineHeight: 1.4 }}>
+        <div style={{ fontSize: 11, color: theme.textSecondary, marginTop: 4, lineHeight: 1.4 }}>
           {entry.reason}
         </div>
       )}
@@ -206,14 +208,14 @@ const CompanyRow: React.FC<{
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 2 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 6, overflow: "hidden" }}>
           <span style={{
-            fontSize: 10, fontWeight: 700, color: theme.text,
+            fontSize: 12, fontWeight: 700, color: theme.text,
             overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
           }}>
             {entry.name}
           </span>
           {entry.code && (
             <span style={{
-              fontSize: 8, fontWeight: 600, color: theme.muted,
+              fontSize: 10, fontWeight: 600, color: theme.muted,
               padding: "1px 5px", borderRadius: 4,
               background: theme.bgAlt, flexShrink: 0,
             }}>
@@ -222,14 +224,14 @@ const CompanyRow: React.FC<{
           )}
         </div>
         <span style={{
-          fontSize: 10, fontWeight: 800, color,
+          fontSize: 12, fontWeight: 800, color,
           fontFamily: theme.fontFamily, flexShrink: 0,
         }}>
           {sign}{entry.delta.toFixed(1)}%
         </span>
       </div>
       {entry.reason && (
-        <div style={{ fontSize: 9, color: theme.textSecondary, lineHeight: 1.4, marginTop: 4 }}>
+        <div style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.4, marginTop: 4 }}>
           {entry.reason}
         </div>
       )}
@@ -254,10 +256,10 @@ const IndexRow: React.FC<{
     }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
         <div>
-          <span style={{ fontSize: 10, fontWeight: 700, color: theme.text }}>{entry.name}</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>{entry.name}</span>
           {entry.code && (
             <span style={{
-              fontSize: 8, color: theme.muted, marginLeft: 6,
+              fontSize: 10, color: theme.muted, marginLeft: 6,
               fontFamily: theme.fontFamily,
             }}>
               {entry.code}
@@ -265,7 +267,7 @@ const IndexRow: React.FC<{
           )}
         </div>
         <span style={{
-          fontSize: 10, fontWeight: 800, color,
+          fontSize: 12, fontWeight: 800, color,
           fontFamily: theme.fontFamily,
         }}>
           {sign}{entry.delta.toFixed(2)}%
@@ -295,7 +297,7 @@ const IndexRow: React.FC<{
         }} />
       </div>
       {entry.reason && (
-        <div style={{ fontSize: 9, color: theme.textSecondary, lineHeight: 1.4, marginTop: 6 }}>
+        <div style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.4, marginTop: 6 }}>
           {entry.reason}
         </div>
       )}
@@ -480,35 +482,35 @@ const DualProbBar: React.FC<{
   const al = alphaLevel(alpha);
   return (
     <div style={{ marginBottom: 10 }}>
-      <div style={{ fontSize: 9, fontWeight: 700, color: theme.text, marginBottom: 4 }}>{label}</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: theme.text, marginBottom: 4 }}>{label}</div>
       {/* Polymarket bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-        <span style={{ fontSize: 7, color: theme.muted, width: 28, flexShrink: 0 }}>PM</span>
+        <span style={{ fontSize: 9, color: theme.muted, width: 28, flexShrink: 0 }}>PM</span>
         <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
           <div style={{ height: 6, borderRadius: 3, background: "#901dea", width: `${pmProb}%`, transition: "width 0.3s" }} />
         </div>
-        <span style={{ fontSize: 8, fontWeight: 700, color: theme.muted, width: 28, textAlign: "right", fontFamily: theme.monoFontFamily }}>{pmProb}%</span>
+        <span style={{ fontSize: 10, fontWeight: 700, color: theme.muted, width: 32, textAlign: "right", fontFamily: theme.monoFontFamily }}>{pmProb}%</span>
       </div>
       {/* RateXAI bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-        <span style={{ fontSize: 7, color: "#30fd82", width: 28, flexShrink: 0, fontWeight: 700 }}>RX</span>
+        <span style={{ fontSize: 9, color: "#30fd82", width: 28, flexShrink: 0, fontWeight: 700 }}>RX</span>
         <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
           <div style={{ height: 6, borderRadius: 3, background: "#30fd82", width: `${rxProb}%`, transition: "width 0.3s" }} />
         </div>
-        <span style={{ fontSize: 8, fontWeight: 800, color: "#30fd82", width: 28, textAlign: "right", fontFamily: theme.monoFontFamily }}>{rxProb}%</span>
+        <span style={{ fontSize: 10, fontWeight: 800, color: "#30fd82", width: 32, textAlign: "right", fontFamily: theme.monoFontFamily }}>{rxProb}%</span>
       </div>
       {/* Alpha badge */}
       <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-        <span style={{ fontSize: 7, color: theme.muted, width: 28, flexShrink: 0 }}>Alpha</span>
+        <span style={{ fontSize: 9, color: theme.muted, width: 28, flexShrink: 0 }}>Alpha</span>
         <span style={{
-          fontSize: 8, fontWeight: 800, color: al.color,
+          fontSize: 10, fontWeight: 800, color: al.color,
           fontFamily: theme.monoFontFamily,
           padding: "1px 6px", borderRadius: 4,
           background: `${al.color}18`,
         }}>
           {alpha > 0 ? "+" : ""}{alpha}pp {al.icon}
         </span>
-        <span style={{ fontSize: 7, color: al.color }}>{al.signal}</span>
+        <span style={{ fontSize: 9, color: al.color }}>{al.signal}</span>
       </div>
     </div>
   );
@@ -533,18 +535,18 @@ const MarketCard: React.FC<{
       onClick={onClick}
       style={{
         padding: 12, borderRadius: 10,
-        background: theme.card, border: `1px solid ${al.color}30`,
+        background: theme.card,
         marginBottom: 8, cursor: "pointer",
-        transition: "border-color 0.2s, background 0.2s",
+        transition: "background 0.2s",
       }}
     >
       {/* Question header */}
       <div style={{
-        fontSize: 10, fontWeight: 700, color: theme.text,
+        fontSize: 12, fontWeight: 700, color: theme.text,
         marginBottom: 10, lineHeight: 1.4,
         display: "flex", gap: 6, alignItems: "flex-start",
       }}>
-        <span style={{ flexShrink: 0 }}>📊</span>
+        <span style={{ flexShrink: 0, fontSize: 15 }}>📊</span>
         <span>{anchor.marketQuestion || anchor.label}</span>
       </div>
 
@@ -571,20 +573,20 @@ const MarketCard: React.FC<{
       }}>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {expiryLabel && (
-            <span style={{ fontSize: 7, color: theme.muted }}>⏰ {expiryLabel}</span>
+            <span style={{ fontSize: 9, color: theme.muted }}>⏰ {expiryLabel}</span>
           )}
           {anchor.tradingVolume && (
-            <span style={{ fontSize: 7, color: theme.muted }}>Vol: {anchor.tradingVolume}</span>
+            <span style={{ fontSize: 9, color: theme.muted }}>Vol: {anchor.tradingVolume}</span>
           )}
         </div>
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           <span style={{
-            fontSize: 7, color: theme.muted,
+            fontSize: 9, color: theme.muted,
             fontFamily: theme.monoFontFamily,
           }}>
             conf: {(confidence * 100).toFixed(0)}%
           </span>
-          <span style={{ fontSize: 7, color: theme.muted }}>
+          <span style={{ fontSize: 9, color: theme.muted }}>
             {causalCount} nodes
           </span>
         </div>
@@ -618,7 +620,7 @@ const AlphaSignals: React.FC<{
       border: `1px solid ${theme.border}`, marginBottom: 12,
     }}>
       <div style={{
-        fontSize: 8, fontWeight: 700, color: theme.accent,
+        fontSize: 10, fontWeight: 700, color: theme.accent,
         letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8,
         fontFamily: theme.monoFontFamily,
       }}>
@@ -631,10 +633,10 @@ const AlphaSignals: React.FC<{
             display: "flex", alignItems: "center", gap: 6,
             padding: "4px 0",
             borderBottom: `1px solid ${theme.border}`,
-            fontSize: 8, fontFamily: theme.monoFontFamily,
+            fontSize: 10, fontFamily: theme.monoFontFamily,
           }}>
             <span style={{ color: al.color, fontWeight: 800, width: 16 }}>{al.icon}</span>
-            <span style={{ flex: 1, color: theme.textSecondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 8 }}>
+            <span style={{ flex: 1, color: theme.textSecondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 10 }}>
               {s.label.replace(/^PM:\s*/, "").slice(0, 35)}
             </span>
             <span style={{ color: theme.muted, flexShrink: 0 }}>PM {s.pm}%</span>
@@ -662,7 +664,7 @@ const MarketsTab: React.FC<{
   if (anchors.length === 0) {
     return (
       <div style={{ fontSize: 10, color: theme.muted, padding: "20px 0", textAlign: "center" }}>
-        No prediction markets available
+        No predictions available
       </div>
     );
   }
@@ -670,7 +672,7 @@ const MarketsTab: React.FC<{
   return (
     <div>
       <AlphaSignals anchors={anchors} theme={theme} />
-      <SectionLabel text={`Active Markets (${anchors.length})`} theme={theme} />
+      <SectionLabel text={`Active Predictions (${anchors.length})`} theme={theme} />
       {anchors.map((anchor) => (
         <MarketCard
           key={anchor.id}
@@ -696,8 +698,10 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
   topOffset,
   narrativeNodes,
   onMarketSelect,
+  panelWidth: externalWidth,
 }) => {
-  const [activeTab, setActiveTab] = useState<TabKey>("states");
+  const PANEL_W = externalWidth ?? PANEL_WIDTH;
+  const [activeTab, setActiveTab] = useState<TabKey>("markets");
 
   const handleTabClick = useCallback((key: TabKey) => {
     setActiveTab(key);
@@ -708,13 +712,13 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
       position: "absolute",
       top: topOffset,
       right: 0,
-      width: PANEL_WIDTH,
+      width: PANEL_W,
       bottom: 0,
       background: "rgba(29,39,50,0.97)",
       borderLeft: `1px solid ${theme.border}`,
       backdropFilter: "blur(20px)",
       zIndex: 24,
-      transform: isOpen ? "translateX(0)" : `translateX(${PANEL_WIDTH}px)`,
+      transform: isOpen ? "translateX(0)" : `translateX(${PANEL_W}px)`,
       transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
       display: "flex",
       flexDirection: "column",
@@ -742,7 +746,7 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
                 border: "none",
                 borderBottom: isActive ? `2px solid ${theme.accent}` : "2px solid transparent",
                 color: isActive ? theme.text : theme.muted,
-                fontSize: 10,
+                fontSize: 12,
                 fontWeight: isActive ? 700 : 500,
                 cursor: "pointer",
                 fontFamily: theme.fontFamily,
@@ -762,13 +766,13 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
         flexShrink: 0,
       }}>
         <div style={{
-          fontSize: 11, fontWeight: 800, color: theme.text,
+          fontSize: 13, fontWeight: 800, color: theme.text,
           letterSpacing: 0.5,
         }}>
           Cui Bono
         </div>
         <div style={{
-          fontSize: 8, color: theme.muted, marginTop: 2,
+          fontSize: 10, color: theme.muted, marginTop: 2,
         }}>
           Who benefits / who loses
         </div>

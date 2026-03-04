@@ -81,47 +81,48 @@ export const DEFAULT_THEME: GraphTheme = {
   monoFontFamily: "'JetBrains Mono', 'SF Mono', monospace",
 
   // ─── Event Type Colors ───────────────────────────────────
+  // Solid opaque fills — no transparency per front-end review
   eventTypeColors: {
-    blogger:     { color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
-    media:       { color: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
-    metric:      { color: "#a78bfa", bg: "rgba(167,139,250,0.12)" },
-    partnership: { color: "#2dd4bf", bg: "rgba(45,212,191,0.12)" },
-    listing:     { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
-    launch:      { color: "#fb923c", bg: "rgba(251,146,60,0.12)" },
-    fud:         { color: "#ff495f", bg: "rgba(255,73,95,0.12)" },
-    security:    { color: "#30fd82", bg: "rgba(48,253,130,0.12)" },
-    event:       { color: "#e879f9", bg: "rgba(232,121,249,0.12)" },
-    onchain:     { color: "#22d3ee", bg: "rgba(34,211,238,0.12)" },
-    resolution:  { color: "#30fd82", bg: "rgba(48,253,130,0.12)" },
-    milestone:   { color: "#fde047", bg: "rgba(253,224,71,0.12)" },
-    community:   { color: "#f0abfc", bg: "rgba(240,171,252,0.12)" },
-    governance:  { color: "#67e8f9", bg: "rgba(103,232,249,0.12)" },
-    airdrop:     { color: "#fca5a5", bg: "rgba(252,165,165,0.12)" },
+    blogger:     { color: "#818cf8", bg: "#1a1c3a" },
+    media:       { color: "#38bdf8", bg: "#132a3a" },
+    metric:      { color: "#a78bfa", bg: "#1e1a36" },
+    partnership: { color: "#2dd4bf", bg: "#132e2c" },
+    listing:     { color: "#fbbf24", bg: "#2c2517" },
+    launch:      { color: "#fb923c", bg: "#2c1f14" },
+    fud:         { color: "#ff495f", bg: "#2c141b" },
+    security:    { color: "#30fd82", bg: "#15392b" },
+    event:       { color: "#e879f9", bg: "#2a1530" },
+    onchain:     { color: "#22d3ee", bg: "#13282e" },
+    resolution:  { color: "#30fd82", bg: "#15392b" },
+    milestone:   { color: "#fde047", bg: "#2c2a14" },
+    community:   { color: "#f0abfc", bg: "#271830" },
+    governance:  { color: "#67e8f9", bg: "#152d33" },
+    airdrop:     { color: "#fca5a5", bg: "#2c1a1a" },
   },
 
   // ─── KOL Tier Colors ─────────────────────────────────────
   kolTierColors: {
-    mega:  { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
-    macro: { color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
-    mid:   { color: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
-    micro: { color: "#a78bfa", bg: "rgba(167,139,250,0.12)" },
-    nano:  { color: "#848798", bg: "rgba(132,135,152,0.1)" },
+    mega:  { color: "#fbbf24", bg: "#2c2517" },
+    macro: { color: "#818cf8", bg: "#1a1c3a" },
+    mid:   { color: "#38bdf8", bg: "#132a3a" },
+    micro: { color: "#a78bfa", bg: "#1e1a36" },
+    nano:  { color: "#848798", bg: "#1e1f24" },
   },
 
   // ─── Narrative Category Colors ───────────────────────────
   narrativeCategoryColors: {
-    ai:         { color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
-    war:        { color: "#ff495f", bg: "rgba(255,73,95,0.12)" },
-    elections:  { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
-    regulation: { color: "#67e8f9", bg: "rgba(103,232,249,0.12)" },
-    defi:       { color: "#2dd4bf", bg: "rgba(45,212,191,0.12)" },
-    memecoin:   { color: "#e879f9", bg: "rgba(232,121,249,0.12)" },
-    macro:      { color: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
-    tech:       { color: "#a78bfa", bg: "rgba(167,139,250,0.12)" },
-    scandal:    { color: "#fb923c", bg: "rgba(251,146,60,0.12)" },
-    climate:    { color: "#30fd82", bg: "rgba(48,253,130,0.12)" },
-    sports:     { color: "#22d3ee", bg: "rgba(34,211,238,0.12)" },
-    other:      { color: "#848798", bg: "rgba(132,135,152,0.1)" },
+    ai:         { color: "#818cf8", bg: "#1a1c3a" },
+    war:        { color: "#ff495f", bg: "#2c141b" },
+    elections:  { color: "#fbbf24", bg: "#2c2517" },
+    regulation: { color: "#67e8f9", bg: "#152d33" },
+    defi:       { color: "#2dd4bf", bg: "#132e2c" },
+    memecoin:   { color: "#e879f9", bg: "#2a1530" },
+    macro:      { color: "#38bdf8", bg: "#132a3a" },
+    tech:       { color: "#a78bfa", bg: "#1e1a36" },
+    scandal:    { color: "#fb923c", bg: "#2c1f14" },
+    climate:    { color: "#30fd82", bg: "#15392b" },
+    sports:     { color: "#22d3ee", bg: "#13282e" },
+    other:      { color: "#848798", bg: "#1e1f24" },
   },
 
   // ─── Narrative Signal Colors (Semantic Mapping) ──────────
@@ -131,11 +132,11 @@ export const DEFAULT_THEME: GraphTheme = {
   // reversal   → $complement-strong-up
   // noise      → $faint-strong-up
   narrativeSignalColors: {
-    catalyst:   { color: "#ff9f44", bg: "rgba(255,159,68,0.15)" },
-    escalation: { color: "#ff495f", bg: "rgba(255,73,95,0.15)" },
-    resolution: { color: "#30fd82", bg: "rgba(48,253,130,0.15)" },
-    reversal:   { color: "#b659ff", bg: "rgba(182,89,255,0.15)" },
-    noise:      { color: "#848798", bg: "rgba(132,135,152,0.08)" },
+    catalyst:   { color: "#ff9f44", bg: "#2c2117" },
+    escalation: { color: "#ff495f", bg: "#2c141b" },
+    resolution: { color: "#30fd82", bg: "#15392b" },
+    reversal:   { color: "#b659ff", bg: "#1e1230" },
+    noise:      { color: "#848798", bg: "#1e1f24" },
   },
 };
 

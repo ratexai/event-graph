@@ -41,9 +41,20 @@ export const EventNodeComponent = memo<Props>(({
       <SentimentRing radius={r + 3} sentiment={event.sentiment} theme={theme} isDimmed={isDimmed} />
       <ImpactRing radius={r} impact={event.impact} color={style.color} />
       <circle r={r} fill={style.bg} stroke={style.color} strokeWidth={isHovered || isSelected ? 2.5 : 1.2} />
-      <text y={-3} textAnchor="middle" fontSize={r > 24 ? 16 : 13} style={{ pointerEvents: "none" }}>{meta?.icon || "●"}</text>
-      <text y={r > 24 ? 14 : 11} textAnchor="middle" fill={theme.text} fontSize={Math.max(7.5, r * 0.32)}
-        fontWeight={600} fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{truncateLabel(event.label)}</text>
+      <text y={-3} textAnchor="middle" fontSize={r > 24 ? 20 : 16} style={{ pointerEvents: "none" }}>{meta?.icon || "●"}</text>
+      {(() => {
+        const lbl = truncateLabel(event.label);
+        const fs = Math.max(7.5, r * 0.32);
+        const ly = r > 24 ? 14 : 11;
+        const tw = lbl.length * fs * 0.58 + 6;
+        return (
+          <>
+            <rect x={-tw / 2} y={ly - fs * 0.75} width={tw} height={fs + 3} rx={3} fill={theme.bg} opacity={0.75} />
+            <text y={ly} textAnchor="middle" fill={theme.text} fontSize={fs}
+              fontWeight={600} fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{lbl}</text>
+          </>
+        );
+      })()}
       {event.extra && !isDimmed && (
         <g transform={`translate(${r * 0.7},${-r * 0.7})`}>
           <rect x={-2} y={-8} width={event.extra.length * 5.5 + 8} height={14} rx={7} fill={theme.bgAlt} stroke={style.color} strokeWidth={0.8} />

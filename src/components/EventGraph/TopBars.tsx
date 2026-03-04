@@ -190,7 +190,7 @@ export function FilterBar(props: FilterBarProps) {
             color: hasMarket ? "#b659ff" : theme.muted,
             fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease", whiteSpace: "nowrap",
             display: "flex", alignItems: "center", gap: 4,
-          }}>{"\uD83D\uDD2E"} Has Market</button>
+          }}>{"\uD83D\uDD2E"} Has Prediction</button>
         </>)}
       </>) : (<>
         <span style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginRight: 4 }}>TIER:</span>

@@ -162,7 +162,7 @@ export const AnchorNodeComponent = memo<Props>(({
       )}
 
       {/* 📊 icon badge */}
-      <text y={-r + 8} textAnchor="middle" fontSize={10} style={{ pointerEvents: "none" }}>
+      <text y={-r + 8} textAnchor="middle" fontSize={13} style={{ pointerEvents: "none" }}>
         📊
       </text>
 

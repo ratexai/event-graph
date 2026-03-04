@@ -34,7 +34,8 @@ const HEADER_HEIGHT = 48;
 const FILTER_HEIGHT = 38;
 const KOL_STATS_HEIGHT = 52;
 const DETAIL_PANEL_WIDTH = 340;
-const CUI_BONO_WIDTH = 300;
+/** Right sidebar occupies 20 % of the container width (min 260, max 380). */
+const CUI_BONO_PCT = 0.20;
 
 const EMPTY_EVENT_NODES: EventNode[] = [];
 const EMPTY_KOL_NODES: KolNode[] = [];
@@ -99,9 +100,11 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const topOffset = HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0) + statsHeight;
   const hasCuiBono = mode === "narratives" && !!narrativeData?.narrative?.cuiBono;
   const hasNarrativeSidebar = mode === "narratives" && (hasCuiBono || narrativeNodes.length > 0);
-  const cuiBonoWidth = hasNarrativeSidebar ? CUI_BONO_WIDTH : 0;
+  const cuiBonoWidth = hasNarrativeSidebar ? Math.max(260, Math.min(380, Math.round(dims.w * CUI_BONO_PCT))) : 0;
   const panelWidth = selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : cuiBonoWidth;
-  const svgWidth = Math.max(0, dims.w - (hasNarrativeSidebar && !(selection.panelOpen && showDetailPanel) ? cuiBonoWidth : 0) - (selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : 0));
+  // Map canvas always takes full width — sidebars overlay on top.
+  // This prevents element collisions when the viewport is small.
+  const svgWidth = Math.max(0, dims.w);
   const svgHeight = Math.max(0, dims.h - topOffset);
 
   const evGraph = useEventFlowGraph(eventData, svgWidth, svgHeight, graphFilters.filters, selection.hovered, layoutOverrides);
@@ -305,6 +308,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           topOffset={topOffset}
           narrativeNodes={narrativeNodes}
           onMarketSelect={handleMarketSelect}
+          panelWidth={cuiBonoWidth}
         />
       )}
 

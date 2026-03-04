@@ -229,25 +229,30 @@ export const NarrativeNodeComponent = memo<Props>(({
       {/* Emoji line (action + flag) above center */}
       {emojiLine && (
         <text y={-r * 0.15 - (lines.length > 1 ? 6 : 3)} textAnchor="middle"
-          fontSize={Math.max(9, r * 0.45)} style={{ pointerEvents: "none" }}>
+          fontSize={Math.max(12, r * 0.55)} style={{ pointerEvents: "none" }}>
           {emojiLine}
         </text>
       )}
 
-      {/* 2-line label */}
+      {/* 2-line label with background plate */}
       {lines.map((line, i) => {
         const baseY = emojiLine
           ? r * 0.15 + i * (labelFontSize + 1.5)
           : -labelFontSize * 0.3 + i * (labelFontSize + 1.5);
+        const textW = line.length * labelFontSize * 0.58 + 6;
         return (
-          <text key={i} y={baseY}
-            textAnchor="middle" fill={theme.text}
-            fontSize={labelFontSize}
-            fontWeight={isHovered ? 700 : 600}
-            fontFamily={theme.monoFontFamily}
-            style={{ pointerEvents: "none" }}>
-            {line}
-          </text>
+          <g key={i}>
+            <rect x={-textW / 2} y={baseY - labelFontSize * 0.75} width={textW} height={labelFontSize + 3}
+              rx={3} fill={theme.bg} opacity={0.75} />
+            <text y={baseY}
+              textAnchor="middle" fill={theme.text}
+              fontSize={labelFontSize}
+              fontWeight={isHovered ? 700 : 600}
+              fontFamily={theme.monoFontFamily}
+              style={{ pointerEvents: "none" }}>
+              {line}
+            </text>
+          </g>
         );
       })}
 
@@ -255,7 +260,7 @@ export const NarrativeNodeComponent = memo<Props>(({
       <g transform={`translate(${-r * 0.8},${-r * 0.8})`}>
         <circle r={6} fill={isFuture ? theme.complementDim : sigStyle.bg}
           stroke={isFuture ? "#901dea" : sigStyle.color} strokeWidth={0.6} />
-        <text textAnchor="middle" y={2.5} fill={isFuture ? theme.complementUp : sigStyle.color} fontSize={6.5}
+        <text textAnchor="middle" y={3} fill={isFuture ? theme.complementUp : sigStyle.color} fontSize={8}
           style={{ pointerEvents: "none" }}>{isFuture ? "\u{1F52E}" : (sigMeta?.icon || "\u25CF")}</text>
       </g>
 
@@ -291,7 +296,7 @@ export const NarrativeNodeComponent = memo<Props>(({
       {!isDimmed && hasCuiBono && (
         <g transform={`translate(${r * 0.75},${r * 0.65})`}>
           <circle r={5} fill={theme.warningDim} stroke={theme.warning} strokeWidth={0.5} />
-          <text textAnchor="middle" y={3} fontSize={7}
+          <text textAnchor="middle" y={3} fontSize={9}
             style={{ pointerEvents: "none" }}>{"\uD83D\uDD75\uFE0F"}</text>
         </g>
       )}
