@@ -35,6 +35,11 @@ export type SortField = "followers" | "engRate" | "reach" | "mentions" | "impact
 export type NarrativeCategory =
   | "ai"
   | "war"
+  | "military"
+  | "political"
+  | "retaliation"
+  | "humanitarian"
+  | "casualties"
   | "elections"
   | "regulation"
   | "defi"

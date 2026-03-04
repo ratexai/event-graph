@@ -167,7 +167,7 @@ export function FilterBar(props: FilterBarProps) {
           const on = activeCategories?.has(cat) ?? true;
           return (
             <button key={cat} onClick={() => onToggleCategory?.(cat)} aria-pressed={on}
-              style={filterBtn(theme, on, style.color, style.color)}>{meta?.label}</button>
+              style={filterBtn(theme, on, style.color, style.color)}>{meta?.label || cat.charAt(0).toUpperCase() + cat.slice(1)}</button>
           );
         })}
         {onToggleHasMarket && (<>
