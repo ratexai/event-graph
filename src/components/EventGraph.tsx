@@ -188,6 +188,9 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         ...style,
       }}
     >
+      {/* Disable SVG animations when user prefers reduced motion */}
+      <style>{`@media (prefers-reduced-motion: reduce) { animate, animateMotion, animateTransform { display: none; } }`}</style>
+
       <HeaderBar
         mode={mode}
         theme={theme}

@@ -148,6 +148,14 @@ export function GraphCanvas({
         <pattern id="dotgrid" width="30" height="30" patternUnits="userSpaceOnUse">
           <circle cx="15" cy="15" r="0.5" fill={theme.muted} opacity="0.12" />
         </pattern>
+        {/* §16 BubbleMap glow filter for selected nodes */}
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
       </defs>
       <rect width="100%" height="100%" fill="url(#dotgrid)" onClick={onBackgroundClick} />
       <g transform={`translate(${panZoom.pan.x},${panZoom.pan.y}) scale(${panZoom.zoom})`}>

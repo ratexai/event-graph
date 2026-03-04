@@ -1,5 +1,6 @@
 /* ═══════════════════════════════════════════════════════════════
-   DetailPanel — Right-side panel for event/KOL node details
+   DetailPanel — Right-side panel + HoverTooltip
+   Styled per BubbleMap design system (§6 Tooltip, §10 Metrics)
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useMemo } from "react";
@@ -10,47 +11,52 @@ import { Sparkline } from "../Shared/SvgPrimitives";
 
 // ─── Helpers ────────────────────────────────────────────────────
 
-/** Generate deterministic sparkline placeholder from a seed value.
- *  Replace with real engHistory / mention trend from API when available. */
 function mockSparkData(base: number, len = 14): number[] {
   let seed = Math.abs(base * 1000) | 0;
   return Array.from({ length: len }, (_, i) => {
-    seed = (seed * 16807 + 7) % 2147483647; // LCG PRNG
+    seed = (seed * 16807 + 7) % 2147483647;
     const pseudo = (seed % 1000) / 1000;
     return Math.max(5, base * (0.2 + pseudo * 0.8) + (i / len) * base * 0.3);
   });
 }
 
-// ─── Metric Card ────────────────────────────────────────────────
+// ─── §10 Metric Card (BubbleMap MetricsGrid) ───────────────────
 
 const MetricCard: React.FC<{
   label: string; value: string | number; color: string;
   maxVal?: number; currentVal?: number; theme: GraphTheme;
 }> = ({ label, value, color, maxVal, currentVal, theme }) => (
-  <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}` }}>
-    <div style={{ fontSize: 7.5, color: theme.muted, letterSpacing: 1.5, marginBottom: 5, textTransform: "uppercase" }}>{label}</div>
-    <div style={{ fontSize: 16, fontWeight: 800, color }}>{typeof value === "number" && value > 999 ? formatNumber(value) : value}</div>
+  <div style={{
+    padding: 10, borderRadius: 10,
+    background: theme.bgAlt,              // §10: baseWeakBack #161d26
+    display: "flex", flexDirection: "column", gap: 6,
+  }}>
+    <div style={{ fontSize: 12, fontWeight: 400, color: theme.textSecondary }}>{label}</div>
+    <div style={{ fontSize: 14, fontWeight: 500, color }}>{typeof value === "number" && value > 999 ? formatNumber(value) : value}</div>
     {maxVal != null && currentVal != null && (
-      <div style={{ marginTop: 6, height: 3, borderRadius: 2, background: theme.border }}>
-        <div style={{ height: 3, borderRadius: 2, background: color, width: `${(currentVal / maxVal) * 100}%` }} />
+      <div style={{ height: 3, borderRadius: 2, background: theme.border }}>
+        <div style={{ height: 3, borderRadius: 2, background: color, width: `${Math.min((currentVal / maxVal) * 100, 100)}%` }} />
       </div>
     )}
   </div>
 );
 
-// ─── Sentiment Badge ────────────────────────────────────────────
+// ─── §7 Sentiment Badge (tag style) ────────────────────────────
 
 const SentimentBadge: React.FC<{ sentiment: Sentiment; theme: GraphTheme; full?: boolean }> = ({ sentiment, theme, full = false }) => {
   const color = sentiment === "pos" ? theme.positive : sentiment === "neg" ? theme.negative : theme.neutral;
   const bg = sentiment === "pos" ? theme.positiveDim : sentiment === "neg" ? theme.negativeDim : theme.neutralDim;
   return (
-    <div style={{ padding: "4px 12px", borderRadius: 20, background: bg, fontSize: 10, fontWeight: 700, color }}>
+    <div style={{
+      padding: "2px 8px", borderRadius: 44,      // §7 pill shape
+      background: bg, fontSize: 12, fontWeight: 400, color,
+    }}>
       {sentimentArrow(sentiment)} {full ? sentimentLabel(sentiment) : sentiment === "pos" ? "Pos" : sentiment === "neg" ? "Neg" : "Neu"}
     </div>
   );
 };
 
-// ─── KOL/Event Link Item ────────────────────────────────────────
+// ─── §11 Connection Link Item ──────────────────────────────────
 
 const LinkItem: React.FC<{
   avatar: string; name: string; subtitle: string;
@@ -58,28 +64,41 @@ const LinkItem: React.FC<{
   theme: GraphTheme; onClick?: () => void;
 }> = ({ avatar, name, subtitle, badgeLabel, badgeColor, badgeBg, theme, onClick }) => (
   <div style={{
-    display: "flex", gap: 10, alignItems: "center", padding: "8px 0",
+    display: "flex", gap: 8, alignItems: "center", padding: "6px 0",
     borderBottom: `1px solid ${theme.border}`, cursor: onClick ? "pointer" : "default",
   }} onClick={onClick}>
     <div style={{
-      width: 24, height: 24, borderRadius: 8, background: badgeBg || theme.bgAlt,
+      width: 24, height: 24, borderRadius: 6,
+      background: badgeBg || theme.surface,    // §3 baseStrongDown
       display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: 9, fontWeight: 800, color: badgeColor || theme.muted, fontFamily: theme.monoFontFamily,
-    }}>{avatar}</div>
-    <div>
-      <div style={{ fontSize: 10, fontWeight: 600 }}>{name}</div>
-      <div style={{ fontSize: 8, color: theme.muted }}>{subtitle}</div>
+      fontSize: 11, fontWeight: 600, color: badgeColor || theme.muted,
+    }}>{avatar.slice(0, 2)}</div>
+    <div style={{ flex: 1, minWidth: 0 }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: theme.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{name}</div>
+      <div style={{ fontSize: 11, color: theme.muted }}>{subtitle}</div>
     </div>
     {badgeLabel && (
       <div style={{
-        marginLeft: "auto", padding: "1px 6px", borderRadius: 8,
-        background: badgeBg || theme.bgAlt, fontSize: 8, fontWeight: 700, color: badgeColor || theme.muted,
+        padding: "1px 6px", borderRadius: 44,
+        background: `${badgeColor || theme.muted}18`,
+        color: badgeColor || theme.muted,
+        border: `1px solid ${badgeColor || theme.muted}33`,
+        fontSize: 11, fontWeight: 400, flexShrink: 0,
       }}>{badgeLabel}</div>
     )}
   </div>
 );
 
-// ─── Event Detail ───────────────────────────────────────────────
+// ─── §11 Section Title ─────────────────────────────────────────
+
+const SectionTitle: React.FC<{ children: React.ReactNode; theme: GraphTheme }> = ({ children, theme }) => (
+  <div style={{
+    fontSize: 11, fontWeight: 700, color: theme.muted,
+    textTransform: "uppercase", letterSpacing: 1.5, marginBottom: 8,
+  }}>{children}</div>
+);
+
+// ─── Event Detail ──────────────────────────────────────────────
 
 interface EventDetailProps {
   event: EventNode;
@@ -94,10 +113,8 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, allEvents, timeSlotLab
   const meta = EVENT_TYPE_META[event.type];
   const dayLabel = timeSlotLabels[event.col] || `Col ${event.col}`;
 
-  // Build lookup map for O(1) access
   const eventMap = useMemo(() => new Map(allEvents.map((e) => [e.id, e])), [allEvents]);
 
-  // Upstream chain
   const upstream: EventNode[] = [];
   const visited = new Set<string>();
   const trace = (id: string) => {
@@ -109,45 +126,42 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, allEvents, timeSlotLab
     if (ev.id !== event.id) upstream.push(ev);
   };
   trace(event.id);
-
-  // Downstream
   const downstream = allEvents.filter((e) => e.from?.includes(event.id));
 
   return (
-    <div style={{ padding: 20 }}>
-      {/* Header */}
-      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 20 }}>
+    <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+      {/* Header — §6 avatar + name */}
+      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         {event.imageUrl ? (
           <img src={event.imageUrl} alt="" style={{
-            width: 48, height: 48, borderRadius: 14, objectFit: "cover",
-            border: `1px solid ${style.color}30`, flexShrink: 0,
+            width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
           }} />
         ) : (
           <div style={{
-            width: 48, height: 48, borderRadius: 14, background: style.bg,
-            border: `1px solid ${style.color}30`, display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: 24, flexShrink: 0,
-          }}>{meta?.icon || "●"}</div>
+            width: 40, height: 40, borderRadius: "50%", background: style.bg,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 14, fontWeight: 600, color: style.color, flexShrink: 0,
+          }}>{meta?.label?.slice(0, 2) || "EV"}</div>
         )}
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 800 }}>{event.label}</div>
-          <div style={{ fontSize: 10, color: style.color, fontWeight: 600, marginTop: 2 }}>{meta?.label} · {dayLabel}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: theme.text }}>{event.label}</div>
+          <div style={{ fontSize: 11, color: theme.muted }}>{meta?.label} · {dayLabel}</div>
         </div>
       </div>
 
       {/* Description */}
-      <p style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.6, margin: "0 0 20px" }}>{event.desc}</p>
+      <p style={{ fontSize: 12, color: theme.textSecondary, lineHeight: "18px", margin: 0 }}>{event.desc}</p>
 
       {/* Badges */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         <SentimentBadge sentiment={event.sentiment} theme={theme} full />
         {event.extra && (
-          <div style={{ padding: "4px 12px", borderRadius: 20, background: style.bg, fontSize: 10, fontWeight: 600, color: style.color }}>{event.extra}</div>
+          <div style={{ padding: "2px 8px", borderRadius: 44, background: `${style.color}18`, color: style.color, border: `1px solid ${style.color}33`, fontSize: 12 }}>{event.extra}</div>
         )}
       </div>
 
-      {/* Metrics grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 24 }}>
+      {/* §10 Metrics grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
         <MetricCard label="Impact" value={event.impact} color={style.color} maxVal={100} currentVal={event.impact} theme={theme} />
         <MetricCard label="Mentions" value={event.mentions} color={theme.accent} theme={theme} />
         <MetricCard label="Weight" value={`${(event.weight * 100).toFixed(0)}%`} color={theme.text} theme={theme} />
@@ -155,20 +169,20 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, allEvents, timeSlotLab
       </div>
 
       {/* Sparkline */}
-      <div style={{ padding: 14, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 24 }}>
-        <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 8, textTransform: "uppercase" }}>Mention Trend</div>
+      <div style={{ padding: 10, borderRadius: 10, background: theme.bgAlt }}>
+        <div style={{ fontSize: 11, color: theme.muted, letterSpacing: 1.5, marginBottom: 6, textTransform: "uppercase", fontWeight: 700 }}>Mention Trend</div>
         <Sparkline data={mockSparkData(event.impact)} color={style.color} width={280} height={40} />
       </div>
 
-      {/* Upstream chain */}
+      {/* §11 Connections */}
       {upstream.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>Event Chain (upstream)</div>
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8 }}>
+          <SectionTitle theme={theme}>Event Chain (upstream)</SectionTitle>
           {upstream.map((ev) => {
             const evStyle = getEventTypeStyle(theme, ev.type);
             const evMeta = EVENT_TYPE_META[ev.type];
             return (
-              <LinkItem key={ev.id} avatar={evMeta?.icon || "●"} name={ev.label}
+              <LinkItem key={ev.id} avatar={evMeta?.label || "EV"} name={ev.label}
                 subtitle={`${evMeta?.label} · Impact ${ev.impact}`}
                 badgeColor={evStyle.color} badgeBg={evStyle.bg}
                 theme={theme} onClick={() => onNavigate(ev.id)} />
@@ -177,15 +191,14 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, allEvents, timeSlotLab
         </div>
       )}
 
-      {/* Downstream */}
       {downstream.length > 0 && (
-        <div>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>Led to →</div>
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8 }}>
+          <SectionTitle theme={theme}>Led to</SectionTitle>
           {downstream.map((ev) => {
             const evStyle = getEventTypeStyle(theme, ev.type);
             const evMeta = EVENT_TYPE_META[ev.type];
             return (
-              <LinkItem key={ev.id} avatar={evMeta?.icon || "●"} name={ev.label}
+              <LinkItem key={ev.id} avatar={evMeta?.label || "EV"} name={ev.label}
                 subtitle={`${evMeta?.label} · Impact ${ev.impact}`}
                 badgeColor={evStyle.color} badgeBg={evStyle.bg}
                 theme={theme} onClick={() => onNavigate(ev.id)} />
@@ -197,7 +210,7 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, allEvents, timeSlotLab
   );
 };
 
-// ─── KOL Detail ─────────────────────────────────────────────────
+// ─── KOL Detail ────────────────────────────────────────────────
 
 interface KolDetailProps {
   kol: KolNode;
@@ -217,74 +230,71 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
   const influencedBy = (kol.from || []).map((id) => kolMap.get(id)).filter(Boolean) as KolNode[];
 
   return (
-    <div style={{ padding: 20 }}>
-      {/* Header */}
-      <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 20 }}>
+    <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+      {/* Header — §6 avatar + name + handle */}
+      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         {(kol.imageUrl || kol.avatarUrl) ? (
           <img src={(kol.imageUrl || kol.avatarUrl)!} alt="" style={{
-            width: 56, height: 56, borderRadius: 16, objectFit: "cover",
-            border: `2px solid ${tierStyle.color}40`, flexShrink: 0,
+            width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
           }} />
         ) : (
           <div style={{
-            width: 56, height: 56, borderRadius: 16, background: tierStyle.bg,
-            border: `2px solid ${tierStyle.color}40`, display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: 20, fontWeight: 800, color: tierStyle.color,
-            fontFamily: theme.monoFontFamily, flexShrink: 0,
+            width: 40, height: 40, borderRadius: "50%", background: tierStyle.bg,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 14, fontWeight: 800, color: tierStyle.color, flexShrink: 0,
           }}>{kol.avatar}</div>
         )}
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 800 }}>{kol.name}</div>
-          <div style={{ fontSize: 10, color: theme.textSecondary, marginTop: 2 }}>{kol.handle}</div>
-          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-            <div style={{ padding: "2px 8px", borderRadius: 10, background: tierStyle.bg, fontSize: 9, fontWeight: 700, color: tierStyle.color }}>{tierMeta.label}</div>
-            <div style={{ padding: "2px 8px", borderRadius: 10, background: theme.accentDim, fontSize: 9, color: theme.accent }}>{platMeta.icon} {platMeta.label}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: theme.text }}>{kol.name}</div>
+          <div style={{ fontSize: 11, color: theme.muted }}>{kol.handle}</div>
+          <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+            <span style={{ padding: "1px 6px", borderRadius: 44, background: `${tierStyle.color}18`, color: tierStyle.color, border: `1px solid ${tierStyle.color}33`, fontSize: 11, fontWeight: 400 }}>{tierMeta.label}</span>
+            <span style={{ padding: "1px 6px", borderRadius: 44, background: `${theme.accent}18`, color: theme.accent, border: `1px solid ${theme.accent}33`, fontSize: 11, fontWeight: 400 }}>{platMeta.label}</span>
           </div>
         </div>
       </div>
 
-      {/* Metrics grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 20 }}>
+      {/* §10 Metrics grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
         <MetricCard label="Followers" value={formatNumber(kol.followers)} color={tierStyle.color} theme={theme} />
         <MetricCard label="Eng. Rate" value={kol.engRate.toFixed(1) + "%"} color={theme.accent} theme={theme} />
         <MetricCard label="Reach" value={formatNumber(kol.reach)} color={getKolTierStyle(theme, "mega").color} theme={theme} />
         <MetricCard label="Mentions" value={kol.mentions} color={getKolTierStyle(theme, "macro").color} theme={theme} />
-        <MetricCard label="Total Views" value={kol.views > 0 ? formatNumber(kol.views) : "N/A"} color={getKolTierStyle(theme, "mid").color} theme={theme} />
+        <MetricCard label="Views" value={kol.views > 0 ? formatNumber(kol.views) : "N/A"} color={getKolTierStyle(theme, "mid").color} theme={theme} />
         <MetricCard label="Sentiment" value={sentimentLabel(kol.sentiment)} color={kol.sentiment === "pos" ? theme.positive : kol.sentiment === "neg" ? theme.negative : theme.neutral} theme={theme} />
       </div>
 
-      {/* Engagement sparkline */}
-      <div style={{ padding: 14, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 20 }}>
-        <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 8, textTransform: "uppercase" }}>Engagement Trend</div>
+      {/* Sparkline */}
+      <div style={{ padding: 10, borderRadius: 10, background: theme.bgAlt }}>
+        <div style={{ fontSize: 11, color: theme.muted, letterSpacing: 1.5, marginBottom: 6, textTransform: "uppercase", fontWeight: 700 }}>Engagement Trend</div>
         <Sparkline data={kol.engHistory || mockSparkData(kol.engRate * 10)} color={tierStyle.color} width={280} height={40} />
       </div>
 
-      {/* Posts timeline */}
+      {/* Posts */}
       {kol.posts.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>Posts Timeline</div>
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8 }}>
+          <SectionTitle theme={theme}>Posts Timeline</SectionTitle>
           {kol.posts.map((p, i) => (
-            <div key={i} style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 8 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-                <span style={{ fontSize: 9, color: theme.muted }}>{timeSlotLabels[p.day] || `Day ${p.day + 1}`} · {p.type}</span>
+            <div key={i} style={{ padding: 10, borderRadius: 10, background: theme.bgAlt, marginBottom: 6 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+                <span style={{ fontSize: 11, color: theme.muted }}>{timeSlotLabels[p.day] || `Day ${p.day + 1}`} · {p.type}</span>
                 <SentimentBadge sentiment={p.sentiment} theme={theme} />
               </div>
-              <div style={{ fontSize: 11, fontWeight: 600, marginBottom: 6 }}>{p.title}</div>
-              <div style={{ display: "flex", gap: 12, fontSize: 9, color: theme.textSecondary }}>
-                {p.views > 0 && <span>▶ {formatNumber(p.views)} views</span>}
-                <span>♥ {formatNumber(p.likes)} likes</span>
-                {p.comments != null && <span>💬 {formatNumber(p.comments)}</span>}
-                {p.shares != null && <span>↗ {formatNumber(p.shares)}</span>}
+              <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 4 }}>{p.title}</div>
+              <div style={{ display: "flex", gap: 10, fontSize: 11, color: theme.textSecondary }}>
+                {p.views > 0 && <span>{formatNumber(p.views)} views</span>}
+                <span>{formatNumber(p.likes)} likes</span>
+                {p.comments != null && <span>{formatNumber(p.comments)} comments</span>}
               </div>
             </div>
           ))}
         </div>
       )}
 
-      {/* Influenced KOLs */}
+      {/* §11 Connections */}
       {influencedKols.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>Influenced KOLs →</div>
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8 }}>
+          <SectionTitle theme={theme}>Influenced KOLs</SectionTitle>
           {influencedKols.map((ik) => {
             const ikStyle = getKolTierStyle(theme, ik.tier);
             return (
@@ -297,10 +307,9 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
         </div>
       )}
 
-      {/* Influenced by */}
       {influencedBy.length > 0 && (
-        <div>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>← Influenced By</div>
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8 }}>
+          <SectionTitle theme={theme}>Influenced By</SectionTitle>
           {influencedBy.map((fk) => {
             const fkStyle = getKolTierStyle(theme, fk.tier);
             return (
@@ -316,44 +325,42 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
   );
 };
 
-// ─── Cui Bono Section (per-event) ────────────────────────────────
+// ─── Cui Bono Section ──────────────────────────────────────────
 
 const CuiBonoSection: React.FC<{ cuiBono: CuiBono; theme: GraphTheme }> = ({ cuiBono, theme }) => (
-  <div style={{ marginBottom: 20 }}>
-    <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
-      {"\uD83D\uDD75\uFE0F"} Cui Bono
-    </div>
+  <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8 }}>
+    <SectionTitle theme={theme}>Cui Bono</SectionTitle>
     {cuiBono.winners.length > 0 && (
-      <div style={{ marginBottom: 10 }}>
-        <div style={{ fontSize: 9, color: theme.positive, fontWeight: 700, marginBottom: 6 }}>Winners</div>
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 11, color: theme.positive, fontWeight: 600, marginBottom: 4 }}>Winners</div>
         {cuiBono.winners.map((e, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.positiveDim, marginBottom: 3 }}>
-            <span style={{ fontSize: 10, color: theme.text }}>{e.name}</span>
-            <span style={{ fontSize: 10, fontWeight: 700, color: theme.positive }}>+{e.delta}</span>
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.positiveDim, marginBottom: 2 }}>
+            <span style={{ fontSize: 12, color: theme.text }}>{e.name}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: theme.positive }}>+{e.delta}</span>
           </div>
         ))}
       </div>
     )}
     {cuiBono.losers.length > 0 && (
-      <div style={{ marginBottom: 10 }}>
-        <div style={{ fontSize: 9, color: theme.negative, fontWeight: 700, marginBottom: 6 }}>Losers</div>
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 11, color: theme.negative, fontWeight: 600, marginBottom: 4 }}>Losers</div>
         {cuiBono.losers.map((e, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.negativeDim, marginBottom: 3 }}>
-            <span style={{ fontSize: 10, color: theme.text }}>{e.name}</span>
-            <span style={{ fontSize: 10, fontWeight: 700, color: theme.negative }}>{e.delta}</span>
+          <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.negativeDim, marginBottom: 2 }}>
+            <span style={{ fontSize: 12, color: theme.text }}>{e.name}</span>
+            <span style={{ fontSize: 12, fontWeight: 600, color: theme.negative }}>{e.delta}</span>
           </div>
         ))}
       </div>
     )}
     {cuiBono.indices && cuiBono.indices.length > 0 && (
-      <div style={{ marginBottom: 10 }}>
-        <div style={{ fontSize: 9, color: theme.accent, fontWeight: 700, marginBottom: 6 }}>Indices</div>
+      <div style={{ marginBottom: 8 }}>
+        <div style={{ fontSize: 11, color: theme.accent, fontWeight: 600, marginBottom: 4 }}>Indices</div>
         {cuiBono.indices.map((e, i) => {
           const color = e.delta >= 0 ? theme.positive : theme.negative;
           return (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 3 }}>
-              <span style={{ fontSize: 10, color: theme.text }}>{e.name} <span style={{ color: theme.muted, fontSize: 8 }}>{e.code}</span></span>
-              <span style={{ fontSize: 10, fontWeight: 700, color }}>{e.delta > 0 ? "+" : ""}{e.delta}%</span>
+            <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 8px", borderRadius: 6, background: theme.bgAlt, marginBottom: 2 }}>
+              <span style={{ fontSize: 12, color: theme.text }}>{e.name} <span style={{ color: theme.muted, fontSize: 10 }}>{e.code}</span></span>
+              <span style={{ fontSize: 12, fontWeight: 600, color }}>{e.delta > 0 ? "+" : ""}{e.delta}%</span>
             </div>
           );
         })}
@@ -361,16 +368,16 @@ const CuiBonoSection: React.FC<{ cuiBono: CuiBono; theme: GraphTheme }> = ({ cui
     )}
     {cuiBono.hiddenMotives && cuiBono.hiddenMotives.length > 0 && (
       <div style={{ padding: 10, borderRadius: 10, background: theme.warningDim, border: `1px solid ${theme.warning}30` }}>
-        <div style={{ fontSize: 12, color: theme.warning, fontWeight: 700, marginBottom: 4 }}>{"\uD83D\uDD75\uFE0F"} Hidden Motives</div>
+        <div style={{ fontSize: 12, color: theme.warning, fontWeight: 600, marginBottom: 4 }}>Hidden Motives</div>
         {cuiBono.hiddenMotives.map((m, i) => (
-          <div key={i} style={{ fontSize: 9, color: theme.textSecondary, lineHeight: 1.5, marginBottom: 2 }}>• {m}</div>
+          <div key={i} style={{ fontSize: 11, color: theme.textSecondary, lineHeight: "16px", marginBottom: 2 }}>• {m}</div>
         ))}
       </div>
     )}
   </div>
 );
 
-// ─── Narrative Detail ────────────────────────────────────────────
+// ─── Narrative Detail ──────────────────────────────────────────
 
 interface NarrativeDetailProps {
   node: NarrativeNode;
@@ -392,7 +399,6 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
 
   const nodeMap = useMemo(() => new Map(allNodes.map((n) => [n.id, n])), [allNodes]);
 
-  // Upstream chain
   const upstream: NarrativeNode[] = [];
   const visited = new Set<string>();
   const trace = (id: string) => {
@@ -404,147 +410,126 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
     if (ev.id !== node.id) upstream.push(ev);
   };
   trace(node.id);
-
   const downstream = allNodes.filter((n) => n.from?.includes(node.id));
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 12 }}>
       {/* Header */}
-      <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 20 }}>
+      <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
         {node.imageUrl ? (
           <img src={node.imageUrl} alt="" style={{
-            width: 48, height: 48, borderRadius: 14, objectFit: "cover",
-            border: `1px solid ${catStyle.color}30`, flexShrink: 0,
+            width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0,
           }} />
         ) : (
           <div style={{
-            width: 48, height: 48, borderRadius: 14, background: catStyle.bg,
-            border: `1px solid ${catStyle.color}30`, display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: 24, flexShrink: 0,
-          }}>{catMeta?.icon || "●"}</div>
+            width: 40, height: 40, borderRadius: "50%", background: catStyle.bg,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontSize: 14, fontWeight: 600, color: catStyle.color, flexShrink: 0,
+          }}>{catMeta?.label?.slice(0, 2) || "NR"}</div>
         )}
-        <div>
-          <div style={{ fontSize: 16, fontWeight: 800 }}>{node.label}</div>
-          <div style={{ fontSize: 10, color: catStyle.color, fontWeight: 600, marginTop: 2 }}>{catMeta?.label} · {dayLabel}</div>
-          <div style={{ display: "flex", gap: 6, marginTop: 6 }}>
-            <div style={{ padding: "2px 8px", borderRadius: 10, background: sigStyle.bg, fontSize: 9, fontWeight: 700, color: sigStyle.color }}>
-              {sigMeta?.icon} {sigMeta?.label}
-            </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: theme.text }}>{node.label}</div>
+          <div style={{ fontSize: 11, color: theme.muted }}>{catMeta?.label} · {dayLabel}</div>
+          <div style={{ display: "flex", gap: 4, marginTop: 4 }}>
+            <span style={{ padding: "1px 6px", borderRadius: 44, background: `${sigStyle.color}18`, color: sigStyle.color, border: `1px solid ${sigStyle.color}33`, fontSize: 11, fontWeight: 400 }}>{sigMeta?.label}</span>
           </div>
         </div>
       </div>
 
-      {/* Description */}
-      <p style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.6, margin: "0 0 20px" }}>{node.desc}</p>
+      <p style={{ fontSize: 12, color: theme.textSecondary, lineHeight: "18px", margin: 0 }}>{node.desc}</p>
 
       {/* Badges */}
-      <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 20 }}>
+      <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
         <SentimentBadge sentiment={node.sentiment} theme={theme} full />
-        <div style={{ padding: "4px 12px", borderRadius: 20, background: theme.bgAlt, fontSize: 10, fontWeight: 700, color: deltaColor }}>
-          {deltaText}
-        </div>
+        <div style={{ padding: "2px 8px", borderRadius: 44, background: `${deltaColor}18`, color: deltaColor, border: `1px solid ${deltaColor}33`, fontSize: 12 }}>{deltaText}</div>
         {node.extra && (
-          <div style={{ padding: "4px 12px", borderRadius: 20, background: catStyle.bg, fontSize: 10, fontWeight: 600, color: catStyle.color }}>{node.extra}</div>
+          <div style={{ padding: "2px 8px", borderRadius: 44, background: `${catStyle.color}18`, color: catStyle.color, border: `1px solid ${catStyle.color}33`, fontSize: 12 }}>{node.extra}</div>
         )}
       </div>
 
       {/* Market probability card */}
-      <div style={{ padding: 16, borderRadius: 12, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 20 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase" }}>Prediction Probability</div>
-          <div style={{ fontSize: 20, fontWeight: 800, color: theme.accent }}>{node.marketProb != null ? `${node.marketProb.toFixed(1)}%` : "\u2014"}</div>
+      <div style={{ padding: 12, borderRadius: 10, background: theme.bgAlt }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <div style={{ fontSize: 11, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 700 }}>Prediction Probability</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: theme.accent }}>{node.marketProb != null ? `${node.marketProb.toFixed(1)}%` : "\u2014"}</div>
         </div>
-        <div style={{ height: 6, borderRadius: 3, background: theme.border, overflow: "hidden" }}>
-          <div style={{ height: 6, borderRadius: 3, background: theme.accent, width: `${node.marketProb ?? 0}%`, transition: "width 0.3s" }} />
+        <div style={{ display: "flex", gap: 4 }}>
+          <div style={{ height: 8, borderRadius: "16px 0 0 16px", background: theme.positive, flex: node.marketProb ?? 0, transition: "flex 0.5s ease" }} />
+          <div style={{ height: 8, borderRadius: "0 16px 16px 0", background: theme.negative, flex: 100 - (node.marketProb ?? 0), transition: "flex 0.5s ease" }} />
         </div>
         {node.marketQuestion && (
-          <div style={{ fontSize: 10, color: theme.textSecondary, marginTop: 10, fontStyle: "italic" }}>
-            "{node.marketQuestion}"
-          </div>
+          <div style={{ fontSize: 12, color: theme.textSecondary, marginTop: 8, fontStyle: "italic" }}>"{node.marketQuestion}"</div>
         )}
         {node.marketPlatform && (
-          <div style={{ fontSize: 9, color: theme.muted, marginTop: 4 }}>
+          <div style={{ fontSize: 11, color: theme.muted, marginTop: 4 }}>
             via {node.marketPlatform}{node.marketUrl ? " · " : ""}
-            {node.marketUrl && <a href={node.marketUrl} target="_blank" rel="noopener noreferrer" style={{ color: theme.accent, textDecoration: "none" }}>View Prediction →</a>}
+            {node.marketUrl && <a href={node.marketUrl} target="_blank" rel="noopener noreferrer" style={{ color: theme.accent, textDecoration: "none" }}>View</a>}
           </div>
         )}
       </div>
 
-      {/* Metrics grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10, marginBottom: 24 }}>
+      {/* §10 Metrics grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
         <MetricCard label="Odds Delta" value={deltaText} color={deltaColor} theme={theme} />
         <MetricCard label="Weight" value={`${(node.weight * 100).toFixed(0)}%`} color={catStyle.color} maxVal={100} currentVal={node.weight * 100} theme={theme} />
         <MetricCard label="Momentum" value={node.momentum > 0 ? `+${node.momentum.toFixed(1)}` : node.momentum.toFixed(1)} color={node.momentum > 0 ? theme.positive : node.momentum < 0 ? theme.negative : theme.neutral} theme={theme} />
         <MetricCard label="Volume" value={formatNumber(node.volume)} color={theme.accent} theme={theme} />
-        <MetricCard label="Source Authority" value={`${node.sourceAuthority}`} color={sigStyle.color} maxVal={100} currentVal={node.sourceAuthority} theme={theme} />
+        <MetricCard label="Source Auth" value={`${node.sourceAuthority}`} color={sigStyle.color} maxVal={100} currentVal={node.sourceAuthority} theme={theme} />
         <MetricCard label="Signal" value={sigMeta?.label || node.signal} color={sigStyle.color} theme={theme} />
       </div>
 
-      {/* Source info */}
+      {/* Source */}
       {(node.sourceName || node.sourceUrl) && (
-        <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 20 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 6, textTransform: "uppercase" }}>Source</div>
-          {node.sourceName && <div style={{ fontSize: 11, fontWeight: 600 }}>{node.sourceName}</div>}
+        <div style={{ padding: 10, borderRadius: 10, background: theme.bgAlt }}>
+          <div style={{ fontSize: 11, color: theme.muted, letterSpacing: 1.5, marginBottom: 4, textTransform: "uppercase", fontWeight: 700 }}>Source</div>
+          {node.sourceName && <div style={{ fontSize: 12, fontWeight: 600 }}>{node.sourceName}</div>}
           {node.sourceUrl && (
-            <a href={node.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 10, color: theme.accent, textDecoration: "none" }}>
+            <a href={node.sourceUrl} target="_blank" rel="noopener noreferrer" style={{ fontSize: 11, color: theme.accent, textDecoration: "none" }}>
               {node.sourceUrl.length > 50 ? node.sourceUrl.slice(0, 50) + "..." : node.sourceUrl}
             </a>
           )}
         </div>
       )}
 
-      {/* Sparkline placeholder (volume trend) */}
-      <div style={{ padding: 14, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 24 }}>
-        <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 8, textTransform: "uppercase" }}>Volume Trend</div>
+      {/* Sparkline */}
+      <div style={{ padding: 10, borderRadius: 10, background: theme.bgAlt }}>
+        <div style={{ fontSize: 11, color: theme.muted, letterSpacing: 1.5, marginBottom: 6, textTransform: "uppercase", fontWeight: 700 }}>Volume Trend</div>
         <Sparkline data={mockSparkData(node.volume > 0 ? node.volume : 50)} color={catStyle.color} width={280} height={40} />
       </div>
 
-      {/* Tags */}
+      {/* Tags — §7 pill badges */}
       {node.tags && node.tags.length > 0 && (
-        <div style={{ marginBottom: 20, display: "flex", gap: 6, flexWrap: "wrap" }}>
+        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
           {node.tags.map((tag) => (
-            <span key={tag} style={{ padding: "2px 8px", borderRadius: 44, background: theme.bgAlt, border: `1px solid ${theme.border}`, fontSize: 12, color: theme.textSecondary }}>
-              #{tag}
-            </span>
+            <span key={tag} style={{
+              padding: "2px 8px", borderRadius: 44,
+              background: theme.positiveDim, color: "#9cf3bf",
+              fontSize: 12, fontWeight: 400,
+            }}>#{tag}</span>
           ))}
         </div>
       )}
 
-      {/* Scenario-specific sections */}
+      {/* Scenario sections */}
       {isScenario && node.outcome && (
         <div style={{
-          padding: 14, borderRadius: 10, marginBottom: 20,
+          padding: 10, borderRadius: 10,
           background: node.outcome === "YES" ? theme.positiveDim : theme.negativeDim,
           border: `1px solid ${node.outcome === "YES" ? theme.positive : theme.negative}30`,
         }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 6 }}>
-            Scenario Outcome
-          </div>
-          <div style={{
-            fontSize: 16, fontWeight: 800,
-            color: node.outcome === "YES" ? theme.positive : theme.negative,
-          }}>
+          <div style={{ fontSize: 11, color: theme.muted, textTransform: "uppercase", letterSpacing: 1.5, fontWeight: 700, marginBottom: 4 }}>Scenario Outcome</div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: node.outcome === "YES" ? theme.positive : theme.negative }}>
             {node.outcome === "YES" ? "✓" : "✗"} {node.outcome} — {node.outcomeProbability ?? "?"}%
           </div>
-          {node.parentAnchor && (
-            <div style={{ fontSize: 9, color: theme.muted, marginTop: 4 }}>
-              Branch from: {node.parentAnchor}
-            </div>
-          )}
+          {node.parentAnchor && <div style={{ fontSize: 11, color: theme.muted, marginTop: 4 }}>Branch from: {node.parentAnchor}</div>}
         </div>
       )}
 
       {isScenario && node.conditions && node.conditions.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
-            Conditions Required
-          </div>
+        <div>
+          <SectionTitle theme={theme}>Conditions Required</SectionTitle>
           {node.conditions.map((c, i) => (
-            <div key={i} style={{
-              padding: "6px 10px", borderRadius: 6, background: theme.card,
-              border: `1px solid ${theme.border}`, marginBottom: 4,
-              fontSize: 10, color: theme.textSecondary,
-            }}>
+            <div key={i} style={{ padding: "4px 8px", borderRadius: 6, background: theme.bgAlt, marginBottom: 3, fontSize: 12, color: theme.textSecondary }}>
               {i + 1}. {c}
             </div>
           ))}
@@ -552,34 +537,27 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
       )}
 
       {isScenario && node.nextEvents && node.nextEvents.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>
-            Next Events (if realized)
-          </div>
+        <div>
+          <SectionTitle theme={theme}>Next Events (if realized)</SectionTitle>
           {node.nextEvents.map((ne, i) => (
-            <div key={i} style={{
-              padding: "6px 10px", borderRadius: 6, background: theme.card,
-              border: `1px solid ${theme.border}`, marginBottom: 4,
-              fontSize: 10, color: theme.text,
-            }}>
+            <div key={i} style={{ padding: "4px 8px", borderRadius: 6, background: theme.bgAlt, marginBottom: 3, fontSize: 12, color: theme.text }}>
               → {ne}
             </div>
           ))}
         </div>
       )}
 
-      {/* Cui Bono (per-event) */}
       {node.cuiBono && <CuiBonoSection cuiBono={node.cuiBono} theme={theme} />}
 
-      {/* Upstream chain */}
+      {/* §11 Connections */}
       {upstream.length > 0 && (
-        <div style={{ marginBottom: 20 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>Narrative Chain (upstream)</div>
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8 }}>
+          <SectionTitle theme={theme}>Narrative Chain (upstream)</SectionTitle>
           {upstream.map((n) => {
             const nStyle = getNarrativeCategoryStyle(theme, n.category);
             const nMeta = NARRATIVE_CATEGORY_META[n.category];
             return (
-              <LinkItem key={n.id} avatar={nMeta?.icon || "●"} name={n.label}
+              <LinkItem key={n.id} avatar={nMeta?.label || "NR"} name={n.label}
                 subtitle={`${nMeta?.label} · ${n.oddsDelta > 0 ? "+" : ""}${n.oddsDelta.toFixed(1)}pp`}
                 badgeColor={nStyle.color} badgeBg={nStyle.bg}
                 theme={theme} onClick={() => onNavigate(n.id)} />
@@ -588,15 +566,14 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
         </div>
       )}
 
-      {/* Downstream */}
       {downstream.length > 0 && (
-        <div>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, marginBottom: 10, textTransform: "uppercase" }}>Led to →</div>
+        <div style={{ borderTop: `1px solid ${theme.border}`, paddingTop: 8 }}>
+          <SectionTitle theme={theme}>Led to</SectionTitle>
           {downstream.map((n) => {
             const nStyle = getNarrativeCategoryStyle(theme, n.category);
             const nMeta = NARRATIVE_CATEGORY_META[n.category];
             return (
-              <LinkItem key={n.id} avatar={nMeta?.icon || "●"} name={n.label}
+              <LinkItem key={n.id} avatar={nMeta?.label || "NR"} name={n.label}
                 subtitle={`${nMeta?.label} · ${n.oddsDelta > 0 ? "+" : ""}${n.oddsDelta.toFixed(1)}pp`}
                 badgeColor={nStyle.color} badgeBg={nStyle.bg}
                 theme={theme} onClick={() => onNavigate(n.id)} />
@@ -608,7 +585,7 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
   );
 };
 
-// ─── HoverTooltip ───────────────────────────────────────────────
+// ─── §6 HoverTooltip (BubbleMap tooltip card) ──────────────────
 
 interface TooltipProps {
   event?: EventNode | null;
@@ -617,31 +594,33 @@ interface TooltipProps {
   theme: GraphTheme;
 }
 
+const tooltipBase = (theme: GraphTheme, borderColor?: string): React.CSSProperties => ({
+  position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)",
+  display: "flex", gap: 12, alignItems: "center",
+  width: "auto", maxWidth: 400, padding: 12,
+  borderRadius: 12,
+  border: `1px solid ${borderColor || theme.border}`,
+  background: theme.bg,                       // §6: baseStrong
+  pointerEvents: "none", zIndex: 35,
+  fontFamily: theme.fontFamily,
+});
+
 const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) => {
   if (event) {
     const style = getEventTypeStyle(theme, event.type);
+    const meta = EVENT_TYPE_META[event.type];
     return (
-      <div style={{
-        position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)",
-        background: theme.surface, border: `1px solid ${style.color}25`, borderRadius: 12,
-        padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
-        backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "none", maxWidth: "92%",
-      }}>
+      <div style={tooltipBase(theme, `${style.color}40`)}>
         {event.imageUrl ? (
-          <img src={event.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+          <img src={event.imageUrl} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
         ) : (
-          <span style={{ fontSize: 28 }}>{EVENT_TYPE_META[event.type]?.icon}</span>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: style.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: style.color, flexShrink: 0 }}>{meta?.label?.slice(0, 2)}</div>
         )}
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 700 }}>{event.label}</div>
-          <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 2, maxWidth: 260 }}>{event.desc}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: theme.text }}>{event.label}</div>
+          <div style={{ fontSize: 11, color: theme.muted, marginTop: 2 }}>{meta?.label} · Impact {event.impact}</div>
         </div>
         <SentimentBadge sentiment={event.sentiment} theme={theme} />
-        <div style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 14, fontWeight: 800, color: style.color }}>{event.impact}</div>
-          <div style={{ fontSize: 7, color: theme.muted }}>IMPACT</div>
-        </div>
-        <div style={{ fontSize: 9, color: theme.muted, padding: "3px 8px", background: theme.bgAlt, borderRadius: 8 }}>Click →</div>
       </div>
     );
   }
@@ -649,36 +628,21 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
   if (kol) {
     const tierStyle = getKolTierStyle(theme, kol.tier);
     return (
-      <div style={{
-        position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)",
-        background: theme.surface, border: `1px solid ${tierStyle.color}25`, borderRadius: 12,
-        padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
-        backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "none", maxWidth: "92%",
-      }}>
+      <div style={tooltipBase(theme, `${tierStyle.color}40`)}>
         {(kol.imageUrl || kol.avatarUrl) ? (
-          <img src={(kol.imageUrl || kol.avatarUrl)!} alt="" style={{ width: 40, height: 40, borderRadius: 12, objectFit: "cover", flexShrink: 0 }} />
+          <img src={(kol.imageUrl || kol.avatarUrl)!} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
         ) : (
-          <div style={{
-            width: 40, height: 40, borderRadius: 12, background: tierStyle.bg,
-            border: `1px solid ${tierStyle.color}30`, display: "flex", alignItems: "center",
-            justifyContent: "center", fontSize: 16, fontWeight: 800, color: tierStyle.color,
-            fontFamily: theme.monoFontFamily,
-          }}>{kol.avatar}</div>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: tierStyle.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 14, fontWeight: 800, color: tierStyle.color, flexShrink: 0 }}>{kol.avatar}</div>
         )}
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 700 }}>{kol.name}</div>
-          <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 1 }}>{kol.handle} · {kol.platform}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: theme.text }}>{kol.name}</div>
+          <div style={{ fontSize: 11, color: theme.muted, marginTop: 1 }}>{kol.handle}</div>
         </div>
-        <div style={{ padding: "2px 8px", borderRadius: 10, background: tierStyle.bg, fontSize: 9, fontWeight: 700, color: tierStyle.color }}>
-          {KOL_TIER_META[kol.tier].label}
-        </div>
-        <div style={{ display: "flex", gap: 12 }}>
-          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.text }}>{formatNumber(kol.followers)}</div><div style={{ fontSize: 7, color: theme.muted }}>FOLLOWERS</div></div>
-          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.accent }}>{kol.engRate.toFixed(1)}%</div><div style={{ fontSize: 7, color: theme.muted }}>ENG RATE</div></div>
-          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: tierStyle.color }}>{formatNumber(kol.reach)}</div><div style={{ fontSize: 7, color: theme.muted }}>REACH</div></div>
+        <div style={{ display: "flex", gap: 8, flexShrink: 0 }}>
+          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 600, color: theme.text }}>{formatNumber(kol.followers)}</div><div style={{ fontSize: 11, color: theme.muted }}>Followers</div></div>
+          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 600, color: theme.accent }}>{kol.engRate.toFixed(1)}%</div><div style={{ fontSize: 11, color: theme.muted }}>Eng</div></div>
         </div>
         <SentimentBadge sentiment={kol.sentiment} theme={theme} />
-        <div style={{ fontSize: 9, color: theme.muted, padding: "3px 8px", background: theme.bgAlt, borderRadius: 8 }}>Click →</div>
       </div>
     );
   }
@@ -686,36 +650,26 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
   if (narrative) {
     const catStyle = getNarrativeCategoryStyle(theme, narrative.category);
     const sigStyle = getNarrativeSignalStyle(theme, narrative.signal);
-    const catMeta = NARRATIVE_CATEGORY_META[narrative.category];
     const sigMeta = NARRATIVE_SIGNAL_META[narrative.signal];
+    const catMeta = NARRATIVE_CATEGORY_META[narrative.category];
     const deltaColor = narrative.oddsDelta > 0 ? theme.positive : narrative.oddsDelta < 0 ? theme.negative : theme.neutral;
     const deltaText = narrative.oddsDelta > 0 ? `+${narrative.oddsDelta.toFixed(1)}pp` : `${narrative.oddsDelta.toFixed(1)}pp`;
     return (
-      <div style={{
-        position: "absolute", bottom: 42, left: "50%", transform: "translateX(-50%)",
-        background: theme.surface, border: `1px solid ${catStyle.color}25`, borderRadius: 12,
-        padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
-        backdropFilter: "blur(20px)", zIndex: 35, boxShadow: "none", maxWidth: "85%",
-        pointerEvents: "none",
-      }}>
+      <div style={tooltipBase(theme, `${catStyle.color}40`)}>
         {narrative.imageUrl ? (
-          <img src={narrative.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+          <img src={narrative.imageUrl} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
         ) : (
-          <span style={{ fontSize: 28 }}>{catMeta?.icon}</span>
+          <div style={{ width: 40, height: 40, borderRadius: "50%", background: catStyle.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: catStyle.color, flexShrink: 0 }}>{catMeta?.label?.slice(0, 2)}</div>
         )}
-        <div>
-          <div style={{ fontSize: 13, fontWeight: 700 }}>{narrative.label}</div>
-          <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 2, maxWidth: 260 }}>{narrative.desc}</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontSize: 14, fontWeight: 500, color: theme.text }}>{narrative.label}</div>
+          <div style={{ fontSize: 11, color: theme.muted, marginTop: 2, maxWidth: 200 }}>{narrative.desc?.slice(0, 80)}{(narrative.desc?.length ?? 0) > 80 ? "..." : ""}</div>
         </div>
-        <div style={{ padding: "2px 8px", borderRadius: 10, background: sigStyle.bg, fontSize: 9, fontWeight: 700, color: sigStyle.color }}>
-          {sigMeta?.icon} {sigMeta?.label}
+        <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
+          <span style={{ padding: "1px 6px", borderRadius: 44, background: `${sigStyle.color}18`, color: sigStyle.color, border: `1px solid ${sigStyle.color}33`, fontSize: 11 }}>{sigMeta?.label}</span>
+          <div style={{ fontSize: 14, fontWeight: 600, color: deltaColor }}>{deltaText}</div>
+          <div style={{ fontSize: 11, color: theme.accent }}>{narrative.marketProb != null ? `${narrative.marketProb.toFixed(0)}%` : ""}</div>
         </div>
-        <SentimentBadge sentiment={narrative.sentiment} theme={theme} />
-        <div style={{ display: "flex", gap: 12 }}>
-          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: deltaColor }}>{deltaText}</div><div style={{ fontSize: 7, color: theme.muted }}>ODDS</div></div>
-          <div style={{ textAlign: "center" }}><div style={{ fontSize: 14, fontWeight: 800, color: theme.accent }}>{narrative.marketProb != null ? `${narrative.marketProb.toFixed(0)}%` : "\u2014"}</div><div style={{ fontSize: 7, color: theme.muted }}>PROB</div></div>
-        </div>
-        <div style={{ fontSize: 9, color: theme.muted, padding: "3px 8px", background: theme.bgAlt, borderRadius: 8 }}>Click →</div>
       </div>
     );
   }
@@ -723,7 +677,7 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
   return null;
 };
 
-// ─── Main DetailPanel ───────────────────────────────────────────
+// ─── Main DetailPanel ──────────────────────────────────────────
 
 export interface DetailPanelProps {
   isOpen: boolean;
@@ -737,9 +691,7 @@ export interface DetailPanelProps {
   theme: GraphTheme;
   onClose: () => void;
   onNavigate: (id: string) => void;
-  /** Dynamic panel width — defaults to 340 */
   panelWidth?: number;
-  /** Top offset to align with other sidebars */
   topOffset?: number;
 }
 
@@ -753,16 +705,17 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   return (
   <div style={{
     position: "absolute", top: T, right: 0, width: W, bottom: 0,
-    background: "#1d2732", borderLeft: `1px solid ${theme.border}`,
-    backdropFilter: "blur(20px)", zIndex: 25,
+    background: theme.bg,                      // §6: baseStrong (was hardcoded #1d2732)
+    borderLeft: `1px solid ${theme.border}`,   // §6: faintStrong border
+    zIndex: 25,
     transform: isOpen ? "translateX(0)" : `translateX(${W}px)`,
     transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
     overflowY: "auto", overflowX: "hidden",
   }}>
     <button onClick={onClose} style={{
-      position: "sticky", top: 0, right: 0, zIndex: 5, width: 32, height: 32,
-      background: "#1d2732", border: `1px solid ${theme.border}`,
-      borderRadius: 8, color: theme.muted, fontSize: 16, cursor: "pointer",
+      position: "sticky", top: 0, right: 0, zIndex: 5, width: 30, height: 30,
+      background: theme.surface, border: `1px solid ${theme.border}`,
+      borderRadius: 8, color: theme.muted, fontSize: 15, cursor: "pointer",
       fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center",
       margin: "8px 8px 0 auto",
     }}>✕</button>

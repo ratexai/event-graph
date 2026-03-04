@@ -4,6 +4,8 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import type {
+  EventNode, KolNode, NarrativeNode,
+  KolAggregateStats, NarrativeAggregateStats, ProjectInfo,
   EventFlowRequest, EventFlowResponse,
   KolFlowRequest, KolFlowResponse,
   NarrativeFlowRequest, NarrativeFlowResponse,
@@ -23,6 +25,8 @@ export interface ApiConfig {
   retries?: number;
   /** Cache TTL ms (default: 60000) */
   cacheTtl?: number;
+  /** Max cached entries (default: 200) */
+  maxCacheSize?: number;
 }
 
 const DEFAULT_CONFIG: ApiConfig = {
@@ -30,22 +34,22 @@ const DEFAULT_CONFIG: ApiConfig = {
   timeout: 30000,
   retries: 2,
   cacheTtl: 60000,
+  maxCacheSize: 200,
 };
 
 // ─── In-memory cache ────────────────────────────────────────────
 
-const MAX_CACHE_SIZE = 200;
 const cache = new Map<string, { data: unknown; ts: number }>();
 
-function evictStaleEntries(ttl: number): void {
+function evictStaleEntries(ttl: number, maxSize: number): void {
   const now = Date.now();
   for (const [key, entry] of cache) {
     if (now - entry.ts >= ttl) cache.delete(key);
   }
   // If still over limit, remove oldest entries
-  if (cache.size > MAX_CACHE_SIZE) {
+  if (cache.size > maxSize) {
     const sorted = [...cache.entries()].sort((a, b) => a[1].ts - b[1].ts);
-    const toRemove = sorted.slice(0, cache.size - MAX_CACHE_SIZE);
+    const toRemove = sorted.slice(0, cache.size - maxSize);
     for (const [key] of toRemove) cache.delete(key);
   }
 }
@@ -57,14 +61,18 @@ function getCached<T>(key: string, ttl: number): T | null {
   return null;
 }
 
-function setCache(key: string, data: unknown, ttl: number): void {
-  if (cache.size >= MAX_CACHE_SIZE) evictStaleEntries(ttl);
+function setCache(key: string, data: unknown, ttl: number, maxSize: number): void {
+  if (cache.size >= maxSize) evictStaleEntries(ttl, maxSize);
   cache.set(key, { data, ts: Date.now() });
 }
 
 export function clearCache(): void {
   cache.clear();
 }
+
+// ─── Request deduplication ──────────────────────────────────────
+
+const inflight = new Map<string, Promise<unknown>>();
 
 // ─── Fetch wrapper ──────────────────────────────────────────────
 
@@ -91,6 +99,24 @@ async function apiFetch<T>(
   const cached = getCached<T>(cacheKey, config.cacheTtl || 60000);
   if (cached) return cached;
 
+  // Deduplicate concurrent identical requests
+  const existing = inflight.get(cacheKey);
+  if (existing) return existing as Promise<T>;
+
+  const promise = apiFetchInner<T>(config, cacheKey, path, body, method);
+  inflight.set(cacheKey, promise);
+  promise.finally(() => inflight.delete(cacheKey));
+  return promise;
+}
+
+async function apiFetchInner<T>(
+  config: ApiConfig,
+  cacheKey: string,
+  path: string,
+  body: unknown | undefined,
+  method: "GET" | "POST",
+): Promise<T> {
+  const url = `${config.baseUrl}${path}`;
   const headers: Record<string, string> = {
     "Content-Type": "application/json",
     ...config.headers,
@@ -123,7 +149,7 @@ async function apiFetch<T>(
       }
 
       const data = (await response.json()) as T;
-      setCache(cacheKey, data, config.cacheTtl || 60000);
+      setCache(cacheKey, data, config.cacheTtl || 60000, config.maxCacheSize || 200);
       return data;
     } catch (err) {
       lastError = err as Error;
@@ -157,8 +183,8 @@ export class EventGraphApiClient {
   }
 
   /** GET /event-flow/node/:id — Single event node detail */
-  async getEventNode(nodeId: string): Promise<{ data: import("../types").EventNode }> {
-    return apiFetch(this.config, `/event-flow/node/${nodeId}`, undefined, "GET");
+  async getEventNode(nodeId: string): Promise<{ data: EventNode }> {
+    return apiFetch(this.config, `/event-flow/node/${encodeURIComponent(nodeId)}`, undefined, "GET");
   }
 
   /** POST /kol-flow/graph — Fetch KOL influence graph */
@@ -167,13 +193,13 @@ export class EventGraphApiClient {
   }
 
   /** GET /kol-flow/kol/:id — Single KOL detail with posts */
-  async getKolDetail(kolId: string): Promise<{ data: import("../types").KolNode }> {
-    return apiFetch(this.config, `/kol-flow/kol/${kolId}`, undefined, "GET");
+  async getKolDetail(kolId: string): Promise<{ data: KolNode }> {
+    return apiFetch(this.config, `/kol-flow/kol/${encodeURIComponent(kolId)}`, undefined, "GET");
   }
 
   /** GET /kol-flow/stats — Aggregate KOL stats for a project */
-  async getKolStats(projectId: string): Promise<{ data: import("../types").KolAggregateStats }> {
-    return apiFetch(this.config, `/kol-flow/stats?projectId=${projectId}`, undefined, "GET");
+  async getKolStats(projectId: string): Promise<{ data: KolAggregateStats }> {
+    return apiFetch(this.config, `/kol-flow/stats?projectId=${encodeURIComponent(projectId)}`, undefined, "GET");
   }
 
   /** POST /narrative-flow/graph — Fetch narrative flow graph */
@@ -182,18 +208,18 @@ export class EventGraphApiClient {
   }
 
   /** GET /narrative-flow/node/:id — Single narrative node detail */
-  async getNarrativeNode(nodeId: string): Promise<{ data: import("../types").NarrativeNode }> {
-    return apiFetch(this.config, `/narrative-flow/node/${nodeId}`, undefined, "GET");
+  async getNarrativeNode(nodeId: string): Promise<{ data: NarrativeNode }> {
+    return apiFetch(this.config, `/narrative-flow/node/${encodeURIComponent(nodeId)}`, undefined, "GET");
   }
 
   /** GET /narrative-flow/stats — Aggregate narrative stats */
-  async getNarrativeStats(narrativeId: string): Promise<{ data: import("../types").NarrativeAggregateStats }> {
-    return apiFetch(this.config, `/narrative-flow/stats?narrativeId=${narrativeId}`, undefined, "GET");
+  async getNarrativeStats(narrativeId: string): Promise<{ data: NarrativeAggregateStats }> {
+    return apiFetch(this.config, `/narrative-flow/stats?narrativeId=${encodeURIComponent(narrativeId)}`, undefined, "GET");
   }
 
   /** GET /projects/:id */
-  async getProject(projectId: string): Promise<{ data: import("../types").ProjectInfo }> {
-    return apiFetch(this.config, `/projects/${projectId}`, undefined, "GET");
+  async getProject(projectId: string): Promise<{ data: ProjectInfo }> {
+    return apiFetch(this.config, `/projects/${encodeURIComponent(projectId)}`, undefined, "GET");
   }
 }
 
