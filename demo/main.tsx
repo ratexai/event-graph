@@ -163,7 +163,7 @@ function App() {
         kolData={kolData}
         narrativeData={enrichedNarrativeData}
         defaultMode="narratives"
-        branding={{ name: "RateXAI", accentColor: "#00e5a0" }}
+        branding={{ name: "Event Prediction", accentColor: "#00e5a0" }}
         onNodeSelect={handleNodeSelect}
         onModeChange={handleModeChange}
       />

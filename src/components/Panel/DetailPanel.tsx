@@ -491,12 +491,6 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
         </div>
       )}
 
-      {/* Sparkline */}
-      <div style={{ padding: 10, borderRadius: 10, background: theme.bgAlt }}>
-        <div style={{ fontSize: 11, color: theme.muted, letterSpacing: 1.5, marginBottom: 6, textTransform: "uppercase", fontWeight: 700 }}>Volume Trend</div>
-        <Sparkline data={mockSparkData(node.volume > 0 ? node.volume : 50)} color={catStyle.color} width={280} height={40} />
-      </div>
-
       {/* Tags — §7 pill badges */}
       {node.tags && node.tags.length > 0 && (
         <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
