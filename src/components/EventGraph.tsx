@@ -24,8 +24,8 @@ import {
 import { isAnchorNode } from "../utils";
 import { DetailPanel, HoverTooltip } from "./Panel/DetailPanel";
 import { GraphCanvas } from "./EventGraph/GraphCanvas";
-import { StatusOverlay, ZoomControls, NarrativeLegend } from "./EventGraph/Overlays";
-import { TopBar, KolStatsBar, NarrativeStatsBar } from "./EventGraph/TopBars";
+import { StatusOverlay, ZoomControls } from "./EventGraph/Overlays";
+import { TopBar, KolStatsBar, NarrativeStatsBar, NarrativeFilterPanel } from "./EventGraph/TopBars";
 import { GraphErrorBoundary } from "./Shared/ErrorBoundary";
 import { CuiBonoPanel } from "./CuiBono/CuiBonoPanel";
 import { AnchorModal } from "./NarrativeFlow/AnchorModal";
@@ -284,7 +284,20 @@ export const EventGraph: React.FC<EventGraphProps> = ({
       )}
 
       {mode === "narratives" && (
-        <NarrativeLegend theme={theme} panelOffset={panelWidth} />
+        <NarrativeFilterPanel
+          theme={theme}
+          allCategories={allCategories}
+          allSignals={allSignals}
+          activeCategories={graphFilters.filters.activeCategories}
+          activeSignals={graphFilters.filters.activeSignals}
+          onResetCategories={graphFilters.resetCategories}
+          onToggleCategory={graphFilters.toggleCategory}
+          onToggleSignal={graphFilters.toggleSignal}
+          hasMarket={graphFilters.filters.hasMarket}
+          onToggleHasMarket={graphFilters.toggleHasMarket}
+          minWeight={graphFilters.filters.minWeight ?? 0}
+          onSetMinWeight={graphFilters.setMinWeight}
+        />
       )}
 
       {/* Cui Bono + Markets sidebar — visible in narrative mode */}

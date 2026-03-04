@@ -79,3 +79,4 @@ export { CuiBonoPanel } from "./components/CuiBono/CuiBonoPanel";
 export type { CuiBonoPanelProps } from "./components/CuiBono/CuiBonoPanel";
 export { GraphErrorBoundary } from "./components/Shared/ErrorBoundary";
 export { NarrativeLegend } from "./components/EventGraph/Overlays";
+export { NarrativeFilterPanel } from "./components/EventGraph/TopBars";

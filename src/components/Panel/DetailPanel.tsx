@@ -648,22 +648,74 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
     const catMeta = NARRATIVE_CATEGORY_META[narrative.category];
     const deltaColor = narrative.oddsDelta > 0 ? theme.positive : narrative.oddsDelta < 0 ? theme.negative : theme.neutral;
     const deltaText = narrative.oddsDelta > 0 ? `+${narrative.oddsDelta.toFixed(1)}pp` : `${narrative.oddsDelta.toFixed(1)}pp`;
+    const sentColor = narrative.sentiment === "pos" ? theme.positive : narrative.sentiment === "neg" ? theme.negative : theme.neutral;
+    const momentumColor = (narrative.momentum ?? 0) > 0 ? theme.positive : (narrative.momentum ?? 0) < 0 ? theme.negative : theme.neutral;
     return (
-      <div style={tooltipBase(theme, `${catStyle.color}40`)}>
-        {narrative.imageUrl ? (
-          <img src={narrative.imageUrl} alt="" style={{ width: 40, height: 40, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
-        ) : (
-          <div style={{ width: 40, height: 40, borderRadius: "50%", background: catStyle.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: catStyle.color, flexShrink: 0 }}>{catMeta?.label?.slice(0, 2)}</div>
+      <div style={{ ...tooltipBase(theme, `${catStyle.color}40`), maxWidth: 520, flexDirection: "column", gap: 8 }}>
+        {/* Row 1: avatar + title + signal badge */}
+        <div style={{ display: "flex", gap: 10, alignItems: "center", width: "100%" }}>
+          {narrative.imageUrl ? (
+            <img src={narrative.imageUrl} alt="" style={{ width: 36, height: 36, borderRadius: "50%", objectFit: "cover", flexShrink: 0 }} />
+          ) : (
+            <div style={{ width: 36, height: 36, borderRadius: "50%", background: catStyle.bg, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 600, color: catStyle.color, flexShrink: 0 }}>{catMeta?.label?.slice(0, 2)}</div>
+          )}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: theme.text }}>{narrative.label}</div>
+            <div style={{ fontSize: 11, color: theme.muted, marginTop: 1 }}>{catMeta?.label} · {sigMeta?.label}</div>
+          </div>
+          <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+            <SentimentBadge sentiment={narrative.sentiment} theme={theme} />
+            <span style={{ padding: "2px 6px", borderRadius: 44, background: `${sigStyle.color}18`, color: sigStyle.color, border: `1px solid ${sigStyle.color}33`, fontSize: 11, whiteSpace: "nowrap" }}>{sigMeta?.label}</span>
+          </div>
+        </div>
+
+        {/* Row 2: description */}
+        <div style={{ fontSize: 11, color: theme.textSecondary, lineHeight: "15px" }}>
+          {narrative.desc?.slice(0, 140)}{(narrative.desc?.length ?? 0) > 140 ? "..." : ""}
+        </div>
+
+        {/* Row 3: metrics grid */}
+        <div style={{ display: "flex", gap: 12, width: "100%", flexWrap: "wrap" }}>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: deltaColor }}>{deltaText}</div>
+            <div style={{ fontSize: 9, color: theme.muted }}>Odds Δ</div>
+          </div>
+          {narrative.marketProb != null && (
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: theme.accent }}>{narrative.marketProb.toFixed(0)}%</div>
+              <div style={{ fontSize: 9, color: theme.muted }}>Prob</div>
+            </div>
+          )}
+          {narrative.momentum != null && (
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: momentumColor }}>{narrative.momentum > 0 ? "+" : ""}{narrative.momentum.toFixed(1)}</div>
+              <div style={{ fontSize: 9, color: theme.muted }}>Mtm</div>
+            </div>
+          )}
+          {narrative.volume != null && narrative.volume > 0 && (
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: theme.text }}>{formatNumber(narrative.volume)}</div>
+              <div style={{ fontSize: 9, color: theme.muted }}>Volume</div>
+            </div>
+          )}
+          {narrative.sourceAuthority != null && (
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontSize: 13, fontWeight: 600, color: sigStyle.color }}>{narrative.sourceAuthority}</div>
+              <div style={{ fontSize: 9, color: theme.muted }}>Auth</div>
+            </div>
+          )}
+          <div style={{ textAlign: "center" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: sentColor }}>{sentimentArrow(narrative.sentiment)} {narrative.sentiment === "pos" ? "Pos" : narrative.sentiment === "neg" ? "Neg" : "Neu"}</div>
+            <div style={{ fontSize: 9, color: theme.muted }}>Sent</div>
+          </div>
+        </div>
+
+        {/* Row 4: source */}
+        {narrative.sourceName && (
+          <div style={{ fontSize: 10, color: theme.muted }}>
+            Source: <span style={{ color: theme.textSecondary }}>{narrative.sourceName}</span>
+          </div>
         )}
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <div style={{ fontSize: 14, fontWeight: 500, color: theme.text }}>{narrative.label}</div>
-          <div style={{ fontSize: 11, color: theme.muted, marginTop: 2, maxWidth: 200 }}>{narrative.desc?.slice(0, 80)}{(narrative.desc?.length ?? 0) > 80 ? "..." : ""}</div>
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 4, alignItems: "flex-end", flexShrink: 0 }}>
-          <span style={{ padding: "1px 6px", borderRadius: 44, background: `${sigStyle.color}18`, color: sigStyle.color, border: `1px solid ${sigStyle.color}33`, fontSize: 11 }}>{sigMeta?.label}</span>
-          <div style={{ fontSize: 14, fontWeight: 600, color: deltaColor }}>{deltaText}</div>
-          <div style={{ fontSize: 11, color: theme.accent }}>{narrative.marketProb != null ? `${narrative.marketProb.toFixed(0)}%` : ""}</div>
-        </div>
       </div>
     );
   }
