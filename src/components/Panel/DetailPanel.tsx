@@ -117,11 +117,18 @@ const EventDetail: React.FC<EventDetailProps> = ({ event, allEvents, timeSlotLab
     <div style={{ padding: 20 }}>
       {/* Header */}
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 20 }}>
-        <div style={{
-          width: 48, height: 48, borderRadius: 14, background: style.bg,
-          border: `1px solid ${style.color}30`, display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: 24, flexShrink: 0,
-        }}>{meta?.icon || "●"}</div>
+        {event.imageUrl ? (
+          <img src={event.imageUrl} alt="" style={{
+            width: 48, height: 48, borderRadius: 14, objectFit: "cover",
+            border: `1px solid ${style.color}30`, flexShrink: 0,
+          }} />
+        ) : (
+          <div style={{
+            width: 48, height: 48, borderRadius: 14, background: style.bg,
+            border: `1px solid ${style.color}30`, display: "flex", alignItems: "center",
+            justifyContent: "center", fontSize: 24, flexShrink: 0,
+          }}>{meta?.icon || "●"}</div>
+        )}
         <div>
           <div style={{ fontSize: 16, fontWeight: 800 }}>{event.label}</div>
           <div style={{ fontSize: 10, color: style.color, fontWeight: 600, marginTop: 2 }}>{meta?.label} · {dayLabel}</div>
@@ -213,12 +220,19 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
     <div style={{ padding: 20 }}>
       {/* Header */}
       <div style={{ display: "flex", gap: 14, alignItems: "flex-start", marginBottom: 20 }}>
-        <div style={{
-          width: 56, height: 56, borderRadius: 16, background: tierStyle.bg,
-          border: `2px solid ${tierStyle.color}40`, display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: 20, fontWeight: 800, color: tierStyle.color,
-          fontFamily: theme.monoFontFamily, flexShrink: 0,
-        }}>{kol.avatar}</div>
+        {(kol.imageUrl || kol.avatarUrl) ? (
+          <img src={(kol.imageUrl || kol.avatarUrl)!} alt="" style={{
+            width: 56, height: 56, borderRadius: 16, objectFit: "cover",
+            border: `2px solid ${tierStyle.color}40`, flexShrink: 0,
+          }} />
+        ) : (
+          <div style={{
+            width: 56, height: 56, borderRadius: 16, background: tierStyle.bg,
+            border: `2px solid ${tierStyle.color}40`, display: "flex", alignItems: "center",
+            justifyContent: "center", fontSize: 20, fontWeight: 800, color: tierStyle.color,
+            fontFamily: theme.monoFontFamily, flexShrink: 0,
+          }}>{kol.avatar}</div>
+        )}
         <div>
           <div style={{ fontSize: 16, fontWeight: 800 }}>{kol.name}</div>
           <div style={{ fontSize: 10, color: theme.textSecondary, marginTop: 2 }}>{kol.handle}</div>
@@ -397,11 +411,18 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
     <div style={{ padding: 20 }}>
       {/* Header */}
       <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 20 }}>
-        <div style={{
-          width: 48, height: 48, borderRadius: 14, background: catStyle.bg,
-          border: `1px solid ${catStyle.color}30`, display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: 24, flexShrink: 0,
-        }}>{catMeta?.icon || "●"}</div>
+        {node.imageUrl ? (
+          <img src={node.imageUrl} alt="" style={{
+            width: 48, height: 48, borderRadius: 14, objectFit: "cover",
+            border: `1px solid ${catStyle.color}30`, flexShrink: 0,
+          }} />
+        ) : (
+          <div style={{
+            width: 48, height: 48, borderRadius: 14, background: catStyle.bg,
+            border: `1px solid ${catStyle.color}30`, display: "flex", alignItems: "center",
+            justifyContent: "center", fontSize: 24, flexShrink: 0,
+          }}>{catMeta?.icon || "●"}</div>
+        )}
         <div>
           <div style={{ fontSize: 16, fontWeight: 800 }}>{node.label}</div>
           <div style={{ fontSize: 10, color: catStyle.color, fontWeight: 600, marginTop: 2 }}>{catMeta?.label} · {dayLabel}</div>
@@ -606,7 +627,11 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
         backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "none", maxWidth: "92%",
       }}>
-        <span style={{ fontSize: 28 }}>{EVENT_TYPE_META[event.type]?.icon}</span>
+        {event.imageUrl ? (
+          <img src={event.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+        ) : (
+          <span style={{ fontSize: 28 }}>{EVENT_TYPE_META[event.type]?.icon}</span>
+        )}
         <div>
           <div style={{ fontSize: 13, fontWeight: 700 }}>{event.label}</div>
           <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 2, maxWidth: 260 }}>{event.desc}</div>
@@ -630,12 +655,16 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
         backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "none", maxWidth: "92%",
       }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: 12, background: tierStyle.bg,
-          border: `1px solid ${tierStyle.color}30`, display: "flex", alignItems: "center",
-          justifyContent: "center", fontSize: 16, fontWeight: 800, color: tierStyle.color,
-          fontFamily: theme.monoFontFamily,
-        }}>{kol.avatar}</div>
+        {(kol.imageUrl || kol.avatarUrl) ? (
+          <img src={(kol.imageUrl || kol.avatarUrl)!} alt="" style={{ width: 40, height: 40, borderRadius: 12, objectFit: "cover", flexShrink: 0 }} />
+        ) : (
+          <div style={{
+            width: 40, height: 40, borderRadius: 12, background: tierStyle.bg,
+            border: `1px solid ${tierStyle.color}30`, display: "flex", alignItems: "center",
+            justifyContent: "center", fontSize: 16, fontWeight: 800, color: tierStyle.color,
+            fontFamily: theme.monoFontFamily,
+          }}>{kol.avatar}</div>
+        )}
         <div>
           <div style={{ fontSize: 13, fontWeight: 700 }}>{kol.name}</div>
           <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 1 }}>{kol.handle} · {kol.platform}</div>
@@ -669,7 +698,11 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         backdropFilter: "blur(20px)", zIndex: 35, boxShadow: "none", maxWidth: "85%",
         pointerEvents: "none",
       }}>
-        <span style={{ fontSize: 28 }}>{catMeta?.icon}</span>
+        {narrative.imageUrl ? (
+          <img src={narrative.imageUrl} alt="" style={{ width: 32, height: 32, borderRadius: 10, objectFit: "cover", flexShrink: 0 }} />
+        ) : (
+          <span style={{ fontSize: 28 }}>{catMeta?.icon}</span>
+        )}
         <div>
           <div style={{ fontSize: 13, fontWeight: 700 }}>{narrative.label}</div>
           <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 2, maxWidth: 260 }}>{narrative.desc}</div>

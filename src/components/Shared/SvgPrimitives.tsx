@@ -250,3 +250,45 @@ export const TierBadge = memo<TierBadgeProps>(({ label, color, bg, offsetX, offs
   </g>
 ));
 TierBadge.displayName = "TierBadge";
+
+// ─── NodeImage — circular clipped avatar / logo ─────────────────
+
+interface NodeImageProps {
+  /** Image URL */
+  href: string;
+  /** Clip circle radius */
+  radius: number;
+  /** Unique ID (node id) for the clipPath */
+  nodeId: string;
+  /** Border stroke color */
+  borderColor?: string;
+  /** Border stroke width */
+  borderWidth?: number;
+}
+
+export const NodeImage = memo<NodeImageProps>(({ href, radius, nodeId, borderColor, borderWidth = 1.5 }) => {
+  const clipId = `img-clip-${nodeId}`;
+  return (
+    <g>
+      <defs>
+        <clipPath id={clipId}>
+          <circle r={radius} />
+        </clipPath>
+      </defs>
+      <image
+        href={href}
+        x={-radius}
+        y={-radius}
+        width={radius * 2}
+        height={radius * 2}
+        clipPath={`url(#${clipId})`}
+        preserveAspectRatio="xMidYMid slice"
+        style={{ pointerEvents: "none" }}
+      />
+      {borderColor && (
+        <circle r={radius} fill="none" stroke={borderColor} strokeWidth={borderWidth} />
+      )}
+    </g>
+  );
+});
+NodeImage.displayName = "NodeImage";

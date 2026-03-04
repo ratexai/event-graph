@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import type { NarrativeNode as NarrativeNodeType, NarrativeSignal, GraphTheme } from "../../types";
 import { getNarrativeCategoryStyle, getNarrativeSignalStyle, getSentimentColor, NARRATIVE_SIGNAL_META } from "../../styles/theme";
 import { narrativeNodeRadius, wrapLabel, getNodeEmojis, getSourceAbbr } from "../../utils";
-import { GlowRings, ImpactRing } from "../Shared/SvgPrimitives";
+import { GlowRings, ImpactRing, NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
   node: NarrativeNodeType;
@@ -226,13 +226,16 @@ export const NarrativeNodeComponent = memo<Props>(({
         fill={sentColor} stroke={theme.bg} strokeWidth={1}
         opacity={isDimmed ? 0.1 : 0.9} />
 
-      {/* Emoji line (action + flag) above center */}
-      {emojiLine && (
+      {/* Avatar image (circular, inside the node shape) — or emoji fallback */}
+      {node.imageUrl ? (
+        <NodeImage href={node.imageUrl} radius={r * 0.5} nodeId={node.id}
+          borderColor={isPredictionEndpoint ? "#901dea" : catStyle.color} borderWidth={1} />
+      ) : emojiLine ? (
         <text y={-r * 0.15 - (lines.length > 1 ? 6 : 3)} textAnchor="middle"
           fontSize={Math.max(12, r * 0.55)} style={{ pointerEvents: "none" }}>
           {emojiLine}
         </text>
-      )}
+      ) : null}
 
       {/* 2-line label with background plate */}
       {lines.map((line, i) => {

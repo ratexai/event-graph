@@ -73,6 +73,8 @@ export interface EventNode {
   timestamp?: string;
   sourceUrl?: string;
   projectId?: string;
+  /** Circular avatar image — company logo, person photo, etc. */
+  imageUrl?: string;
   meta?: Record<string, unknown>;
 }
 
@@ -149,6 +151,8 @@ export interface KolNode {
   /** KOL IDs this one influenced */
   influence?: string[];
   avatarUrl?: string;
+  /** Circular avatar image (alias for avatarUrl, used by renderer) */
+  imageUrl?: string;
   profileUrl?: string;
   /** Trust/reliability score 0..100 */
   trustScore?: number;
@@ -231,6 +235,8 @@ export interface NarrativeNode {
   extra?: string;
   /** Tags for cross-referencing */
   tags?: string[];
+  /** Circular avatar image — leader photo, company logo, flag, etc. */
+  imageUrl?: string;
   /** Extensible metadata */
   meta?: Record<string, unknown>;
 

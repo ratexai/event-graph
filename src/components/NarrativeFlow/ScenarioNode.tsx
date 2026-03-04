@@ -8,6 +8,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import type { NarrativeNode as NarrativeNodeType, GraphTheme } from "../../types";
 import { narrativeNodeRadius, wrapLabel } from "../../utils";
 import { getNarrativeCategoryStyle } from "../../styles/theme";
+import { NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
   node: NarrativeNodeType;
@@ -81,6 +82,12 @@ export const ScenarioNodeComponent = memo<Props>(({
           prog
         </text>
       </g>
+
+      {/* Avatar image */}
+      {node.imageUrl && (
+        <NodeImage href={node.imageUrl} radius={r * 0.45} nodeId={node.id}
+          borderColor={outcomeColor} borderWidth={1} />
+      )}
 
       {/* Label with background plate */}
       {lines.map((line, i) => {

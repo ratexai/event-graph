@@ -7,6 +7,7 @@
 import React, { memo, useCallback, useMemo } from "react";
 import type { NarrativeNode as NarrativeNodeType, GraphTheme } from "../../types";
 import { ANCHOR_NODE_RADIUS, wrapLabel } from "../../utils";
+import { NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
   node: NarrativeNodeType;
@@ -24,8 +25,8 @@ interface Props {
 
 // Polymarket complement color constants (from theme.complement family)
 const COMPLEMENT = "#901dea";
-const COMPLEMENT_DIM = "rgba(144,29,234,0.15)";
-const COMPLEMENT_GLOW = "rgba(144,29,234,0.25)";
+const COMPLEMENT_DIM = "#1e1230";
+const COMPLEMENT_GLOW = "#2a1840";
 
 /** Mini sparkline for probHistory inside the anchor node */
 const MiniSparkline = memo<{ data: number[]; width: number; height: number }>(
@@ -161,10 +162,17 @@ export const AnchorNodeComponent = memo<Props>(({
         </text>
       )}
 
-      {/* 📊 icon badge */}
-      <text y={-r + 8} textAnchor="middle" fontSize={13} style={{ pointerEvents: "none" }}>
-        📊
-      </text>
+      {/* Avatar image or 📊 icon */}
+      {node.imageUrl ? (
+        <g transform={`translate(0,${-r + 14})`}>
+          <NodeImage href={node.imageUrl} radius={10} nodeId={`${node.id}-avatar`}
+            borderColor={COMPLEMENT} borderWidth={1} />
+        </g>
+      ) : (
+        <text y={-r + 8} textAnchor="middle" fontSize={13} style={{ pointerEvents: "none" }}>
+          📊
+        </text>
+      )}
 
       {/* probHistory sparkline inside node (only when no RateXAI data, as dual display uses the space) */}
       {!rxText && node.probHistory && node.probHistory.length > 2 && (

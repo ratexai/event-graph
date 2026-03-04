@@ -2,7 +2,7 @@ import React, { memo, useCallback } from "react";
 import type { EventNode as EventNodeType, GraphTheme } from "../../types";
 import { getEventTypeStyle, EVENT_TYPE_META } from "../../styles/theme";
 import { nodeRadius, truncateLabel } from "../../utils";
-import { GlowRings, SentimentRing, ImpactRing } from "../Shared/SvgPrimitives";
+import { GlowRings, SentimentRing, ImpactRing, NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
   event: EventNodeType;
@@ -41,7 +41,11 @@ export const EventNodeComponent = memo<Props>(({
       <SentimentRing radius={r + 3} sentiment={event.sentiment} theme={theme} isDimmed={isDimmed} />
       <ImpactRing radius={r} impact={event.impact} color={style.color} />
       <circle r={r} fill={style.bg} stroke={style.color} strokeWidth={isHovered || isSelected ? 2.5 : 1.2} />
-      <text y={-3} textAnchor="middle" fontSize={r > 24 ? 20 : 16} style={{ pointerEvents: "none" }}>{meta?.icon || "●"}</text>
+      {event.imageUrl ? (
+        <NodeImage href={event.imageUrl} radius={r * 0.65} nodeId={event.id} borderColor={style.color} borderWidth={1} />
+      ) : (
+        <text y={-3} textAnchor="middle" fontSize={r > 24 ? 20 : 16} style={{ pointerEvents: "none" }}>{meta?.icon || "●"}</text>
+      )}
       {(() => {
         const lbl = truncateLabel(event.label);
         const fs = Math.max(7.5, r * 0.32);

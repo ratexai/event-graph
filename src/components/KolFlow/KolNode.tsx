@@ -2,7 +2,7 @@ import React, { memo, useCallback } from "react";
 import type { KolNode as KolNodeType, GraphTheme } from "../../types";
 import { getKolTierStyle, KOL_TIER_META, PLATFORM_META } from "../../styles/theme";
 import { kolRadius, truncateLabel, formatNumber } from "../../utils";
-import { GlowRings, SentimentRing, TierBadge } from "../Shared/SvgPrimitives";
+import { GlowRings, SentimentRing, TierBadge, NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
   kol: KolNodeType;
@@ -44,9 +44,13 @@ export const KolNodeComponent = memo<Props>(({
         strokeDasharray={`${kol.engRate * 8} ${(10 - kol.engRate) * 8}`} strokeDashoffset={-15} strokeLinecap="round" />
       <SentimentRing radius={r + 3} sentiment={kol.sentiment} theme={theme} isDimmed={isDimmed} />
       <circle r={r} fill={tierStyle.bg} stroke={tierStyle.color} strokeWidth={isHovered || isSelected ? 2.5 : 1.2} />
-      {/* Avatar initials */}
-      <text y={-5} textAnchor="middle" fill={tierStyle.color} fontSize={r * 0.45} fontWeight={800}
-        fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{kol.avatar}</text>
+      {/* Avatar: image or initials */}
+      {(kol.imageUrl || kol.avatarUrl) ? (
+        <NodeImage href={(kol.imageUrl || kol.avatarUrl)!} radius={r * 0.7} nodeId={kol.id} borderColor={tierStyle.color} borderWidth={1} />
+      ) : (
+        <text y={-5} textAnchor="middle" fill={tierStyle.color} fontSize={r * 0.45} fontWeight={800}
+          fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{kol.avatar}</text>
+      )}
       {/* Name with background plate */}
       {(() => {
         const lbl = truncateLabel(kol.name, 14);

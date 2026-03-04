@@ -50,7 +50,7 @@ export const DEFAULT_THEME: GraphTheme = {
 
   // ─── Accent (Blue — not green!) ──────────────────────────
   accent: "#1c64f2",                   // $accent-strong
-  accentDim: "rgba(28,100,242,0.12)",  // accent bg
+  accentDim: "#121e36",                // accent bg (opaque)
   accentHover: "#1e429f",              // $accent-strong-down
 
   // ─── Success / Positive ──────────────────────────────────
@@ -65,7 +65,7 @@ export const DEFAULT_THEME: GraphTheme = {
 
   // ─── Neutral ─────────────────────────────────────────────
   neutral: "#848798",                  // $faint-strong-up
-  neutralDim: "rgba(132,135,152,0.1)",
+  neutralDim: "#1e1f24",
 
   // ─── Warning / Catalyst ──────────────────────────────────
   warning: "#ff9f44",                  // $warning-strong
@@ -74,7 +74,7 @@ export const DEFAULT_THEME: GraphTheme = {
   // ─── Complement / Polymarket ─────────────────────────────
   complement: "#901dea",               // $complement
   complementUp: "#b659ff",             // $complement-strong-up
-  complementDim: "rgba(144,29,234,0.15)",
+  complementDim: "#1e1230",
 
   // ─── Font Families ───────────────────────────────────────
   fontFamily: "'Work Sans', sans-serif",
