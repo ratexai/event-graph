@@ -57,7 +57,7 @@ export const ScenarioNodeComponent = memo<Props>(({
         strokeDasharray="4 5" opacity={isDimmed ? 0.05 : 0.25} />
 
       {/* Main shape — dashed border, semi-transparent fill */}
-      <circle r={r} fill={outcomeBg} opacity={0.5}
+      <circle r={r} fill={outcomeBg}
         stroke={outcomeColor} strokeWidth={isHovered || isSelected ? 2 : 1.2}
         strokeDasharray="5 3" />
 
@@ -82,16 +82,24 @@ export const ScenarioNodeComponent = memo<Props>(({
         </text>
       </g>
 
-      {/* Label */}
-      {lines.map((line, i) => (
-        <text key={i} y={-labelFontSize * 0.3 + i * (labelFontSize + 1.5)}
-          textAnchor="middle" fill={theme.text}
-          fontSize={labelFontSize} fontWeight={isHovered ? 700 : 600}
-          fontFamily={theme.monoFontFamily}
-          style={{ pointerEvents: "none" }}>
-          {line}
-        </text>
-      ))}
+      {/* Label with background plate */}
+      {lines.map((line, i) => {
+        const baseY = -labelFontSize * 0.3 + i * (labelFontSize + 1.5);
+        const tw = line.length * labelFontSize * 0.58 + 6;
+        return (
+          <g key={i}>
+            <rect x={-tw / 2} y={baseY - labelFontSize * 0.75} width={tw} height={labelFontSize + 3}
+              rx={3} fill={theme.bg} opacity={0.75} />
+            <text y={baseY}
+              textAnchor="middle" fill={theme.text}
+              fontSize={labelFontSize} fontWeight={isHovered ? 700 : 600}
+              fontFamily={theme.monoFontFamily}
+              style={{ pointerEvents: "none" }}>
+              {line}
+            </text>
+          </g>
+        );
+      })}
 
       {/* Conditions preview (on hover, below node) */}
       {(isHovered || isSelected) && node.conditions && node.conditions.length > 0 && (
@@ -110,7 +118,7 @@ export const ScenarioNodeComponent = memo<Props>(({
       {!isDimmed && node.cuiBono && (
         <g transform={`translate(${r * 0.7},${r * 0.6})`}>
           <circle r={4} fill={theme.warningDim} stroke={theme.warning} strokeWidth={0.4} />
-          <text textAnchor="middle" y={2.5} fontSize={5.5} style={{ pointerEvents: "none" }}>🕵️</text>
+          <text textAnchor="middle" y={2.5} fontSize={7} style={{ pointerEvents: "none" }}>🕵️</text>
         </g>
       )}
     </g>

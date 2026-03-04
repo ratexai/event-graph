@@ -430,7 +430,7 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
       {/* Market probability card */}
       <div style={{ padding: 16, borderRadius: 12, background: theme.card, border: `1px solid ${theme.border}`, marginBottom: 20 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase" }}>Market Probability</div>
+          <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase" }}>Prediction Probability</div>
           <div style={{ fontSize: 20, fontWeight: 800, color: theme.accent }}>{node.marketProb != null ? `${node.marketProb.toFixed(1)}%` : "\u2014"}</div>
         </div>
         <div style={{ height: 6, borderRadius: 3, background: theme.border, overflow: "hidden" }}>
@@ -444,7 +444,7 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
         {node.marketPlatform && (
           <div style={{ fontSize: 9, color: theme.muted, marginTop: 4 }}>
             via {node.marketPlatform}{node.marketUrl ? " · " : ""}
-            {node.marketUrl && <a href={node.marketUrl} target="_blank" rel="noopener noreferrer" style={{ color: theme.accent, textDecoration: "none" }}>View Market →</a>}
+            {node.marketUrl && <a href={node.marketUrl} target="_blank" rel="noopener noreferrer" style={{ color: theme.accent, textDecoration: "none" }}>View Prediction →</a>}
           </div>
         )}
       </div>
@@ -606,7 +606,7 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
         backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "none", maxWidth: "92%",
       }}>
-        <span style={{ fontSize: 22 }}>{EVENT_TYPE_META[event.type]?.icon}</span>
+        <span style={{ fontSize: 28 }}>{EVENT_TYPE_META[event.type]?.icon}</span>
         <div>
           <div style={{ fontSize: 13, fontWeight: 700 }}>{event.label}</div>
           <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 2, maxWidth: 260 }}>{event.desc}</div>
@@ -669,7 +669,7 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         backdropFilter: "blur(20px)", zIndex: 35, boxShadow: "none", maxWidth: "85%",
         pointerEvents: "none",
       }}>
-        <span style={{ fontSize: 22 }}>{catMeta?.icon}</span>
+        <span style={{ fontSize: 28 }}>{catMeta?.icon}</span>
         <div>
           <div style={{ fontSize: 13, fontWeight: 700 }}>{narrative.label}</div>
           <div style={{ fontSize: 9.5, color: theme.textSecondary, marginTop: 2, maxWidth: 260 }}>{narrative.desc}</div>

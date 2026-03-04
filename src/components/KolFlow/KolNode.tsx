@@ -47,9 +47,20 @@ export const KolNodeComponent = memo<Props>(({
       {/* Avatar initials */}
       <text y={-5} textAnchor="middle" fill={tierStyle.color} fontSize={r * 0.45} fontWeight={800}
         fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{kol.avatar}</text>
-      {/* Name */}
-      <text y={r * 0.35 + 4} textAnchor="middle" fill={theme.text} fontSize={Math.max(7, r * 0.28)}
-        fontWeight={600} fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{truncateLabel(kol.name, 14)}</text>
+      {/* Name with background plate */}
+      {(() => {
+        const lbl = truncateLabel(kol.name, 14);
+        const fs = Math.max(7, r * 0.28);
+        const ly = r * 0.35 + 4;
+        const tw = lbl.length * fs * 0.58 + 6;
+        return (
+          <>
+            <rect x={-tw / 2} y={ly - fs * 0.75} width={tw} height={fs + 3} rx={3} fill={theme.bg} opacity={0.75} />
+            <text y={ly} textAnchor="middle" fill={theme.text} fontSize={fs}
+              fontWeight={600} fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{lbl}</text>
+          </>
+        );
+      })()}
       {/* Followers + platform */}
       {!isDimmed && (
         <g transform={`translate(0,${r + 14})`}>

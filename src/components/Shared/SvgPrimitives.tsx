@@ -150,7 +150,7 @@ export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, them
       {isAnchorDate && (
         <>
           {/* Anchor date expiry marker at top */}
-          <text x={x} y={topY - 20} textAnchor="middle" fontSize={10}
+          <text x={x} y={topY - 20} textAnchor="middle" fontSize={13}
             style={{ pointerEvents: "none" }}>📊</text>
         </>
       )}
