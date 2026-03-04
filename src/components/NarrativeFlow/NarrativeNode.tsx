@@ -77,10 +77,11 @@ const PolymarketDot = memo<{ x: number; y: number; prob: number; isHovered: bool
         </text>
       )}
       {!isHovered && (
-        <text y={2} textAnchor="middle" fontSize={5.5} fontWeight={700} fill="rgba(255,255,255,0.9)"
+        <text y={2} textAnchor="middle" fontSize={5.5} fontWeight={700} fill="#fff"
           fontFamily="'JetBrains Mono','SF Mono',monospace" style={{ pointerEvents: "none" }}>
           PM
         </text>
+
       )}
     </g>
   ),
@@ -90,20 +91,20 @@ PolymarketDot.displayName = "PolymarketDot";
 // ─── Source badge colors ────────────────────────────────────
 
 const SOURCE_COLORS: Record<string, { bg: string; fg: string }> = {
-  R:    { bg: "rgba(251,146,60,0.2)", fg: "#fb923c" },  // Reuters orange
-  AJ:   { bg: "rgba(251,191,36,0.2)", fg: "#fbbf24" },  // Al Jazeera gold
-  BB:   { bg: "rgba(167,139,250,0.2)", fg: "#a78bfa" },  // Bloomberg purple
-  CNBC: { bg: "rgba(56,189,248,0.15)", fg: "#38bdf8" },  // CNBC blue
-  CNN:  { bg: "rgba(248,113,113,0.15)", fg: "#f87171" }, // CNN red
-  NPR:  { bg: "rgba(45,212,191,0.15)", fg: "#2dd4bf" },  // NPR teal
-  WSJ:  { bg: "rgba(253,224,71,0.15)", fg: "#fde047" },  // WSJ yellow
-  WP:   { bg: "rgba(148,163,184,0.15)", fg: "#94a3b8" }, // WashPost gray
-  IAEA: { bg: "rgba(34,211,238,0.15)", fg: "#22d3ee" },  // IAEA cyan
-  ISW:  { bg: "rgba(129,140,248,0.15)", fg: "#818cf8" }, // ISW indigo
-  IDF:  { bg: "rgba(74,222,128,0.15)", fg: "#4ade80" },  // IDF green
-  PM:   { bg: "rgba(144,29,234,0.2)", fg: "#901dea" },    // Polymarket ($complement)
-  IR:   { bg: "rgba(248,113,113,0.15)", fg: "#f87171" }, // Iran state
-  WH:   { bg: "rgba(96,165,250,0.15)", fg: "#60a5fa" },  // White House
+  R:    { bg: "#402f22", fg: "#fb923c" },  // Reuters orange
+  AJ:   { bg: "#40381d", fg: "#fbbf24" },  // Al Jazeera gold
+  BB:   { bg: "#2f2d48", fg: "#a78bfa" },  // Bloomberg purple
+  CNBC: { bg: "#172f3c", fg: "#38bdf8" },  // CNBC blue
+  CNN:  { bg: "#342428", fg: "#f87171" },  // CNN red
+  NPR:  { bg: "#153234", fg: "#2dd4bf" },  // NPR teal
+  WSJ:  { bg: "#343422", fg: "#fde047" },  // WSJ yellow
+  WP:   { bg: "#252b33", fg: "#94a3b8" },  // WashPost gray
+  IAEA: { bg: "#14323b", fg: "#22d3ee" },  // IAEA cyan
+  ISW:  { bg: "#22283c", fg: "#818cf8" },  // ISW indigo
+  IDF:  { bg: "#1a342a", fg: "#4ade80" },  // IDF green
+  PM:   { bg: "#2a1844", fg: "#901dea" },  // Polymarket ($complement)
+  IR:   { bg: "#342428", fg: "#f87171" },  // Iran state
+  WH:   { bg: "#1d2b3c", fg: "#60a5fa" },  // White House
 };
 
 // ─── Source badge (shown on hover) ──────────────────────────

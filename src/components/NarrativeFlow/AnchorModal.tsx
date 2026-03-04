@@ -380,7 +380,7 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
     }}>
       {/* Backdrop */}
       <div style={{
-        position: "absolute", inset: 0, background: "rgba(0,0,0,0.7)",
+        position: "absolute", inset: 0, background: "#080a10e0",
         backdropFilter: "blur(8px)",
       }} onClick={onClose} />
 
@@ -388,7 +388,7 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
       <div style={{
         position: "relative", zIndex: 51, width: "min(680px, 90vw)",
         maxHeight: "85vh", overflowY: "auto",
-        background: "rgba(29,39,50,0.97)", border: `1px solid ${COMPLEMENT}40`,
+        background: "#1d2732", border: `1px solid ${COMPLEMENT}40`,
         borderRadius: 12, padding: 28,
       }}>
         {/* Close button */}
@@ -402,7 +402,7 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
         <div style={{ display: "flex", gap: 16, alignItems: "flex-start", marginBottom: 24 }}>
           <div style={{
             width: 56, height: 56, borderRadius: "50%",
-            background: "rgba(144,29,234,0.15)", border: `2px solid ${COMPLEMENT}`,
+            background: "#1e1230", border: `2px solid ${COMPLEMENT}`,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 28, fontWeight: 800, color: COMPLEMENT,
             fontFamily: theme.monoFontFamily, flexShrink: 0,
@@ -450,7 +450,7 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
                 <span style={{
                   fontSize: 11, fontWeight: 800, color: alphaInfo.color,
                   padding: "2px 10px", borderRadius: 6,
-                  background: `${alphaInfo.color}18`,
+                  background: alphaInfo.color === "#30fd82" ? theme.positiveDim : alphaInfo.color === "#ff495f" ? theme.negativeDim : alphaInfo.color === "#ff9f44" ? theme.warningDim : theme.neutralDim,
                   fontFamily: theme.monoFontFamily,
                 }}>
                   α {alphaInfo.text} {alphaInfo.icon}
@@ -599,7 +599,7 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
               style={{
                 display: "inline-flex", gap: 8, alignItems: "center",
                 padding: "10px 24px", borderRadius: 10,
-                background: "rgba(144,29,234,0.15)", border: `1px solid ${COMPLEMENT}40`,
+                background: "#1e1230", border: `1px solid ${COMPLEMENT}40`,
                 color: COMPLEMENT, fontSize: 11, fontWeight: 700, textDecoration: "none",
                 fontFamily: theme.monoFontFamily,
               }}>

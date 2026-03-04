@@ -35,8 +35,8 @@ export const DEFAULT_THEME: GraphTheme = {
   // ─── Backgrounds ─────────────────────────────────────────
   bg: "#11161b",                        // $base-strong
   bgAlt: "#161d26",                     // $base-weak-back
-  surface: "rgba(29,39,50,0.97)",       // $base-strong-down with alpha
-  card: "rgba(27,43,62,0.94)",          // $base-strong-back with alpha
+  surface: "#1d2732",                    // $base-strong-down (opaque)
+  card: "#1a2a3c",                      // $base-strong-back (opaque)
 
   // ─── Borders ─────────────────────────────────────────────
   border: "#353742",                    // $faint-strong
