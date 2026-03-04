@@ -16,7 +16,7 @@ export interface AnchorModalProps {
   onNavigate: (id: string) => void;
 }
 
-const PURPLE = "#6366f1";
+const COMPLEMENT = "#901dea";
 
 /** Causal factor row */
 const InfluenceRow: React.FC<{
@@ -38,7 +38,7 @@ const InfluenceRow: React.FC<{
     >
       <div style={{
         minWidth: 44, textAlign: "right", fontSize: 13, fontWeight: 800, color,
-        fontFamily: "'JetBrains Mono',monospace",
+        fontFamily: theme.monoFontFamily,
       }}>
         {link.influence > 0 ? "+" : ""}{link.influence}pp
       </div>
@@ -168,33 +168,33 @@ const DualSparkline: React.FC<{
         <g key={v}>
           <line x1={0} y1={toY(v)} x2={width} y2={toY(v)} stroke="#ffffff08" strokeWidth={0.5} />
           <text x={-4} y={toY(v) + 3} textAnchor="end" fill="#ffffff30" fontSize={6}
-            fontFamily="'JetBrains Mono',monospace">{v}%</text>
+            fontFamily="'JetBrains Mono','SF Mono',monospace">{v}%</text>
         </g>
       ))}
       {/* PM line */}
-      <polyline points={pmPts} fill="none" stroke={PURPLE} strokeWidth={1.5}
+      <polyline points={pmPts} fill="none" stroke={COMPLEMENT} strokeWidth={1.5}
         strokeLinecap="round" opacity={0.7} />
       {/* RX line */}
-      <polyline points={rxPts} fill="none" stroke="#22c55e" strokeWidth={2}
+      <polyline points={rxPts} fill="none" stroke="#30fd82" strokeWidth={2}
         strokeLinecap="round" opacity={0.9} />
       {/* Divergence annotation */}
       {divIdx > 0 && (
         <g transform={`translate(${divIdx * xStep},${toY(data[divIdx].rateX)})`}>
-          <circle r={3} fill="#22c55e" opacity={0.8} />
-          <text x={6} y={-4} fill="#22c55e" fontSize={6.5} fontWeight={700}
-            fontFamily="'JetBrains Mono',monospace">divergence</text>
+          <circle r={3} fill="#30fd82" opacity={0.8} />
+          <text x={6} y={-4} fill="#30fd82" fontSize={6.5} fontWeight={700}
+            fontFamily="'JetBrains Mono','SF Mono',monospace">divergence</text>
         </g>
       )}
       {/* Endpoint dots */}
-      <circle cx={width} cy={toY(data[data.length - 1].polymarket)} r={3} fill={PURPLE} />
-      <circle cx={width} cy={toY(data[data.length - 1].rateX)} r={3} fill="#22c55e" />
+      <circle cx={width} cy={toY(data[data.length - 1].polymarket)} r={3} fill={COMPLEMENT} />
+      <circle cx={width} cy={toY(data[data.length - 1].rateX)} r={3} fill="#30fd82" />
       {/* Endpoint labels */}
-      <text x={width + 6} y={toY(data[data.length - 1].polymarket) + 3} fill={PURPLE}
-        fontSize={7} fontWeight={700} fontFamily="'JetBrains Mono',monospace">
+      <text x={width + 6} y={toY(data[data.length - 1].polymarket) + 3} fill={COMPLEMENT}
+        fontSize={7} fontWeight={700} fontFamily="'JetBrains Mono','SF Mono',monospace">
         PM {data[data.length - 1].polymarket}%
       </text>
-      <text x={width + 6} y={toY(data[data.length - 1].rateX) + 3} fill="#22c55e"
-        fontSize={7} fontWeight={700} fontFamily="'JetBrains Mono',monospace">
+      <text x={width + 6} y={toY(data[data.length - 1].rateX) + 3} fill="#30fd82"
+        fontSize={7} fontWeight={700} fontFamily="'JetBrains Mono','SF Mono',monospace">
         RX {data[data.length - 1].rateX}%
       </text>
       {/* Date labels */}
@@ -203,7 +203,7 @@ const DualSparkline: React.FC<{
         const label = d.date.replace(/^\d{4}-/, "").replace("-", "/");
         return (
           <text key={idx} x={idx * xStep} y={height + 12} textAnchor="middle"
-            fill="#ffffff40" fontSize={6} fontFamily="'JetBrains Mono',monospace">
+            fill="#ffffff40" fontSize={6} fontFamily="'JetBrains Mono','SF Mono',monospace">
             {label}
           </text>
         );
@@ -261,10 +261,10 @@ const WaterfallChart: React.FC<{
     <svg width={barWidth + labelWidth + 60} height={totalHeight} style={{ overflow: "visible", fontSize: 8 }}>
       {/* Start bar */}
       <text x={0} y={12} fill={theme.muted} fontSize={8} fontWeight={700}
-        fontFamily="'JetBrains Mono',monospace">Base probability</text>
-      <rect x={labelWidth} y={2} width={toX(startProb)} height={14} rx={3} fill={PURPLE} opacity={0.5} />
+        fontFamily="'JetBrains Mono','SF Mono',monospace">Base probability</text>
+      <rect x={labelWidth} y={2} width={toX(startProb)} height={14} rx={3} fill={COMPLEMENT} opacity={0.5} />
       <text x={labelWidth + toX(startProb) + 6} y={12} fill={theme.text} fontSize={8} fontWeight={700}
-        fontFamily="'JetBrains Mono',monospace">{startProb}%</text>
+        fontFamily="'JetBrains Mono','SF Mono',monospace">{startProb}%</text>
 
       {/* Factor bars */}
       {rows.map((row, i) => {
@@ -280,7 +280,7 @@ const WaterfallChart: React.FC<{
               stroke={theme.border} strokeWidth={0.5} strokeDasharray="2 2" />
             {/* Label */}
             <text x={0} y={y + 10} fill={theme.textSecondary} fontSize={7.5}
-              fontFamily="'JetBrains Mono',monospace" style={{ overflow: "hidden" }}>
+              fontFamily="'JetBrains Mono','SF Mono',monospace" style={{ overflow: "hidden" }}>
               {row.label.length > 30 ? row.label.slice(0, 28) + "…" : row.label}
             </text>
             {/* Bar */}
@@ -288,7 +288,7 @@ const WaterfallChart: React.FC<{
               fill={row.color} opacity={0.6} />
             {/* Delta label */}
             <text x={labelWidth + barTo + 6} y={y + 10} fill={row.color} fontSize={8} fontWeight={800}
-              fontFamily="'JetBrains Mono',monospace">
+              fontFamily="'JetBrains Mono','SF Mono',monospace">
               {sign}{row.influence}pp → {row.to.toFixed(0)}%
             </text>
           </g>
@@ -303,12 +303,12 @@ const WaterfallChart: React.FC<{
           <g>
             <line x1={labelWidth + toX(pmProb)} y1={lastY - 4} x2={labelWidth + toX(pmProb)} y2={lastY + 2}
               stroke={theme.border} strokeWidth={0.5} strokeDasharray="2 2" />
-            <text x={0} y={lastY + 10} fill="#22c55e" fontSize={8} fontWeight={800}
-              fontFamily="'JetBrains Mono',monospace">RateXAI estimate</text>
+            <text x={0} y={lastY + 10} fill="#30fd82" fontSize={8} fontWeight={800}
+              fontFamily="'JetBrains Mono','SF Mono',monospace">RateXAI estimate</text>
             <rect x={labelWidth} y={lastY} width={toX(endProb)} height={14} rx={3}
-              fill="#22c55e" opacity={0.5} />
-            <text x={labelWidth + toX(endProb) + 6} y={lastY + 10} fill="#22c55e" fontSize={9} fontWeight={800}
-              fontFamily="'JetBrains Mono',monospace">{endProb}%</text>
+              fill="#30fd82" opacity={0.5} />
+            <text x={labelWidth + toX(endProb) + 6} y={lastY + 10} fill="#30fd82" fontSize={9} fontWeight={800}
+              fontFamily="'JetBrains Mono','SF Mono',monospace">{endProb}%</text>
           </g>
         );
       })()}
@@ -347,9 +347,9 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
     if (alpha == null) return null;
     const abs = Math.abs(alpha);
     let color = "#888"; let signal = "≈ in line"; let icon = "≈";
-    if (abs > 10) { color = alpha > 0 ? "#22c55e" : "#ef4444"; signal = alpha > 0 ? "▲▲ major opportunity" : "▼▼ major overpriced"; icon = alpha > 0 ? "▲▲" : "▼▼"; }
-    else if (abs > 5) { color = alpha > 0 ? "#22c55e" : "#ef4444"; signal = alpha > 0 ? "▲ underpriced" : "▼ overpriced"; icon = alpha > 0 ? "▲" : "▼"; }
-    else if (abs > 2) { color = "#eab308"; signal = alpha > 0 ? "△ mild divergence" : "▽ mild divergence"; icon = alpha > 0 ? "△" : "▽"; }
+    if (abs > 10) { color = alpha > 0 ? "#30fd82" : "#ff495f"; signal = alpha > 0 ? "▲▲ major opportunity" : "▼▼ major overpriced"; icon = alpha > 0 ? "▲▲" : "▼▼"; }
+    else if (abs > 5) { color = alpha > 0 ? "#30fd82" : "#ff495f"; signal = alpha > 0 ? "▲ underpriced" : "▼ overpriced"; icon = alpha > 0 ? "▲" : "▼"; }
+    else if (abs > 2) { color = "#ff9f44"; signal = alpha > 0 ? "△ mild divergence" : "▽ mild divergence"; icon = alpha > 0 ? "△" : "▽"; }
     return { color, signal, icon, text: `${alpha > 0 ? "+" : ""}${alpha}pp` };
   }, [alpha]);
 
@@ -388,29 +388,29 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
       <div style={{
         position: "relative", zIndex: 51, width: "min(680px, 90vw)",
         maxHeight: "85vh", overflowY: "auto",
-        background: "rgba(8,10,16,0.97)", border: `1px solid ${PURPLE}40`,
-        borderRadius: 16, padding: 28, boxShadow: "0 20px 80px rgba(99,102,241,0.2)",
+        background: "rgba(29,39,50,0.97)", border: `1px solid ${COMPLEMENT}40`,
+        borderRadius: 12, padding: 28,
       }}>
         {/* Close button */}
         <button onClick={onClose} style={{
           position: "absolute", top: 12, right: 12, background: "none",
           border: "none", color: theme.muted, fontSize: 18, cursor: "pointer",
-          fontFamily: "inherit",
+          fontFamily: "inherit", transition: "background-color 0.3s ease",
         }}>✕</button>
 
         {/* Header */}
         <div style={{ display: "flex", gap: 16, alignItems: "flex-start", marginBottom: 24 }}>
           <div style={{
             width: 56, height: 56, borderRadius: "50%",
-            background: "rgba(99,102,241,0.15)", border: `2px solid ${PURPLE}`,
+            background: "rgba(144,29,234,0.15)", border: `2px solid ${COMPLEMENT}`,
             display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: 28, fontWeight: 800, color: PURPLE,
-            fontFamily: "'JetBrains Mono',monospace", flexShrink: 0,
+            fontSize: 28, fontWeight: 800, color: COMPLEMENT,
+            fontFamily: theme.monoFontFamily, flexShrink: 0,
           }}>
             📊
           </div>
           <div>
-            <div style={{ fontSize: 9, color: PURPLE, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>
+            <div style={{ fontSize: 9, color: COMPLEMENT, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>
               POLYMARKET ANCHOR
             </div>
             <div style={{ fontSize: 18, fontWeight: 800, color: theme.text, marginBottom: 4 }}>
@@ -432,14 +432,14 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
             <div style={{ display: "flex", justifyContent: "center", gap: 12, alignItems: "baseline" }}>
               <div>
                 <div style={{ fontSize: 8, color: theme.muted, marginBottom: 2 }}>PM</div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: PURPLE }}>{probText}</div>
+                <div style={{ fontSize: 18, fontWeight: 700, color: COMPLEMENT }}>{probText}</div>
               </div>
               {rxText && (
                 <>
                   <div style={{ fontSize: 12, color: theme.muted }}>vs</div>
                   <div>
-                    <div style={{ fontSize: 8, color: "#22c55e", marginBottom: 2, fontWeight: 700 }}>RateXAI</div>
-                    <div style={{ fontSize: 22, fontWeight: 800, color: "#22c55e" }}>{rxText}</div>
+                    <div style={{ fontSize: 8, color: "#30fd82", marginBottom: 2, fontWeight: 700 }}>RateXAI</div>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#30fd82" }}>{rxText}</div>
                   </div>
                 </>
               )}
@@ -451,7 +451,7 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
                   fontSize: 11, fontWeight: 800, color: alphaInfo.color,
                   padding: "2px 10px", borderRadius: 6,
                   background: `${alphaInfo.color}18`,
-                  fontFamily: "'JetBrains Mono',monospace",
+                  fontFamily: theme.monoFontFamily,
                 }}>
                   α {alphaInfo.text} {alphaInfo.icon}
                 </span>
@@ -488,8 +488,8 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
                 Probability History
               </div>
               <div style={{ display: "flex", gap: 12, fontSize: 8 }}>
-                <span style={{ color: PURPLE }}>━ Polymarket</span>
-                <span style={{ color: "#22c55e" }}>━ RateXAI</span>
+                <span style={{ color: COMPLEMENT }}>━ Polymarket</span>
+                <span style={{ color: "#30fd82" }}>━ RateXAI</span>
               </div>
             </div>
             <DualSparkline data={anchor.dualProbHistory} width={580} height={60} />
@@ -502,7 +502,7 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
             <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 10 }}>
               Probability History
             </div>
-            <Sparkline data={anchor.probHistory} color={PURPLE} width={580} height={50} />
+            <Sparkline data={anchor.probHistory} color={COMPLEMENT} width={580} height={50} />
           </div>
         ) : null}
 
@@ -510,9 +510,9 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
         {anchor.rateXReasoning && (
           <div style={{
             padding: 14, borderRadius: 10, background: theme.card,
-            border: `1px solid #22c55e30`, marginBottom: 24,
+            border: `1px solid #30fd8230`, marginBottom: 24,
           }}>
-            <div style={{ fontSize: 8, color: "#22c55e", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>
+            <div style={{ fontSize: 8, color: "#30fd82", letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>
               RateXAI Analysis
             </div>
             <div style={{ fontSize: 10, color: theme.textSecondary, lineHeight: 1.6, fontStyle: "italic" }}>
@@ -599,9 +599,9 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
               style={{
                 display: "inline-flex", gap: 8, alignItems: "center",
                 padding: "10px 24px", borderRadius: 10,
-                background: "rgba(99,102,241,0.15)", border: `1px solid ${PURPLE}40`,
-                color: PURPLE, fontSize: 11, fontWeight: 700, textDecoration: "none",
-                fontFamily: "'JetBrains Mono',monospace",
+                background: "rgba(144,29,234,0.15)", border: `1px solid ${COMPLEMENT}40`,
+                color: COMPLEMENT, fontSize: 11, fontWeight: 700, textDecoration: "none",
+                fontFamily: theme.monoFontFamily,
               }}>
               📊 View on Polymarket →
             </a>

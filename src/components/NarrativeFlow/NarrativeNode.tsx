@@ -69,16 +69,16 @@ function getSignalShapePath(signal: NarrativeSignal, r: number): string | null {
 const PolymarketDot = memo<{ x: number; y: number; prob: number; isHovered: boolean }>(
   ({ x, y, prob, isHovered }) => (
     <g transform={`translate(${x},${y})`}>
-      <circle r={isHovered ? 8 : 5} fill="#6366f1" opacity={0.9} />
+      <circle r={isHovered ? 8 : 5} fill="#901dea" opacity={0.9} />
       {isHovered && (
         <text y={3} textAnchor="middle" fontSize={6} fontWeight={700} fill="#fff"
-          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          fontFamily="'JetBrains Mono','SF Mono',monospace" style={{ pointerEvents: "none" }}>
           {prob}%
         </text>
       )}
       {!isHovered && (
         <text y={2} textAnchor="middle" fontSize={5.5} fontWeight={700} fill="rgba(255,255,255,0.9)"
-          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          fontFamily="'JetBrains Mono','SF Mono',monospace" style={{ pointerEvents: "none" }}>
           PM
         </text>
       )}
@@ -101,7 +101,7 @@ const SOURCE_COLORS: Record<string, { bg: string; fg: string }> = {
   IAEA: { bg: "rgba(34,211,238,0.15)", fg: "#22d3ee" },  // IAEA cyan
   ISW:  { bg: "rgba(129,140,248,0.15)", fg: "#818cf8" }, // ISW indigo
   IDF:  { bg: "rgba(74,222,128,0.15)", fg: "#4ade80" },  // IDF green
-  PM:   { bg: "rgba(99,102,241,0.2)", fg: "#6366f1" },   // Polymarket
+  PM:   { bg: "rgba(144,29,234,0.2)", fg: "#901dea" },    // Polymarket ($complement)
   IR:   { bg: "rgba(248,113,113,0.15)", fg: "#f87171" }, // Iran state
   WH:   { bg: "rgba(96,165,250,0.15)", fg: "#60a5fa" },  // White House
 };
@@ -126,7 +126,7 @@ const SourceBadge = memo<{ x: number; y: number; sourceName: string; theme: Grap
               <rect x={0} y={-7} width={w} height={14} rx={7}
                 fill={sc.bg} stroke={sc.fg} strokeWidth={0.5} opacity={0.9} />
               <text x={w / 2} y={3} textAnchor="middle" fontSize={6.5} fontWeight={700}
-                fill={sc.fg} fontFamily="'JetBrains Mono',monospace"
+                fill={sc.fg} fontFamily={theme.monoFontFamily}
                 style={{ pointerEvents: "none" }}>{abbr}</text>
             </g>
           );
@@ -189,20 +189,20 @@ export const NarrativeNodeComponent = memo<Props>(({
 
       {/* Glow rings — future nodes get a pulsing outer glow */}
       {isFuture && !isDimmed && (
-        <circle r={outerR + 6} fill="none" stroke={isPredictionEndpoint ? "#6366f1" : catStyle.color}
+        <circle r={outerR + 6} fill="none" stroke={isPredictionEndpoint ? "#901dea" : catStyle.color}
           strokeWidth={1.5} opacity={0.3} strokeDasharray="4 6">
           <animate attributeName="opacity" values="0.15;0.4;0.15" dur="3s" repeatCount="indefinite" />
           <animate attributeName="r" values={`${outerR + 4};${outerR + 8};${outerR + 4}`} dur="3s" repeatCount="indefinite" />
         </circle>
       )}
 
-      <GlowRings radius={r} color={isFuture ? (isPredictionEndpoint ? "#6366f1" : catStyle.color) : catStyle.color} time={time} isActive={isHovered || isSelected} />
+      <GlowRings radius={r} color={isFuture ? (isPredictionEndpoint ? "#901dea" : catStyle.color) : catStyle.color} time={time} isActive={isHovered || isSelected} />
 
       {/* Impact ring */}
       <ImpactRing radius={r} impact={node.weight * 100} color={catStyle.color} />
 
       {/* Momentum ring — dashed for deceleration, always dashed for future */}
-      <circle r={outerR} fill="none" stroke={isFuture ? "#6366f1" : sigStyle.color} strokeWidth={1}
+      <circle r={outerR} fill="none" stroke={isFuture ? "#901dea" : sigStyle.color} strokeWidth={1}
         opacity={isDimmed ? 0.05 : isFuture ? 0.4 : 0.25}
         strokeDasharray={isFuture || node.momentum < 0 ? "3 4" : "none"}
         strokeLinecap="round" />
@@ -210,12 +210,12 @@ export const NarrativeNodeComponent = memo<Props>(({
       {/* Main shape — future nodes: dashed border, semi-transparent fill */}
       {isCircle ? (
         <circle r={r} fill={isFuture ? `${catStyle.bg}` : catStyle.bg}
-          stroke={isPredictionEndpoint ? "#6366f1" : catStyle.color}
+          stroke={isPredictionEndpoint ? "#901dea" : catStyle.color}
           strokeWidth={isHovered || isSelected ? 2.5 : isFuture ? 1.8 : 1.2}
           strokeDasharray={isFuture ? "5 3" : "none"} />
       ) : (
         <path d={shapePath} fill={isFuture ? `${catStyle.bg}` : catStyle.bg}
-          stroke={isPredictionEndpoint ? "#6366f1" : catStyle.color}
+          stroke={isPredictionEndpoint ? "#901dea" : catStyle.color}
           strokeWidth={isHovered || isSelected ? 2.5 : isFuture ? 1.8 : 1.2}
           strokeLinejoin="round"
           strokeDasharray={isFuture ? "5 3" : "none"} />
@@ -244,7 +244,7 @@ export const NarrativeNodeComponent = memo<Props>(({
             textAnchor="middle" fill={theme.text}
             fontSize={labelFontSize}
             fontWeight={isHovered ? 700 : 600}
-            fontFamily="'JetBrains Mono',monospace"
+            fontFamily={theme.monoFontFamily}
             style={{ pointerEvents: "none" }}>
             {line}
           </text>
@@ -253,9 +253,9 @@ export const NarrativeNodeComponent = memo<Props>(({
 
       {/* Signal badge (top-left, small) */}
       <g transform={`translate(${-r * 0.8},${-r * 0.8})`}>
-        <circle r={6} fill={isFuture ? "rgba(99,102,241,0.25)" : sigStyle.bg}
-          stroke={isFuture ? "#6366f1" : sigStyle.color} strokeWidth={0.6} />
-        <text textAnchor="middle" y={2.5} fill={isFuture ? "#a78bfa" : sigStyle.color} fontSize={6.5}
+        <circle r={6} fill={isFuture ? theme.complementDim : sigStyle.bg}
+          stroke={isFuture ? "#901dea" : sigStyle.color} strokeWidth={0.6} />
+        <text textAnchor="middle" y={2.5} fill={isFuture ? theme.complementUp : sigStyle.color} fontSize={6.5}
           style={{ pointerEvents: "none" }}>{isFuture ? "\u{1F52E}" : (sigMeta?.icon || "\u25CF")}</text>
       </g>
 
@@ -263,9 +263,9 @@ export const NarrativeNodeComponent = memo<Props>(({
       {isPredictionEndpoint && !isDimmed && (
         <g transform={`translate(${-r * 0.8},${-r * 0.8 + 15})`}>
           <rect x={-14} y={-6} width={28} height={12} rx={6}
-            fill="rgba(99,102,241,0.3)" stroke="#6366f1" strokeWidth={0.5} />
-          <text textAnchor="middle" y={2} fill="#a78bfa" fontSize={5.5} fontWeight={700}
-            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            fill={theme.complementDim} stroke={theme.complement} strokeWidth={0.5} />
+          <text textAnchor="middle" y={2} fill={theme.complementUp} fontSize={5.5} fontWeight={700}
+            fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
             {node.resolvesAt ? new Date(node.resolvesAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : "EXP"}
           </text>
         </g>
@@ -277,7 +277,7 @@ export const NarrativeNodeComponent = memo<Props>(({
           <rect x={-2} y={-7} width={deltaText.length * 5 + 6} height={12} rx={6}
             fill={theme.bgAlt} stroke={deltaColor} strokeWidth={0.6} />
           <text x={deltaText.length * 2.5 + 1} y={1.5} textAnchor="middle" fill={deltaColor} fontSize={6}
-            fontFamily="'JetBrains Mono',monospace" fontWeight={600}
+            fontFamily={theme.monoFontFamily} fontWeight={600}
             style={{ pointerEvents: "none" }}>{deltaText}</text>
         </g>
       )}
@@ -290,7 +290,7 @@ export const NarrativeNodeComponent = memo<Props>(({
       {/* 🕵️ Cui Bono marker (bottom-right, small) */}
       {!isDimmed && hasCuiBono && (
         <g transform={`translate(${r * 0.75},${r * 0.65})`}>
-          <circle r={5} fill="rgba(251,191,36,0.25)" stroke="#fbbf24" strokeWidth={0.5} />
+          <circle r={5} fill={theme.warningDim} stroke={theme.warning} strokeWidth={0.5} />
           <text textAnchor="middle" y={3} fontSize={7}
             style={{ pointerEvents: "none" }}>{"\uD83D\uDD75\uFE0F"}</text>
         </g>

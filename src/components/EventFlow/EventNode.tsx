@@ -43,12 +43,12 @@ export const EventNodeComponent = memo<Props>(({
       <circle r={r} fill={style.bg} stroke={style.color} strokeWidth={isHovered || isSelected ? 2.5 : 1.2} />
       <text y={-3} textAnchor="middle" fontSize={r > 24 ? 16 : 13} style={{ pointerEvents: "none" }}>{meta?.icon || "●"}</text>
       <text y={r > 24 ? 14 : 11} textAnchor="middle" fill={theme.text} fontSize={Math.max(7.5, r * 0.32)}
-        fontWeight={600} fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>{truncateLabel(event.label)}</text>
+        fontWeight={600} fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{truncateLabel(event.label)}</text>
       {event.extra && !isDimmed && (
         <g transform={`translate(${r * 0.7},${-r * 0.7})`}>
           <rect x={-2} y={-8} width={event.extra.length * 5.5 + 8} height={14} rx={7} fill={theme.bgAlt} stroke={style.color} strokeWidth={0.8} />
           <text x={event.extra.length * 2.75 + 2} y={2} textAnchor="middle" fill={style.color} fontSize={7}
-            fontFamily="'JetBrains Mono',monospace" fontWeight={600} style={{ pointerEvents: "none" }}>{event.extra}</text>
+            fontFamily={theme.monoFontFamily} fontWeight={600} style={{ pointerEvents: "none" }}>{event.extra}</text>
         </g>
       )}
     </g>

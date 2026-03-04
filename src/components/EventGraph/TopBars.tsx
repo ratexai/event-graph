@@ -44,16 +44,16 @@ export function HeaderBar({
           ? <img src={branding.logo} alt={branding.name} style={{ height: 20 }} />
           : branding.logo
             ? branding.logo
-            : <span style={{ color: branding.accentColor || theme.accent, fontWeight: 800, fontSize: 14, letterSpacing: 2.5 }}>{branding.name}</span>}
+            : <span style={{ color: branding.accentColor || theme.accent, fontWeight: 700, fontSize: 14, letterSpacing: 2, fontFamily: theme.monoFontFamily, textTransform: "uppercase" as const }}>{branding.name}</span>}
         <div style={{ width: 1, height: 20, background: theme.border }} />
         {showModeSwitcher && (
-          <div style={{ display: "flex", borderRadius: 10, border: `1px solid ${theme.border}`, overflow: "hidden" }}>
+          <div style={{ display: "flex", borderRadius: 8, border: `1px solid ${theme.border}`, overflow: "hidden" }}>
             {([ ["events", "🌊 Events"], ["kols", "👥 KOLs"], ["narratives", "📊 Narratives"] ] as [ViewMode, string][]).map(([key, label]) => (
               <button key={key} onClick={() => onModeChange(key)} style={{
                 padding: "5px 14px", border: "none",
                 background: mode === key ? theme.accentDim : "transparent",
                 color: mode === key ? theme.accent : theme.muted,
-                fontSize: 10, fontWeight: mode === key ? 700 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all .2s",
+                fontSize: 10, fontWeight: mode === key ? 700 : 400, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease",
               }}>{label}</button>
             ))}
           </div>
@@ -114,17 +114,17 @@ export function FilterBar(props: FilterBarProps) {
   return (
     <div style={{
       position: "absolute", top, left: 0, right: panelOffset, height: 38,
-      display: "flex", alignItems: "center", gap: 4, padding: "0 16px",
+      display: "flex", alignItems: "center", gap: 8, padding: "0 16px",
       borderBottom: `1px solid ${theme.border}`, background: `${theme.bg}e0`,
       backdropFilter: "blur(8px)", zIndex: 25, overflowX: "auto",
     }}>
       {mode === "events" ? (<>
         <button onClick={onResetEventTypes} style={{
-          padding: "3px 10px", borderRadius: 12,
+          padding: "3px 10px", borderRadius: 44,
           border: `1px solid ${activeEventTypes.size === allEventTypes.length ? theme.accent : theme.border}`,
           background: activeEventTypes.size === allEventTypes.length ? theme.accentDim : "transparent",
           color: activeEventTypes.size === allEventTypes.length ? theme.accent : theme.muted,
-          fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+          fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease", whiteSpace: "nowrap",
         }}>All</button>
         {allEventTypes.map((type) => {
           const style = getEventTypeStyle(theme, type);
@@ -132,22 +132,22 @@ export function FilterBar(props: FilterBarProps) {
           const on = activeEventTypes.has(type);
           return (
             <button key={type} onClick={() => onToggleEventType(type)} style={{
-              padding: "3px 10px", borderRadius: 12,
+              padding: "3px 10px", borderRadius: 44,
               border: `1px solid ${on ? style.color + "50" : theme.border}`,
               background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
               fontSize: 9, cursor: "pointer", fontFamily: "inherit",
-              display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", transition: "all .2s",
+              display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", transition: "all 0.3s ease",
             }}><span style={{ fontSize: 10 }}>{meta?.icon}</span>{meta?.label}</button>
           );
         })}
       </>) : mode === "narratives" ? (<>
         {onResetCategories && (
           <button onClick={onResetCategories} style={{
-            padding: "3px 10px", borderRadius: 12,
+            padding: "3px 10px", borderRadius: 44,
             border: `1px solid ${activeCategories?.size === allCategories.length ? theme.accent : theme.border}`,
             background: activeCategories?.size === allCategories.length ? theme.accentDim : "transparent",
             color: activeCategories?.size === allCategories.length ? theme.accent : theme.muted,
-            fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+            fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease", whiteSpace: "nowrap",
           }}>All</button>
         )}
         {allCategories.map((cat) => {
@@ -156,11 +156,11 @@ export function FilterBar(props: FilterBarProps) {
           const on = activeCategories?.has(cat) ?? true;
           return (
             <button key={cat} onClick={() => onToggleCategory?.(cat)} style={{
-              padding: "3px 10px", borderRadius: 12,
+              padding: "3px 10px", borderRadius: 44,
               border: `1px solid ${on ? style.color + "50" : theme.border}`,
               background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
               fontSize: 9, cursor: "pointer", fontFamily: "inherit",
-              display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", transition: "all .2s",
+              display: "flex", alignItems: "center", gap: 4, whiteSpace: "nowrap", transition: "all 0.3s ease",
             }}><span style={{ fontSize: 10 }}>{meta?.icon}</span>{meta?.label}</button>
           );
         })}
@@ -173,10 +173,10 @@ export function FilterBar(props: FilterBarProps) {
             const on = activeSignals?.has(sig) ?? true;
             return (
               <button key={sig} onClick={() => onToggleSignal?.(sig)} style={{
-                padding: "3px 10px", borderRadius: 12,
+                padding: "3px 10px", borderRadius: 44,
                 border: `1px solid ${on ? style.color + "50" : theme.border}`,
                 background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
-                fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+                fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease", whiteSpace: "nowrap",
               }}>{meta?.icon} {meta?.label}</button>
             );
           })}
@@ -184,11 +184,11 @@ export function FilterBar(props: FilterBarProps) {
         {onToggleHasMarket && (<>
           <div style={{ width: 1, height: 18, background: theme.border, margin: "0 6px" }} />
           <button onClick={onToggleHasMarket} style={{
-            padding: "3px 10px", borderRadius: 12,
-            border: `1px solid ${hasMarket ? "#6366f1" + "80" : theme.border}`,
-            background: hasMarket ? "rgba(99,102,241,0.15)" : "transparent",
-            color: hasMarket ? "#a78bfa" : theme.muted,
-            fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+            padding: "3px 10px", borderRadius: 44,
+            border: `1px solid ${hasMarket ? "#901dea" + "80" : theme.border}`,
+            background: hasMarket ? "rgba(144,29,234,0.15)" : "transparent",
+            color: hasMarket ? "#b659ff" : theme.muted,
+            fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease", whiteSpace: "nowrap",
             display: "flex", alignItems: "center", gap: 4,
           }}>{"\uD83D\uDD2E"} Has Market</button>
         </>)}
@@ -200,10 +200,10 @@ export function FilterBar(props: FilterBarProps) {
           const on = activeTiers.has(tier);
           return (
             <button key={tier} onClick={() => onToggleTier(tier)} style={{
-              padding: "3px 10px", borderRadius: 12,
+              padding: "3px 10px", borderRadius: 44,
               border: `1px solid ${on ? style.color + "50" : theme.border}`,
               background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
-              fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+              fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease", whiteSpace: "nowrap",
             }}>{meta.label} <span style={{ opacity: 0.6, fontSize: 8 }}>{meta.minFollowers}</span></button>
           );
         })}
@@ -214,10 +214,10 @@ export function FilterBar(props: FilterBarProps) {
           const meta = PLATFORM_META[platform] || PLATFORM_META.other;
           return (
             <button key={platform} onClick={() => onTogglePlatform(platform)} style={{
-              padding: "3px 10px", borderRadius: 12,
+              padding: "3px 10px", borderRadius: 44,
               border: `1px solid ${on ? theme.accent + "40" : theme.border}`,
               background: on ? theme.accentDim : "transparent", color: on ? theme.accent : theme.muted,
-              fontSize: 9, cursor: "pointer", fontFamily: "inherit", whiteSpace: "nowrap",
+              fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease", whiteSpace: "nowrap",
             }}>{meta.icon} {meta.label}</button>
           );
         })}
@@ -256,7 +256,7 @@ export function KolStatsBar({ top, height, panelOffset, theme, stats }: KolStats
       ].map((item, i) => (
         <div key={item.l} style={{ flex: 1, textAlign: "center", borderRight: i < 4 ? `1px solid ${theme.border}` : "none", padding: "4px 0" }}>
           <div style={{ fontSize: 16, fontWeight: 800, color: item.c }}>{item.v}</div>
-          <div style={{ fontSize: 7.5, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>{item.l}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: theme.muted, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>{item.l}</div>
         </div>
       ))}
     </div>
@@ -295,7 +295,7 @@ export function NarrativeStatsBar({ top, height, panelOffset, theme, stats }: Na
       ].map((item, i) => (
         <div key={item.l} style={{ flex: 1, textAlign: "center", borderRight: i < 4 ? `1px solid ${theme.border}` : "none", padding: "4px 0" }}>
           <div style={{ fontSize: 16, fontWeight: 800, color: item.c }}>{item.v}</div>
-          <div style={{ fontSize: 7.5, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>{item.l}</div>
+          <div style={{ fontSize: 12, fontWeight: 700, color: theme.muted, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>{item.l}</div>
         </div>
       ))}
     </div>

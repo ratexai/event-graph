@@ -92,9 +92,8 @@ function getCountryCode(name: string): string {
 /** Section header label (small caps muted text) */
 const SectionLabel: React.FC<{ text: string; theme: GraphTheme }> = ({ text, theme }) => (
   <div style={{
-    fontSize: 8, color: theme.muted, letterSpacing: 1.5,
+    fontSize: 12, fontWeight: 700, color: theme.muted, letterSpacing: 2,
     textTransform: "uppercase", marginBottom: 8, marginTop: 16,
-    fontFamily: "'JetBrains Mono', monospace",
   }}>
     {text}
   </div>
@@ -148,7 +147,7 @@ const CountryRow: React.FC<{
       <ScoreBar value={score} maxAbsValue={maxAbsScore} theme={theme} />
       <span style={{
         fontSize: 9, fontWeight: 700, color,
-        fontFamily: "'JetBrains Mono', monospace",
+        fontFamily: theme.fontFamily,
         width: 42, textAlign: "right", flexShrink: 0,
       }}>
         {sign}{score.toFixed(1)}
@@ -174,7 +173,7 @@ const CuiBonoEntryRow: React.FC<{
         <span style={{ fontSize: 10, fontWeight: 700, color: theme.text }}>{entry.name}</span>
         <span style={{
           fontSize: 9, fontWeight: 700, color,
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: theme.fontFamily,
         }}>
           {sign}{entry.delta.toFixed(1)}
         </span>
@@ -224,7 +223,7 @@ const CompanyRow: React.FC<{
         </div>
         <span style={{
           fontSize: 10, fontWeight: 800, color,
-          fontFamily: "'JetBrains Mono', monospace", flexShrink: 0,
+          fontFamily: theme.fontFamily, flexShrink: 0,
         }}>
           {sign}{entry.delta.toFixed(1)}%
         </span>
@@ -259,7 +258,7 @@ const IndexRow: React.FC<{
           {entry.code && (
             <span style={{
               fontSize: 8, color: theme.muted, marginLeft: 6,
-              fontFamily: "'JetBrains Mono', monospace",
+              fontFamily: theme.fontFamily,
             }}>
               {entry.code}
             </span>
@@ -267,7 +266,7 @@ const IndexRow: React.FC<{
         </div>
         <span style={{
           fontSize: 10, fontWeight: 800, color,
-          fontFamily: "'JetBrains Mono', monospace",
+          fontFamily: theme.fontFamily,
         }}>
           {sign}{entry.delta.toFixed(2)}%
         </span>
@@ -347,7 +346,7 @@ const StatesTab: React.FC<{
         }}>
           <div style={{
             fontSize: 9, fontWeight: 700, color: theme.accent,
-            marginBottom: 8, fontFamily: "'JetBrains Mono', monospace",
+            marginBottom: 8, fontFamily: theme.fontFamily,
           }}>
             Per-event: {selectedNodeLabel || "Selected Event"}
           </div>
@@ -468,10 +467,10 @@ const IndicesTab: React.FC<{
 
 function alphaLevel(alpha: number): { signal: string; color: string; icon: string } {
   const abs = Math.abs(alpha);
-  if (abs <= 2) return { signal: "≈ in line", color: "#888", icon: "≈" };
-  if (abs <= 5) return { signal: alpha > 0 ? "△ mild" : "▽ mild", color: "#eab308", icon: alpha > 0 ? "△" : "▽" };
-  if (abs <= 10) return { signal: alpha > 0 ? "▲ underpriced" : "▼ overpriced", color: alpha > 0 ? "#22c55e" : "#ef4444", icon: alpha > 0 ? "▲" : "▼" };
-  return { signal: alpha > 0 ? "▲▲ major opportunity" : "▼▼ major overpriced", color: alpha > 0 ? "#22c55e" : "#ef4444", icon: alpha > 0 ? "▲▲" : "▼▼" };
+  if (abs <= 2) return { signal: "≈ in line", color: "#848798", icon: "≈" };
+  if (abs <= 5) return { signal: alpha > 0 ? "△ mild" : "▽ mild", color: "#ff9f44", icon: alpha > 0 ? "△" : "▽" };
+  if (abs <= 10) return { signal: alpha > 0 ? "▲ underpriced" : "▼ overpriced", color: alpha > 0 ? "#30fd82" : "#ff495f", icon: alpha > 0 ? "▲" : "▼" };
+  return { signal: alpha > 0 ? "▲▲ major opportunity" : "▼▼ major overpriced", color: alpha > 0 ? "#30fd82" : "#ff495f", icon: alpha > 0 ? "▲▲" : "▼▼" };
 }
 
 /** Dual probability bar (Polymarket vs RateXAI) */
@@ -486,24 +485,24 @@ const DualProbBar: React.FC<{
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
         <span style={{ fontSize: 7, color: theme.muted, width: 28, flexShrink: 0 }}>PM</span>
         <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
-          <div style={{ height: 6, borderRadius: 3, background: "#6366f1", width: `${pmProb}%`, transition: "width 0.3s" }} />
+          <div style={{ height: 6, borderRadius: 3, background: "#901dea", width: `${pmProb}%`, transition: "width 0.3s" }} />
         </div>
-        <span style={{ fontSize: 8, fontWeight: 700, color: theme.muted, width: 28, textAlign: "right", fontFamily: "'JetBrains Mono',monospace" }}>{pmProb}%</span>
+        <span style={{ fontSize: 8, fontWeight: 700, color: theme.muted, width: 28, textAlign: "right", fontFamily: theme.monoFontFamily }}>{pmProb}%</span>
       </div>
       {/* RateXAI bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-        <span style={{ fontSize: 7, color: "#22c55e", width: 28, flexShrink: 0, fontWeight: 700 }}>RX</span>
+        <span style={{ fontSize: 7, color: "#30fd82", width: 28, flexShrink: 0, fontWeight: 700 }}>RX</span>
         <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
-          <div style={{ height: 6, borderRadius: 3, background: "#22c55e", width: `${rxProb}%`, transition: "width 0.3s" }} />
+          <div style={{ height: 6, borderRadius: 3, background: "#30fd82", width: `${rxProb}%`, transition: "width 0.3s" }} />
         </div>
-        <span style={{ fontSize: 8, fontWeight: 800, color: "#22c55e", width: 28, textAlign: "right", fontFamily: "'JetBrains Mono',monospace" }}>{rxProb}%</span>
+        <span style={{ fontSize: 8, fontWeight: 800, color: "#30fd82", width: 28, textAlign: "right", fontFamily: theme.monoFontFamily }}>{rxProb}%</span>
       </div>
       {/* Alpha badge */}
       <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
         <span style={{ fontSize: 7, color: theme.muted, width: 28, flexShrink: 0 }}>Alpha</span>
         <span style={{
           fontSize: 8, fontWeight: 800, color: al.color,
-          fontFamily: "'JetBrains Mono',monospace",
+          fontFamily: theme.monoFontFamily,
           padding: "1px 6px", borderRadius: 4,
           background: `${al.color}18`,
         }}>
@@ -581,7 +580,7 @@ const MarketCard: React.FC<{
         <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
           <span style={{
             fontSize: 7, color: theme.muted,
-            fontFamily: "'JetBrains Mono',monospace",
+            fontFamily: theme.monoFontFamily,
           }}>
             conf: {(confidence * 100).toFixed(0)}%
           </span>
@@ -621,7 +620,7 @@ const AlphaSignals: React.FC<{
       <div style={{
         fontSize: 8, fontWeight: 700, color: theme.accent,
         letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8,
-        fontFamily: "'JetBrains Mono',monospace",
+        fontFamily: theme.monoFontFamily,
       }}>
         🎯 Alpha Signals
       </div>
@@ -632,14 +631,14 @@ const AlphaSignals: React.FC<{
             display: "flex", alignItems: "center", gap: 6,
             padding: "4px 0",
             borderBottom: `1px solid ${theme.border}`,
-            fontSize: 8, fontFamily: "'JetBrains Mono',monospace",
+            fontSize: 8, fontFamily: theme.monoFontFamily,
           }}>
             <span style={{ color: al.color, fontWeight: 800, width: 16 }}>{al.icon}</span>
             <span style={{ flex: 1, color: theme.textSecondary, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontSize: 8 }}>
               {s.label.replace(/^PM:\s*/, "").slice(0, 35)}
             </span>
             <span style={{ color: theme.muted, flexShrink: 0 }}>PM {s.pm}%</span>
-            <span style={{ color: "#22c55e", fontWeight: 700, flexShrink: 0 }}>RX {s.rx}%</span>
+            <span style={{ color: "#30fd82", fontWeight: 700, flexShrink: 0 }}>RX {s.rx}%</span>
             <span style={{ color: al.color, fontWeight: 800, flexShrink: 0 }}>
               {s.alpha > 0 ? "+" : ""}{s.alpha}pp
             </span>
@@ -711,7 +710,7 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
       right: 0,
       width: PANEL_WIDTH,
       bottom: 0,
-      background: "rgba(8,10,16,0.97)",
+      background: "rgba(29,39,50,0.97)",
       borderLeft: `1px solid ${theme.border}`,
       backdropFilter: "blur(20px)",
       zIndex: 24,
@@ -719,7 +718,7 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
       transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
       display: "flex",
       flexDirection: "column",
-      fontFamily: "'JetBrains Mono', monospace",
+      fontFamily: theme.fontFamily,
       color: theme.text,
       overflow: "hidden",
     }}>
@@ -746,7 +745,7 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
                 fontSize: 10,
                 fontWeight: isActive ? 700 : 500,
                 cursor: "pointer",
-                fontFamily: "'JetBrains Mono', monospace",
+                fontFamily: theme.fontFamily,
                 transition: "all 0.2s ease",
                 whiteSpace: "nowrap",
               }}

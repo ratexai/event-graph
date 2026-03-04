@@ -512,14 +512,32 @@ export interface GraphTheme {
   text: string;
   textSecondary: string;
   muted: string;
+  /** Disabled-level text */
+  disabled: string;
   accent: string;
   accentDim: string;
+  /** Accent hover state */
+  accentHover: string;
   positive: string;
   positiveDim: string;
+  /** Darker positive for borders/down states */
+  positiveDown: string;
   negative: string;
   negativeDim: string;
+  /** Darker negative for borders/down states */
+  negativeDown: string;
   neutral: string;
   neutralDim: string;
+  /** Warning / catalyst color */
+  warning: string;
+  warningDim: string;
+  /** Polymarket / complement color */
+  complement: string;
+  complementUp: string;
+  complementDim: string;
+  /** Font families */
+  fontFamily: string;
+  monoFontFamily: string;
   eventTypeColors: Record<EventType, { color: string; bg: string }>;
   kolTierColors: Record<KolTier, { color: string; bg: string }>;
   narrativeCategoryColors: Record<NarrativeCategory, { color: string; bg: string }>;

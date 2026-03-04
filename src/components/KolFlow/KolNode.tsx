@@ -46,14 +46,14 @@ export const KolNodeComponent = memo<Props>(({
       <circle r={r} fill={tierStyle.bg} stroke={tierStyle.color} strokeWidth={isHovered || isSelected ? 2.5 : 1.2} />
       {/* Avatar initials */}
       <text y={-5} textAnchor="middle" fill={tierStyle.color} fontSize={r * 0.45} fontWeight={800}
-        fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>{kol.avatar}</text>
+        fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{kol.avatar}</text>
       {/* Name */}
       <text y={r * 0.35 + 4} textAnchor="middle" fill={theme.text} fontSize={Math.max(7, r * 0.28)}
-        fontWeight={600} fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>{truncateLabel(kol.name, 14)}</text>
+        fontWeight={600} fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{truncateLabel(kol.name, 14)}</text>
       {/* Followers + platform */}
       {!isDimmed && (
         <g transform={`translate(0,${r + 14})`}>
-          <text textAnchor="middle" fill={theme.muted} fontSize={8} fontFamily="'JetBrains Mono',monospace"
+          <text textAnchor="middle" fill={theme.muted} fontSize={8} fontFamily={theme.monoFontFamily}
             style={{ pointerEvents: "none" }}>{formatNumber(kol.followers)} · {platMeta.icon}</text>
         </g>
       )}
@@ -62,7 +62,7 @@ export const KolNodeComponent = memo<Props>(({
       <g transform={`translate(${-r * 0.75},${-r * 0.75})`}>
         <circle r={9} fill={theme.bgAlt} stroke={theme.border} strokeWidth={0.8} />
         <text textAnchor="middle" y={3.5} fill={theme.textSecondary} fontSize={9}
-          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>{platMeta.icon}</text>
+          fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{platMeta.icon}</text>
       </g>
     </g>
   );

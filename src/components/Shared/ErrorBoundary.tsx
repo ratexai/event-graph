@@ -36,7 +36,7 @@ export class GraphErrorBoundary extends React.Component<Props, State> {
             height: "100%",
             gap: 12,
             color: theme.textSecondary,
-            fontFamily: "'JetBrains Mono',monospace",
+            fontFamily: "'Work Sans', sans-serif",
           }}
         >
           <div style={{ fontSize: 24, opacity: 0.5 }}>⚠</div>
