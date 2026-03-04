@@ -286,6 +286,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
       {mode === "narratives" && (
         <NarrativeFilterPanel
           theme={theme}
+          panelOffset={panelWidth}
           allCategories={allCategories}
           allSignals={allSignals}
           activeCategories={graphFilters.filters.activeCategories}
