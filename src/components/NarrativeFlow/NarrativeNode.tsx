@@ -213,22 +213,22 @@ export const NarrativeNodeComponent = memo<Props>(({
           strokeDasharray={isSelected ? "none" : "4,3"} />
       )}
 
-      {/* Main shape — radial gradient fill, future nodes: dashed border */}
+      {/* Main shape — radial gradient fill, 2px stroke always */}
       {isCircle ? (
         <circle r={r} fill={`url(#ng-${node.id})`}
           stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
-          strokeWidth={isHovered || isSelected ? 2 : 1}
-          strokeOpacity={isHovered || isSelected ? 0.85 : 0.35}
+          strokeWidth={2}
+          strokeOpacity={(isHovered || isSelected) ? 0.85 : 0.6}
           strokeDasharray={isFuture ? "5 3" : "none"}
-          style={{ transition: "stroke-width 0.3s, stroke-opacity 0.3s" }} />
+          style={{ transition: "stroke-opacity 0.3s" }} />
       ) : (
         <path d={shapePath} fill={`url(#ng-${node.id})`}
           stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
-          strokeWidth={isHovered || isSelected ? 2 : 1}
-          strokeOpacity={isHovered || isSelected ? 0.85 : 0.35}
+          strokeWidth={2}
+          strokeOpacity={(isHovered || isSelected) ? 0.85 : 0.6}
           strokeLinejoin="round"
           strokeDasharray={isFuture ? "5 3" : "none"}
-          style={{ transition: "stroke-width 0.3s, stroke-opacity 0.3s" }} />
+          style={{ transition: "stroke-opacity 0.3s" }} />
       )}
 
       {/* Sentiment dot — top-right corner (3-4px) */}

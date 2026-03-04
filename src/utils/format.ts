@@ -37,7 +37,7 @@ export function nodeRadius(weight: number, layout: LayoutConfig = DEFAULT_LAYOUT
 }
 
 export function kolRadius(followers: number): number {
-  return Math.max(22, Math.log10(Math.max(followers, 100)) * 12);
+  return Math.max(25, Math.log10(Math.max(followers, 100)) * 14);
 }
 
 export function streamWidth(weight: number, layout: LayoutConfig = DEFAULT_LAYOUT): number {
@@ -50,12 +50,12 @@ export function kolStreamWidth(followers: number): number {
 
 /** Narrative node radius — 5 discrete size tiers based on weight, plus oddsDelta boost */
 export function narrativeNodeRadius(weight: number, oddsDelta: number, _layout?: LayoutConfig): number {
-  // 5 tiers per spec v2: XS(13) S(16) M(19) L(22) XL(26)
-  const base = weight >= 0.92 ? 26
-    : weight >= 0.80 ? 22
-    : weight >= 0.65 ? 19
-    : weight >= 0.50 ? 16
-    : 13;
+  // 5 tiers per spec v2: XS(15) S(18) M(22) L(25) XL(30)
+  const base = weight >= 0.92 ? 30
+    : weight >= 0.80 ? 25
+    : weight >= 0.65 ? 22
+    : weight >= 0.50 ? 18
+    : 15;
   const boost = Math.min(Math.abs(oddsDelta) * 0.2, 4);
   return base + boost;
 }
@@ -84,7 +84,7 @@ export function influenceStreamWidth(influence: number): number {
 }
 
 /** Fixed anchor node radius — always XL per spec v2.1 */
-export const ANCHOR_NODE_RADIUS = 30;
+export const ANCHOR_NODE_RADIUS = 35;
 
 /** Check if a narrative node is an anchor (Polymarket future endpoint) */
 export function isAnchorNode(node: NarrativeNode): boolean {
