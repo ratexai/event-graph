@@ -112,8 +112,13 @@ export const DEFAULT_THEME: GraphTheme = {
   // ─── Narrative Category Colors ───────────────────────────
   narrativeCategoryColors: {
     ai:         { color: "#818cf8", bg: "#1a1c3a" },
-    war:        { color: "#ff495f", bg: "#2c141b" },
-    elections:  { color: "#fbbf24", bg: "#2c2517" },
+    war:           { color: "#ff495f", bg: "#2c141b" },
+    military:      { color: "#f97066", bg: "#2c1618" },
+    political:     { color: "#c084fc", bg: "#221736" },
+    retaliation:   { color: "#ff6b6b", bg: "#2c1414" },
+    humanitarian:  { color: "#fda4af", bg: "#2c1a1e" },
+    casualties:    { color: "#ef4444", bg: "#2c1212" },
+    elections:     { color: "#fbbf24", bg: "#2c2517" },
     regulation: { color: "#67e8f9", bg: "#152d33" },
     defi:       { color: "#2dd4bf", bg: "#132e2c" },
     memecoin:   { color: "#e879f9", bg: "#2a1530" },
@@ -209,8 +214,13 @@ export const KOL_TIER_META: Record<KolTier, { label: string; minFollowers: strin
 
 export const NARRATIVE_CATEGORY_META: Record<NarrativeCategory, { icon: string; label: string }> = {
   ai:         { icon: "🤖", label: "AI" },
-  war:        { icon: "⚔️", label: "Wars & Conflicts" },
-  elections:  { icon: "🗳️", label: "Elections" },
+  war:           { icon: "⚔️", label: "Wars & Conflicts" },
+  military:      { icon: "🎖️", label: "Military" },
+  political:     { icon: "🏛️", label: "Political" },
+  retaliation:   { icon: "💥", label: "Retaliation" },
+  humanitarian:  { icon: "🏥", label: "Humanitarian" },
+  casualties:    { icon: "⚠️", label: "Casualties" },
+  elections:     { icon: "🗳️", label: "Elections" },
   regulation: { icon: "⚖️", label: "Regulation" },
   defi:       { icon: "🏦", label: "DeFi" },
   memecoin:   { icon: "🐸", label: "Memecoin" },
