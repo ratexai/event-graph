@@ -128,7 +128,7 @@ export const AnchorNodeComponent = memo<Props>(({
       <circle r={r + 3} fill={COMPLEMENT_GLOW} opacity={0.15} />
 
       {/* Double ring: outer white + inner purple */}
-      <circle r={r + 2} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={2} />
+      <circle r={r + 2} fill="none" stroke="#35393d" strokeWidth={2} />
       <circle r={r} fill={COMPLEMENT_DIM}
         stroke={COMPLEMENT} strokeWidth={isHovered || isSelected ? 3 : 2}
         style={{ transition: "stroke-width 0.2s" }} />
@@ -195,7 +195,7 @@ export const AnchorNodeComponent = memo<Props>(({
       {expiryLabel && (
         <g transform={`translate(0,${r + 14 + lines.length * 10 + 4})`}>
           <rect x={-22} y={-6} width={44} height={12} rx={6}
-            fill="rgba(144,29,234,0.3)" stroke={COMPLEMENT} strokeWidth={0.5} />
+            fill="#371859" stroke={COMPLEMENT} strokeWidth={0.5} />
           <text textAnchor="middle" y={2} fill={theme.complementUp} fontSize={6.5} fontWeight={700}
             fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
             ⏰ {expiryLabel}
@@ -207,7 +207,7 @@ export const AnchorNodeComponent = memo<Props>(({
       {(isHovered || isSelected) && node.tradingVolume && (
         <g transform={`translate(${r + 6},${-8})`}>
           <rect x={0} y={-7} width={node.tradingVolume.length * 5.5 + 10} height={14} rx={7}
-            fill="rgba(144,29,234,0.2)" stroke={COMPLEMENT} strokeWidth={0.5} />
+            fill="#2a1844" stroke={COMPLEMENT} strokeWidth={0.5} />
           <text x={(node.tradingVolume.length * 5.5 + 10) / 2} y={2} textAnchor="middle"
             fill={theme.complementUp} fontSize={7} fontWeight={700}
             fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>

@@ -185,9 +185,9 @@ export function FilterBar(props: FilterBarProps) {
           <div style={{ width: 1, height: 18, background: theme.border, margin: "0 6px" }} />
           <button onClick={onToggleHasMarket} style={{
             padding: "3px 10px", borderRadius: 44,
-            border: `1px solid ${hasMarket ? "#901dea" + "80" : theme.border}`,
-            background: hasMarket ? "rgba(144,29,234,0.15)" : "transparent",
-            color: hasMarket ? "#b659ff" : theme.muted,
+            border: `1px solid ${hasMarket ? theme.complement + "80" : theme.border}`,
+            background: hasMarket ? theme.complementDim : "transparent",
+            color: hasMarket ? theme.complementUp : theme.muted,
             fontSize: 9, cursor: "pointer", fontFamily: "inherit", transition: "all 0.3s ease", whiteSpace: "nowrap",
             display: "flex", alignItems: "center", gap: 4,
           }}>{"\uD83D\uDD2E"} Has Prediction</button>

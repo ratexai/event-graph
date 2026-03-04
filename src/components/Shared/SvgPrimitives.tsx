@@ -145,7 +145,7 @@ export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, them
         opacity={isAnchorDate ? 0.5 : isFuture ? 0.35 : 0.5} />
       {isSpecial && (
         <rect x={x - 30} y={topY - 14} width={60} height={bottomY - topY + 28}
-          fill={isAnchorDate ? "rgba(144,29,234,0.06)" : "rgba(144,29,234,0.03)"} rx={4} />
+          fill={isAnchorDate ? "#191628" : "#151621"} rx={4} />
       )}
       {isAnchorDate && (
         <>
@@ -155,7 +155,7 @@ export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, them
         </>
       )}
       <rect x={x - 28} y={bottomY + 18} width={56} height={18} rx={9}
-        fill={isSpecial ? "rgba(144,29,234,0.15)" : theme.bgAlt}
+        fill={isSpecial ? "#24173a" : theme.bgAlt}
         stroke={isAnchorDate ? "#901dea" : isFuture ? "#901dea" : theme.border}
         strokeWidth={isAnchorDate ? 1 : isFuture ? 0.8 : 0.5} />
       <text x={x} y={bottomY + 30} textAnchor="middle"

@@ -506,7 +506,7 @@ const DualProbBar: React.FC<{
           fontSize: 10, fontWeight: 800, color: al.color,
           fontFamily: theme.monoFontFamily,
           padding: "1px 6px", borderRadius: 4,
-          background: `${al.color}18`,
+          background: al.color === "#30fd82" ? theme.positiveDim : al.color === "#ff495f" ? theme.negativeDim : al.color === "#ff9f44" ? theme.warningDim : theme.neutralDim,
         }}>
           {alpha > 0 ? "+" : ""}{alpha}pp {al.icon}
         </span>
@@ -714,7 +714,7 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
       right: 0,
       width: PANEL_W,
       bottom: 0,
-      background: "rgba(29,39,50,0.97)",
+      background: "#1d2732",
       borderLeft: `1px solid ${theme.border}`,
       backdropFilter: "blur(20px)",
       zIndex: 24,

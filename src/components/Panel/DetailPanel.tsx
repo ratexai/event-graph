@@ -746,7 +746,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
 }) => (
   <div style={{
     position: "absolute", top: 48, right: 0, width: 340, bottom: 0,
-    background: "rgba(29,39,50,0.97)", borderLeft: `1px solid ${theme.border}`,
+    background: "#1d2732", borderLeft: `1px solid ${theme.border}`,
     backdropFilter: "blur(20px)", zIndex: 25,
     transform: isOpen ? "translateX(0)" : "translateX(340px)",
     transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
@@ -754,7 +754,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   }}>
     <button onClick={onClose} style={{
       position: "sticky", top: 0, zIndex: 5, width: "100%", padding: "10px 16px",
-      background: "rgba(29,39,50,0.95)", borderBottom: `1px solid ${theme.border}`,
+      background: "#1d2732", borderBottom: `1px solid ${theme.border}`,
       border: "none", color: theme.muted, fontSize: 10, cursor: "pointer",
       fontFamily: "inherit", textAlign: "left", backdropFilter: "blur(8px)",
     }}>← Close</button>
