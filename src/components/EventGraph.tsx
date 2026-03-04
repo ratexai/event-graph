@@ -58,7 +58,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   showZoomControls = true,
   showKolStats = true,
   showNarrativeStats = true,
-  branding = { name: "RateXAI" },
+  branding = { name: "Event Prediction" },
   onNodeSelect,
   onNodeHover,
   onModeChange,

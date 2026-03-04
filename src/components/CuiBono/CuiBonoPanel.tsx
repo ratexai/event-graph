@@ -35,10 +35,10 @@ interface TabDef {
 }
 
 const TABS: TabDef[] = [
-  { key: "states", label: "\u{1F30D} States" },
-  { key: "corps", label: "\u{1F3E2} Corps" },
-  { key: "indices", label: "\u{1F4CA} Indices" },
-  { key: "markets", label: "\u{1F3AF} Prediction" },
+  { key: "markets", label: "Prediction" },
+  { key: "states", label: "States" },
+  { key: "corps", label: "Corps" },
+  { key: "indices", label: "Indices" },
 ];
 
 // ─── Country Code to Flag Emoji ─────────────────────────────────
@@ -475,7 +475,7 @@ function alphaLevel(alpha: number): { signal: string; color: string; icon: strin
   return { signal: alpha > 0 ? "▲▲ major opportunity" : "▼▼ major overpriced", color: alpha > 0 ? "#30fd82" : "#ff495f", icon: alpha > 0 ? "▲▲" : "▼▼" };
 }
 
-/** Dual probability bar (Polymarket vs RateXAI) */
+/** Dual probability bar (Polymarket vs Model) */
 const DualProbBar: React.FC<{
   label: string; pmProb: number; rxProb: number; alpha: number; theme: GraphTheme;
 }> = ({ label, pmProb, rxProb, alpha, theme }) => {
@@ -487,17 +487,17 @@ const DualProbBar: React.FC<{
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
         <span style={{ fontSize: 9, color: theme.muted, width: 28, flexShrink: 0 }}>PM</span>
         <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
-          <div style={{ height: 6, borderRadius: 3, background: "#901dea", width: `${pmProb}%`, transition: "width 0.3s" }} />
+          <div style={{ height: 6, borderRadius: 3, background: theme.complement, width: `${pmProb}%`, transition: "width 0.3s" }} />
         </div>
         <span style={{ fontSize: 10, fontWeight: 700, color: theme.muted, width: 32, textAlign: "right", fontFamily: theme.monoFontFamily }}>{pmProb}%</span>
       </div>
-      {/* RateXAI bar */}
+      {/* Model bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-        <span style={{ fontSize: 9, color: "#30fd82", width: 28, flexShrink: 0, fontWeight: 700 }}>RX</span>
+        <span style={{ fontSize: 9, color: theme.positive, width: 28, flexShrink: 0, fontWeight: 700 }}>MDL</span>
         <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
-          <div style={{ height: 6, borderRadius: 3, background: "#30fd82", width: `${rxProb}%`, transition: "width 0.3s" }} />
+          <div style={{ height: 6, borderRadius: 3, background: theme.positive, width: `${rxProb}%`, transition: "width 0.3s" }} />
         </div>
-        <span style={{ fontSize: 10, fontWeight: 800, color: "#30fd82", width: 32, textAlign: "right", fontFamily: theme.monoFontFamily }}>{rxProb}%</span>
+        <span style={{ fontSize: 10, fontWeight: 800, color: theme.positive, width: 32, textAlign: "right", fontFamily: theme.monoFontFamily }}>{rxProb}%</span>
       </div>
       {/* Alpha badge */}
       <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
@@ -546,7 +546,7 @@ const MarketCard: React.FC<{
         marginBottom: 10, lineHeight: 1.4,
         display: "flex", gap: 6, alignItems: "flex-start",
       }}>
-        <span style={{ flexShrink: 0, fontSize: 15 }}>📊</span>
+        <span style={{ flexShrink: 0, fontSize: 11, color: theme.complement, fontWeight: 700 }}>PM</span>
         <span>{anchor.marketQuestion || anchor.label}</span>
       </div>
 
@@ -573,7 +573,7 @@ const MarketCard: React.FC<{
       }}>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {expiryLabel && (
-            <span style={{ fontSize: 9, color: theme.muted }}>⏰ {expiryLabel}</span>
+            <span style={{ fontSize: 9, color: theme.muted }}>{expiryLabel}</span>
           )}
           {anchor.tradingVolume && (
             <span style={{ fontSize: 9, color: theme.muted }}>Vol: {anchor.tradingVolume}</span>
@@ -624,7 +624,7 @@ const AlphaSignals: React.FC<{
         letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8,
         fontFamily: theme.monoFontFamily,
       }}>
-        🎯 Alpha Signals
+        Alpha Signals
       </div>
       {sorted.map((s) => {
         const al = alphaLevel(s.alpha);
@@ -640,7 +640,7 @@ const AlphaSignals: React.FC<{
               {s.label.replace(/^PM:\s*/, "").slice(0, 35)}
             </span>
             <span style={{ color: theme.muted, flexShrink: 0 }}>PM {s.pm}%</span>
-            <span style={{ color: "#30fd82", fontWeight: 700, flexShrink: 0 }}>RX {s.rx}%</span>
+            <span style={{ color: theme.positive, fontWeight: 700, flexShrink: 0 }}>MDL {s.rx}%</span>
             <span style={{ color: al.color, fontWeight: 800, flexShrink: 0 }}>
               {s.alpha > 0 ? "+" : ""}{s.alpha}pp
             </span>
@@ -714,7 +714,7 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
       right: 0,
       width: PANEL_W,
       bottom: 0,
-      background: "#1d2732",
+      background: theme.bg,
       borderLeft: `1px solid ${theme.border}`,
       backdropFilter: "blur(20px)",
       zIndex: 24,

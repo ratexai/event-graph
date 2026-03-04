@@ -206,10 +206,10 @@ export const NarrativeNodeComponent = memo<Props>(({
         </circle>
       )}
 
-      {/* §12 Outer ring — dashed on hover, solid on select */}
-      {(isHovered || isSelected) && (
+      {/* §12 Outer ring — always visible: dashed default, solid on select */}
+      {!isDimmed && (
         <circle r={outerR} fill="none" stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
-          strokeWidth={1.5} opacity={0.5}
+          strokeWidth={(isHovered || isSelected) ? 1.5 : 1} opacity={(isHovered || isSelected) ? 0.5 : 0.25}
           strokeDasharray={isSelected ? "none" : "4,3"} />
       )}
 

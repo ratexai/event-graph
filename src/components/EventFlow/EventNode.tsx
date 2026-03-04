@@ -51,10 +51,10 @@ export const EventNodeComponent = memo<Props>(({
         </radialGradient>
       </defs>
 
-      {/* §12 Outer ring — dashed on hover, solid on select */}
-      {isActive && (
-        <circle r={r + 5} fill="none" stroke={style.color} strokeWidth={1.5}
-          opacity={0.5} strokeDasharray={isSelected ? "none" : "4,3"} />
+      {/* §12 Outer ring — always visible: dashed default, solid on select */}
+      {!isDimmed && (
+        <circle r={r + 5} fill="none" stroke={style.color} strokeWidth={isActive ? 1.5 : 1}
+          opacity={isActive ? 0.5 : 0.25} strokeDasharray={isSelected ? "none" : "4,3"} />
       )}
 
       {/* Main circle — radial gradient fill per §12 */}
