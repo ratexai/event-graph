@@ -127,12 +127,12 @@ export function FilterBar(props: FilterBarProps) {
   const {
     mode, top, panelOffset, theme,
     allEventTypes, allTiers, allPlatforms,
-    allCategories = [], allSignals = [],
+    allCategories = [],
     activeEventTypes, activeTiers, activePlatforms,
-    activeCategories, activeSignals,
+    activeCategories,
     onResetEventTypes, onResetCategories,
     onToggleEventType, onToggleTier, onTogglePlatform,
-    onToggleCategory, onToggleSignal,
+    onToggleCategory,
     hasMarket, onToggleHasMarket,
   } = props;
 

@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const EventNodeComponent = memo<Props>(({
-  event, x, y, theme, time, isHovered, isSelected, isDimmed,
+  event, x, y, theme, time: _time, isHovered, isSelected, isDimmed,
   onHoverStart, onHoverEnd, onSelect,
 }) => {
   const r = nodeRadius(event.weight);

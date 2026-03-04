@@ -49,7 +49,7 @@ const MiniSparkline = memo<{ data: number[]; width: number; height: number; colo
 MiniSparkline.displayName = "MiniSparkline";
 
 export const AnchorNodeComponent = memo<Props>(({
-  node, x, y, theme, time, isHovered, isSelected, isDimmed,
+  node, x, y, theme, time: _time, isHovered, isSelected, isDimmed,
   onHoverStart, onHoverEnd, onSelect,
 }) => {
   const r = ANCHOR_NODE_RADIUS;

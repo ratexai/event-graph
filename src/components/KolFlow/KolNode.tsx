@@ -19,7 +19,7 @@ interface Props {
 }
 
 export const KolNodeComponent = memo<Props>(({
-  kol, x, y, theme, time, isHovered, isSelected, isDimmed,
+  kol, x, y, theme, time: _time, isHovered, isSelected, isDimmed,
   onHoverStart, onHoverEnd, onSelect,
 }) => {
   const r = kolRadius(kol.followers);

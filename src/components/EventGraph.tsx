@@ -9,7 +9,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { EventGraphProps, EventNode, EventType, FilterState, KolNode, NarrativeNode, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../types";
+import type { EventGraphProps, EventNode, EventType, KolNode, NarrativeNode, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../types";
 import { mergeTheme } from "../styles/theme";
 import {
   useAnimationTime,

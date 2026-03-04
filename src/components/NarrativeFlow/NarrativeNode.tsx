@@ -140,7 +140,7 @@ SourceBadge.displayName = "SourceBadge";
 // ─── Main component ─────────────────────────────────────────
 
 export const NarrativeNodeComponent = memo<Props>(({
-  node, x, y, theme, time, isHovered, isSelected, isDimmed,
+  node, x, y, theme, time: _time, isHovered, isSelected, isDimmed,
   onHoverStart, onHoverEnd, onSelect,
 }) => {
   const r = narrativeNodeRadius(node.weight, node.oddsDelta);

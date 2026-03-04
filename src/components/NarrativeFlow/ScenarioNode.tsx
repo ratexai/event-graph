@@ -25,11 +25,11 @@ interface Props {
 }
 
 export const ScenarioNodeComponent = memo<Props>(({
-  node, x, y, theme, time, isHovered, isSelected, isDimmed,
+  node, x, y, theme, time: _time, isHovered, isSelected, isDimmed,
   onHoverStart, onHoverEnd, onSelect,
 }) => {
   const r = narrativeNodeRadius(node.weight, node.oddsDelta);
-  const catStyle = getNarrativeCategoryStyle(theme, node.category);
+  const _catStyle = getNarrativeCategoryStyle(theme, node.category);
   const handleEnter = useCallback(() => onHoverStart(node.id), [node.id, onHoverStart]);
   const handleClick = useCallback(() => onSelect(node.id), [node.id, onSelect]);
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
