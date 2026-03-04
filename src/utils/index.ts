@@ -48,9 +48,14 @@ function computeColumnPositions<T extends HasColId>(
   layout: LayoutConfig,
 ): ComputedPositions {
   const { padding, minNodeSpacing, maxNodeSpacing } = layout;
-  const gw = graphWidth - padding.left - padding.right;
-  const gh = graphHeight - padding.top - padding.bottom;
   const maxCol = Math.max(...nodes.map((n) => n.col), 1);
+  const rawGw = graphWidth - padding.left - padding.right;
+  const rawGh = graphHeight - padding.top - padding.bottom;
+  // Enforce minimum column spacing so columns never compress on small viewports.
+  // The map supports pan/zoom, so content can extend beyond the visible area.
+  const MIN_COL_PX = 100;
+  const gw = Math.max(rawGw, maxCol * MIN_COL_PX);
+  const gh = Math.max(rawGh, 300);
 
   const cols = new Map<number, T[]>();
   for (const n of nodes) {

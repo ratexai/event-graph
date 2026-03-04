@@ -737,27 +737,35 @@ export interface DetailPanelProps {
   theme: GraphTheme;
   onClose: () => void;
   onNavigate: (id: string) => void;
+  /** Dynamic panel width — defaults to 340 */
+  panelWidth?: number;
+  /** Top offset to align with other sidebars */
+  topOffset?: number;
 }
 
 export const DetailPanel: React.FC<DetailPanelProps> = ({
   isOpen, selectedEvent, selectedKol, selectedNarrative,
   allEvents, allKols, allNarratives = [], timeSlotLabels,
-  theme, onClose, onNavigate,
-}) => (
+  theme, onClose, onNavigate, panelWidth: pw, topOffset: tOff,
+}) => {
+  const W = pw ?? 340;
+  const T = tOff ?? 48;
+  return (
   <div style={{
-    position: "absolute", top: 48, right: 0, width: 340, bottom: 0,
+    position: "absolute", top: T, right: 0, width: W, bottom: 0,
     background: "#1d2732", borderLeft: `1px solid ${theme.border}`,
     backdropFilter: "blur(20px)", zIndex: 25,
-    transform: isOpen ? "translateX(0)" : "translateX(340px)",
+    transform: isOpen ? "translateX(0)" : `translateX(${W}px)`,
     transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
     overflowY: "auto", overflowX: "hidden",
   }}>
     <button onClick={onClose} style={{
-      position: "sticky", top: 0, zIndex: 5, width: "100%", padding: "10px 16px",
-      background: "#1d2732", borderBottom: `1px solid ${theme.border}`,
-      border: "none", color: theme.muted, fontSize: 10, cursor: "pointer",
-      fontFamily: "inherit", textAlign: "left", backdropFilter: "blur(8px)",
-    }}>← Close</button>
+      position: "sticky", top: 0, right: 0, zIndex: 5, width: 32, height: 32,
+      background: "#1d2732", border: `1px solid ${theme.border}`,
+      borderRadius: 8, color: theme.muted, fontSize: 16, cursor: "pointer",
+      fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center",
+      margin: "8px 8px 0 auto",
+    }}>✕</button>
 
     {selectedEvent && (
       <EventDetail event={selectedEvent} allEvents={allEvents}
@@ -774,6 +782,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
         timeSlotLabels={timeSlotLabels} theme={theme} onNavigate={onNavigate} />
     )}
   </div>
-);
+  );
+};
 
 export { HoverTooltip };

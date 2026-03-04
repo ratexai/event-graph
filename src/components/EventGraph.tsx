@@ -33,7 +33,6 @@ import { AnchorModal } from "./NarrativeFlow/AnchorModal";
 const HEADER_HEIGHT = 48;
 const FILTER_HEIGHT = 38;
 const KOL_STATS_HEIGHT = 52;
-const DETAIL_PANEL_WIDTH = 340;
 /** Right sidebar occupies 20 % of the container width (min 260, max 380). */
 const CUI_BONO_PCT = 0.20;
 
@@ -100,8 +99,9 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const topOffset = HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0) + statsHeight;
   const hasCuiBono = mode === "narratives" && !!narrativeData?.narrative?.cuiBono;
   const hasNarrativeSidebar = mode === "narratives" && (hasCuiBono || narrativeNodes.length > 0);
-  const cuiBonoWidth = hasNarrativeSidebar ? Math.max(260, Math.min(380, Math.round(dims.w * CUI_BONO_PCT))) : 0;
-  const panelWidth = selection.panelOpen && showDetailPanel ? DETAIL_PANEL_WIDTH : cuiBonoWidth;
+  const sidebarWidth = Math.max(260, Math.min(380, Math.round(dims.w * CUI_BONO_PCT)));
+  const cuiBonoWidth = hasNarrativeSidebar ? sidebarWidth : 0;
+  const panelWidth = selection.panelOpen && showDetailPanel ? sidebarWidth : cuiBonoWidth;
   // Map canvas always takes full width — sidebars overlay on top.
   // This prevents element collisions when the viewport is small.
   const svgWidth = Math.max(0, dims.w);
@@ -278,6 +278,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           narrativeById={narrativeById}
           onHover={handleNodeHover}
           onSelect={handleNodeSelect}
+          onBackgroundClick={selection.closePanel}
         />
       </GraphErrorBoundary>
 
@@ -325,6 +326,8 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           theme={theme}
           onClose={selection.closePanel}
           onNavigate={handleNodeSelect}
+          panelWidth={sidebarWidth}
+          topOffset={topOffset}
         />
       )}
 

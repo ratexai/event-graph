@@ -49,6 +49,7 @@ interface GraphCanvasProps {
   narrativeById?: Map<string, NarrativeNode>;
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
+  onBackgroundClick?: () => void;
 }
 
 export function GraphCanvas({
@@ -77,6 +78,7 @@ export function GraphCanvas({
   narrativeById,
   onHover,
   onSelect,
+  onBackgroundClick,
 }: GraphCanvasProps) {
   const isEventsMode = mode === "events";
   const isNarrativeMode = mode === "narratives";
@@ -147,11 +149,13 @@ export function GraphCanvas({
           <circle cx="15" cy="15" r="0.5" fill={theme.muted} opacity="0.12" />
         </pattern>
       </defs>
-      <rect width="100%" height="100%" fill="url(#dotgrid)" />
+      <rect width="100%" height="100%" fill="url(#dotgrid)" onClick={onBackgroundClick} />
       <g transform={`translate(${panZoom.pan.x},${panZoom.pan.y}) scale(${panZoom.zoom})`}>
         {timeSlots.map((slot, i) => {
           if (i > maxCol) return null;
-          const x = layoutPadding.left + (graphWidth / maxCol) * i;
+          const MIN_COL_PX = 100;
+          const effectiveWidth = Math.max(graphWidth, maxCol * MIN_COL_PX);
+          const x = layoutPadding.left + (effectiveWidth / maxCol) * i;
           const slotIsFuture = isNarrativeMode && (
             slot.label.includes("(fut)") || slot.label.includes("(prog)") ||
             slot.type === "near_future"
