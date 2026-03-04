@@ -181,7 +181,7 @@ export const NarrativeNodeComponent = memo<Props>(({
   const hasCuiBono = !!(node as unknown as Record<string, unknown>).cuiBono;
 
   return (
-    <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s" }}
+    <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s", outline: "none" }}
       role="button" aria-label={`${node.signal} ${node.category}: ${node.label}, odds delta ${node.oddsDelta}`}
       tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
       opacity={isDimmed ? 0.15 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
@@ -247,18 +247,19 @@ export const NarrativeNodeComponent = memo<Props>(({
         </text>
       ) : null}
 
-      {/* 2-line label with background plate */}
+      {/* 2-line label with background plate — left-aligned */}
       {lines.map((line, i) => {
         const baseY = emojiLine
           ? r * 0.15 + i * (labelFontSize + 1.5)
           : -labelFontSize * 0.3 + i * (labelFontSize + 1.5);
         const textW = line.length * labelFontSize * 0.58 + 6;
+        const lx = -r * 0.85;
         return (
           <g key={i}>
-            <rect x={-textW / 2} y={baseY - labelFontSize * 0.75} width={textW} height={labelFontSize + 3}
+            <rect x={lx} y={baseY - labelFontSize * 0.75} width={textW} height={labelFontSize + 3}
               rx={3} fill={theme.bg} opacity={0.75} />
-            <text y={baseY}
-              textAnchor="middle" fill={theme.text}
+            <text x={lx + 3} y={baseY}
+              textAnchor="start" fill={theme.text}
               fontSize={labelFontSize}
               fontWeight={isHovered ? 700 : 600}
               fontFamily={theme.monoFontFamily}

@@ -46,7 +46,7 @@ function toIdMap<T extends { id: string }>(items: T[]): Map<string, T> {
 }
 
 export const EventGraph: React.FC<EventGraphProps> = ({
-  defaultMode = "events",
+  defaultMode = "narratives",
   eventData,
   kolData,
   narrativeData,

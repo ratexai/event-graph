@@ -47,7 +47,7 @@ export const ScenarioNodeComponent = memo<Props>(({
 
   return (
     <g className="scenario-nd" transform={`translate(${x},${y})`}
-      style={{ cursor: "pointer", transition: "opacity 0.3s" }}
+      style={{ cursor: "pointer", transition: "opacity 0.3s", outline: "none" }}
       role="button" aria-label={`Scenario ${node.outcome}: ${node.label}`}
       tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
       opacity={isDimmed ? 0.08 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}

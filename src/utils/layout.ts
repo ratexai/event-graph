@@ -10,9 +10,9 @@ import type {
 // ─── Default Layout ─────────────────────────────────────────────
 
 export const DEFAULT_LAYOUT: LayoutConfig = {
-  padding: { top: 55, right: 85, bottom: 45, left: 85 },
-  minNodeSpacing: 86,
-  maxNodeSpacing: 185,
+  padding: { top: 55, right: 98, bottom: 45, left: 98 },
+  minNodeSpacing: 99,
+  maxNodeSpacing: 213,
   nodeBaseRadius: 18,
   nodeWeightScale: 18,
   streamWidthScale: 22,
@@ -49,7 +49,7 @@ function computeColumnPositions<T extends HasColId>(
   const rawGh = graphHeight - padding.top - padding.bottom;
   // Enforce minimum column spacing so columns never compress on small viewports.
   // The map supports pan/zoom, so content can extend beyond the visible area.
-  const MIN_COL_PX = 100;
+  const MIN_COL_PX = 115;
   const gw = Math.max(rawGw, maxCol * MIN_COL_PX);
   const gh = Math.max(rawGh, 300);
 

@@ -36,7 +36,7 @@ export const KolNodeComponent = memo<Props>(({
   const gradId = `kg-${kol.id}`;
 
   return (
-    <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s" }}
+    <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s", outline: "none" }}
       role="button" aria-label={`${tierMeta.label} KOL: ${kol.name}, ${formatNumber(kol.followers)} followers`}
       tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
       opacity={isDimmed ? 0.15 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
