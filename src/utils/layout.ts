@@ -11,10 +11,10 @@ import type {
 
 export const DEFAULT_LAYOUT: LayoutConfig = {
   padding: { top: 55, right: 85, bottom: 45, left: 85 },
-  minNodeSpacing: 72,
-  maxNodeSpacing: 155,
-  nodeBaseRadius: 16,
-  nodeWeightScale: 16,
+  minNodeSpacing: 86,
+  maxNodeSpacing: 185,
+  nodeBaseRadius: 18,
+  nodeWeightScale: 18,
   streamWidthScale: 22,
   streamMinWidth: 4,
 };

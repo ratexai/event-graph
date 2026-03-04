@@ -167,9 +167,9 @@ export const AnchorNodeComponent = memo<Props>(({
         </g>
       )}
 
-      {/* Label below node */}
+      {/* Label below node — left-aligned */}
       {lines.map((line, i) => (
-        <text key={i} y={r + 14 + i * 10} textAnchor="middle" fill={theme.text}
+        <text key={i} x={-r} y={r + 14 + i * 10} textAnchor="start" fill={theme.text}
           fontSize={8.5} fontWeight={isActive ? 700 : 600}
           fontFamily={theme.monoFontFamily}
           style={{ pointerEvents: "none" }}>

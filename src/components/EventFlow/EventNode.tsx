@@ -57,10 +57,10 @@ export const EventNodeComponent = memo<Props>(({
           opacity={isActive ? 0.5 : 0.25} strokeDasharray={isSelected ? "none" : "4,3"} />
       )}
 
-      {/* Main circle — radial gradient fill per §12 */}
+      {/* Main circle — radial gradient fill, 2px stroke always */}
       <circle r={r} fill={`url(#${gradId})`} stroke={style.color}
-        strokeWidth={isActive ? 2 : 1} strokeOpacity={isActive ? 0.85 : 0.35}
-        style={{ transition: "stroke-width 0.3s, stroke-opacity 0.3s" }} />
+        strokeWidth={2} strokeOpacity={isActive ? 0.85 : 0.6}
+        style={{ transition: "stroke-opacity 0.3s" }} />
 
       {/* Avatar or label */}
       {event.imageUrl ? (
@@ -71,13 +71,13 @@ export const EventNodeComponent = memo<Props>(({
           style={{ pointerEvents: "none" }}>{meta?.label || event.type}</text>
       ) : null}
 
-      {/* Name label below (§12 BubbleNode nameLabel) */}
+      {/* Name label below — left-aligned */}
       {r > 18 && (() => {
         const lbl = truncateLabel(event.label, 14);
         const fs = Math.min(r / 4.5, 12);
         const ly = r + 12;
         return (
-          <text y={ly} textAnchor="middle" fill={theme.text} fontSize={fs}
+          <text x={-r} y={ly} textAnchor="start" fill={theme.text} fontSize={fs}
             fontWeight={500} fontFamily={theme.fontFamily}
             style={{ pointerEvents: "none" }}>{lbl}</text>
         );
