@@ -16,8 +16,6 @@ export interface AnchorModalProps {
   onNavigate: (id: string) => void;
 }
 
-// All complement colors now use theme.complement / theme.complementDim
-
 /** Causal factor row */
 const InfluenceRow: React.FC<{
   link: AnchorInfluenceLink;
@@ -50,7 +48,6 @@ const InfluenceRow: React.FC<{
           {link.mechanism}
         </div>
       </div>
-      {/* Influence magnitude bar */}
       <div style={{ width: 40, height: 6, borderRadius: 3, background: theme.border, overflow: "hidden" }}>
         <div style={{
           width: `${Math.min(Math.abs(link.influence) / 30 * 100, 100)}%`,
@@ -76,29 +73,28 @@ const ScenarioCard: React.FC<{
     <div
       style={{
         padding: 14, borderRadius: 10, background: bg,
-        border: `1px solid ${color}30`, cursor: "pointer",
-        flex: 1, minWidth: 140,
+        cursor: "pointer", flex: 1, minWidth: 140,
       }}
       onClick={() => onNavigate(scenario.id)}
     >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <span style={{ fontSize: 11, fontWeight: 800, color }}>
+        <span style={{ fontSize: 13, fontWeight: 800, color }}>
           {icon} {scenario.outcome} ({scenario.outcomeProbability ?? "?"}%)
         </span>
       </div>
-      <div style={{ fontSize: 10, fontWeight: 600, color: theme.text, marginBottom: 6 }}>{scenario.label}</div>
-      <div style={{ fontSize: 9, color: theme.textSecondary, lineHeight: 1.5, marginBottom: 8 }}>
+      <div style={{ fontSize: 12, fontWeight: 600, color: theme.text, marginBottom: 6 }}>{scenario.label}</div>
+      <div style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.5, marginBottom: 8 }}>
         {scenario.desc && (scenario.desc.length > 120 ? scenario.desc.slice(0, 118) + "…" : scenario.desc)}
       </div>
 
       {/* Conditions */}
       {scenario.conditions && scenario.conditions.length > 0 && (
         <div style={{ marginBottom: 8 }}>
-          <div style={{ fontSize: 7.5, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
+          <div style={{ fontSize: 9, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>
             Conditions
           </div>
           {scenario.conditions.slice(0, 3).map((c, i) => (
-            <div key={i} style={{ fontSize: 8, color: theme.textSecondary, marginBottom: 2 }}>• {c}</div>
+            <div key={i} style={{ fontSize: 10, color: theme.textSecondary, marginBottom: 2 }}>• {c}</div>
           ))}
         </div>
       )}
@@ -106,11 +102,11 @@ const ScenarioCard: React.FC<{
       {/* Next events */}
       {scenario.nextEvents && scenario.nextEvents.length > 0 && (
         <div>
-          <div style={{ fontSize: 7.5, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
+          <div style={{ fontSize: 9, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>
             Next Events
           </div>
           {scenario.nextEvents.slice(0, 3).map((ne, i) => (
-            <div key={i} style={{ fontSize: 8, color: theme.textSecondary, marginBottom: 2 }}>→ {ne}</div>
+            <div key={i} style={{ fontSize: 10, color: theme.textSecondary, marginBottom: 2 }}>→ {ne}</div>
           ))}
         </div>
       )}
@@ -118,21 +114,21 @@ const ScenarioCard: React.FC<{
       {/* Cui Bono mini */}
       {scenario.cuiBono && (
         <div style={{ marginTop: 8, borderTop: `1px solid ${theme.border}`, paddingTop: 6 }}>
-          <div style={{ fontSize: 7.5, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
+          <div style={{ fontSize: 9, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4, fontWeight: 600 }}>
             Cui Bono
           </div>
           <div style={{ display: "flex", gap: 8 }}>
             {scenario.cuiBono.winners.length > 0 && (
               <div>
                 {scenario.cuiBono.winners.slice(0, 2).map((w, i) => (
-                  <div key={i} style={{ fontSize: 8, color: theme.positive }}>+{w.name}</div>
+                  <div key={i} style={{ fontSize: 10, color: theme.positive }}>+{w.name}</div>
                 ))}
               </div>
             )}
             {scenario.cuiBono.losers.length > 0 && (
               <div>
                 {scenario.cuiBono.losers.slice(0, 2).map((l, i) => (
-                  <div key={i} style={{ fontSize: 8, color: theme.negative }}>−{l.name}</div>
+                  <div key={i} style={{ fontSize: 10, color: theme.negative }}>−{l.name}</div>
                 ))}
               </div>
             )}
@@ -158,11 +154,10 @@ const DualSparkline: React.FC<{
   const pmPts = data.map((d, i) => `${i * xStep},${toY(d.polymarket)}`).join(" ");
   const rxPts = data.map((d, i) => `${i * xStep},${toY(d.rateX)}`).join(" ");
 
-  // Find divergence point: where |pm - rx| first exceeds 3pp
   const divIdx = data.findIndex((d) => Math.abs(d.rateX - d.polymarket) > 3);
 
   return (
-    <svg width={width} height={height + 16} style={{ overflow: "visible" }}>
+    <svg width="100%" height={height + 16} viewBox={`-30 0 ${width + 80} ${height + 16}`} preserveAspectRatio="xMidYMid meet">
       {/* Grid lines */}
       {[0, 25, 50, 75, 100].filter((v) => v >= min && v <= max).map((v) => (
         <g key={v}>
@@ -212,7 +207,7 @@ const DualSparkline: React.FC<{
   );
 };
 
-/** Waterfall chart showing factor decomposition */
+/** Waterfall chart showing factor decomposition — responsive */
 const WaterfallChart: React.FC<{
   factors: AnchorFactor[];
   nodeMap: Map<string, NarrativeNode>;
@@ -220,16 +215,15 @@ const WaterfallChart: React.FC<{
   endProb: number;
   theme: GraphTheme;
 }> = ({ factors, nodeMap, startProb, endProb, theme }) => {
-  const barWidth = 520;
+  const totalWidth = 600;
+  const barWidth = 380;
   const rowHeight = 22;
-  const labelWidth = 180;
+  const labelWidth = 160;
 
-  // Sort factors: negative (biggest impact first), then positive
   const sorted = useMemo(() => {
     return [...factors].sort((a, b) => a.influence - b.influence);
   }, [factors]);
 
-  // Build waterfall positions
   const rows = useMemo(() => {
     let running = startProb;
     const result: Array<{
@@ -258,7 +252,7 @@ const WaterfallChart: React.FC<{
   const totalHeight = (rows.length + 2) * rowHeight + 8;
 
   return (
-    <svg width={barWidth + labelWidth + 60} height={totalHeight} style={{ overflow: "visible", fontSize: 8 }}>
+    <svg width="100%" height={totalHeight} viewBox={`0 0 ${totalWidth} ${totalHeight}`} preserveAspectRatio="xMinYMin meet" style={{ fontSize: 8 }}>
       {/* Start bar */}
       <text x={0} y={12} fill={theme.muted} fontSize={8} fontWeight={700}
         fontFamily={theme.monoFontFamily}>Base probability</text>
@@ -275,18 +269,14 @@ const WaterfallChart: React.FC<{
         const sign = row.influence > 0 ? "+" : "";
         return (
           <g key={i}>
-            {/* Connector line from previous */}
             <line x1={labelWidth + toX(row.from)} y1={y - 4} x2={labelWidth + toX(row.from)} y2={y + 2}
               stroke={theme.border} strokeWidth={0.5} strokeDasharray="2 2" />
-            {/* Label */}
             <text x={0} y={y + 10} fill={theme.textSecondary} fontSize={7.5}
-              fontFamily={theme.monoFontFamily} style={{ overflow: "hidden" }}>
-              {row.label.length > 30 ? row.label.slice(0, 28) + "…" : row.label}
+              fontFamily={theme.monoFontFamily}>
+              {row.label.length > 24 ? row.label.slice(0, 22) + "…" : row.label}
             </text>
-            {/* Bar */}
             <rect x={labelWidth + barFrom} y={y} width={barW} height={14} rx={3}
               fill={row.color} opacity={0.6} />
-            {/* Delta label */}
             <text x={labelWidth + barTo + 6} y={y + 10} fill={row.color} fontSize={8} fontWeight={800}
               fontFamily={theme.monoFontFamily}>
               {sign}{row.influence}pp → {row.to.toFixed(0)}%
@@ -295,7 +285,7 @@ const WaterfallChart: React.FC<{
         );
       })}
 
-      {/* End bars: PM and RX */}
+      {/* End bar */}
       {(() => {
         const lastY = (rows.length + 1) * rowHeight + 2;
         const pmProb = rows.length > 0 ? rows[rows.length - 1].to : startProb;
@@ -316,18 +306,27 @@ const WaterfallChart: React.FC<{
   );
 };
 
+// Section label style helper
+const sectionLabel = (theme: GraphTheme): React.CSSProperties => ({
+  fontSize: 10, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase",
+  marginBottom: 10, fontWeight: 600,
+});
+
+// Card style helper — no borders
+const card = (theme: GraphTheme): React.CSSProperties => ({
+  padding: 16, borderRadius: 12, background: theme.card, marginBottom: 16,
+});
+
 export const AnchorModal: React.FC<AnchorModalProps> = ({
   anchor, allNodes, theme, onClose, onNavigate,
 }) => {
   const nodeMap = useMemo(() => new Map(allNodes.map((n) => [n.id, n])), [allNodes]);
 
-  // Sort influence links by |influence| descending
   const sortedInfluence = useMemo(() => {
     if (!anchor.influenceLinks) return [];
     return [...anchor.influenceLinks].sort((a, b) => Math.abs(b.influence) - Math.abs(a.influence));
   }, [anchor.influenceLinks]);
 
-  // Find scenario nodes
   const scenarioNodes = useMemo(() => {
     if (!anchor.scenarios) return [];
     return anchor.scenarios.map((id) => nodeMap.get(id)).filter(Boolean) as NarrativeNode[];
@@ -342,7 +341,6 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
     ? new Date(anchor.resolvesAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
     : "";
 
-  // Alpha styling
   const alphaInfo = useMemo(() => {
     if (alpha == null) return null;
     const abs = Math.abs(alpha);
@@ -353,7 +351,6 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
     return { color, signal, icon, text: `${alpha > 0 ? "+" : ""}${alpha}pp` };
   }, [alpha]);
 
-  // Aggregated influence
   let posTotal = 0;
   let negTotal = 0;
   for (const link of anchor.influenceLinks || []) {
@@ -361,7 +358,6 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
     else negTotal += Math.abs(link.influence);
   }
 
-  // Factors for waterfall chart (use anchor.factors if present, else derive from influenceLinks)
   const factors = useMemo<AnchorFactor[]>(() => {
     if (anchor.factors?.length) return anchor.factors;
     if (!anchor.influenceLinks?.length) return [];
@@ -387,29 +383,28 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
       {/* Modal content */}
       <div style={{
         position: "relative", zIndex: 51, width: "min(680px, 90vw)",
-        maxHeight: "85vh", overflowY: "auto",
-        background: theme.bg, border: `1px solid ${theme.complement}40`,
-        borderRadius: 12, padding: 28,
+        maxHeight: "85vh", overflowY: "auto", overflowX: "hidden",
+        background: theme.bg, borderRadius: 12, padding: 28,
       }}>
         {/* Close button */}
         <button onClick={onClose} style={{
           position: "absolute", top: 12, right: 12, background: "none",
           border: "none", color: theme.muted, fontSize: 18, cursor: "pointer",
-          fontFamily: "inherit", transition: "background-color 0.3s ease",
+          fontFamily: "inherit",
         }}>✕</button>
 
-        {/* Header */}
-        <div style={{ display: "flex", gap: 16, alignItems: "flex-start", marginBottom: 24 }}>
+        {/* ── Header ── */}
+        <div style={{ display: "flex", gap: 16, alignItems: "flex-start", marginBottom: 16 }}>
           <div style={{
             width: 48, height: 48, borderRadius: "50%",
-            background: theme.complementDim, border: `2px solid ${theme.complement}`,
+            background: theme.complementDim,
             display: "flex", alignItems: "center", justifyContent: "center",
             fontSize: 16, fontWeight: 800, color: theme.complement,
             fontFamily: theme.monoFontFamily, flexShrink: 0,
           }}>
             PM
           </div>
-          <div>
+          <div style={{ flex: 1 }}>
             <div style={{ fontSize: 9, color: theme.complement, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>
               PREDICTION MARKET
             </div>
@@ -424,10 +419,25 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
           </div>
         </div>
 
-        {/* Key metrics row — dual probability display */}
-        <div style={{ display: "grid", gridTemplateColumns: rxText ? "2fr 1fr 1fr 1fr" : "repeat(4, 1fr)", gap: 10, marginBottom: 24 }}>
-          {/* Dual probability card */}
-          <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${alphaInfo?.color ?? theme.border}30`, textAlign: "center" }}>
+        {/* ── View on Polymarket button — top, solid purple ── */}
+        {anchor.marketUrl && (
+          <div style={{ marginBottom: 20 }}>
+            <a href={anchor.marketUrl} target="_blank" rel="noopener noreferrer"
+              style={{
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                padding: "12px 24px", borderRadius: 10,
+                background: theme.complement, border: "none",
+                color: "#ffffff", fontSize: 13, fontWeight: 700, textDecoration: "none",
+                fontFamily: theme.monoFontFamily, width: "100%",
+              }}>
+              View on Polymarket
+            </a>
+          </div>
+        )}
+
+        {/* ── Key metrics row ── */}
+        <div style={{ display: "grid", gridTemplateColumns: rxText ? "2fr 1fr 1fr 1fr" : "repeat(4, 1fr)", gap: 10, marginBottom: 16 }}>
+          <div style={{ padding: 12, borderRadius: 10, background: theme.card, textAlign: "center" }}>
             <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 6 }}>Probability</div>
             <div style={{ display: "flex", justifyContent: "center", gap: 12, alignItems: "baseline" }}>
               <div>
@@ -444,7 +454,6 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
                 </>
               )}
             </div>
-            {/* Alpha badge */}
             {alphaInfo && (
               <div style={{ marginTop: 8, display: "flex", justifyContent: "center", gap: 6, alignItems: "center" }}>
                 <span style={{
@@ -459,15 +468,15 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
               </div>
             )}
           </div>
-          <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, textAlign: "center" }}>
+          <div style={{ padding: 12, borderRadius: 10, background: theme.card, textAlign: "center" }}>
             <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>Expiry</div>
             <div style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>{expiryLabel || "—"}</div>
           </div>
-          <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, textAlign: "center" }}>
+          <div style={{ padding: 12, borderRadius: 10, background: theme.card, textAlign: "center" }}>
             <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>Volume</div>
             <div style={{ fontSize: 12, fontWeight: 700, color: theme.text }}>{anchor.tradingVolume || "—"}</div>
           </div>
-          <div style={{ padding: 12, borderRadius: 10, background: theme.card, border: `1px solid ${theme.border}`, textAlign: "center" }}>
+          <div style={{ padding: 12, borderRadius: 10, background: theme.card, textAlign: "center" }}>
             <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 4 }}>
               {anchor.rateXConfidence != null ? "Confidence" : "Liquidity"}
             </div>
@@ -477,72 +486,61 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
           </div>
         </div>
 
-        {/* Dual Probability History Sparkline (PM vs RX) */}
+        {/* ── Scenario Branches — moved up ── */}
+        {scenarioNodes.length > 0 && (
+          <div style={{ marginBottom: 16 }}>
+            <div style={sectionLabel(theme)}>Scenario Branches</div>
+            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+              {scenarioNodes.map((sc) => (
+                <ScenarioCard key={sc.id} scenario={sc} theme={theme} onNavigate={onNavigate} />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Probability History ── */}
         {anchor.dualProbHistory && anchor.dualProbHistory.length > 2 ? (
-          <div style={{
-            padding: 16, borderRadius: 12, background: theme.card,
-            border: `1px solid ${theme.border}`, marginBottom: 24,
-          }}>
+          <div style={card(theme)}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase" }}>
-                Probability History
-              </div>
+              <div style={sectionLabel(theme)}>Probability History</div>
               <div style={{ display: "flex", gap: 12, fontSize: 8 }}>
                 <span style={{ color: theme.complement }}>━ Polymarket</span>
                 <span style={{ color: theme.positive }}>━ Model</span>
               </div>
             </div>
-            <DualSparkline data={anchor.dualProbHistory} width={580} height={60} theme={theme} />
+            <DualSparkline data={anchor.dualProbHistory} width={560} height={60} theme={theme} />
           </div>
         ) : anchor.probHistory && anchor.probHistory.length > 2 ? (
-          <div style={{
-            padding: 16, borderRadius: 12, background: theme.card,
-            border: `1px solid ${theme.border}`, marginBottom: 24,
-          }}>
-            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 10 }}>
-              Probability History
-            </div>
-            <Sparkline data={anchor.probHistory} color={theme.complement} width={580} height={50} />
+          <div style={card(theme)}>
+            <div style={{ ...sectionLabel(theme), marginBottom: 10 }}>Probability History</div>
+            <Sparkline data={anchor.probHistory} color={theme.complement} width={560} height={50} />
           </div>
         ) : null}
 
-        {/* RateXAI Reasoning */}
+        {/* ── Model Analysis ── */}
         {anchor.rateXReasoning && (
-          <div style={{
-            padding: 14, borderRadius: 10, background: theme.card,
-            border: `1px solid ${theme.positive}30`, marginBottom: 24,
-          }}>
-            <div style={{ fontSize: 8, color: theme.positive, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>
+          <div style={card(theme)}>
+            <div style={{ fontSize: 10, color: theme.positive, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8, fontWeight: 700 }}>
               Model Analysis
             </div>
-            <div style={{ fontSize: 10, color: theme.textSecondary, lineHeight: 1.6, fontStyle: "italic" }}>
+            <div style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.6, fontStyle: "italic" }}>
               "{anchor.rateXReasoning}"
             </div>
           </div>
         )}
 
-        {/* Factor Decomposition Waterfall */}
+        {/* ── Factor Decomposition Waterfall — responsive ── */}
         {factors.length > 0 && (
-          <div style={{
-            padding: 16, borderRadius: 12, background: theme.card,
-            border: `1px solid ${theme.border}`, marginBottom: 24,
-          }}>
-            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 10 }}>
-              Factor Decomposition (Waterfall)
-            </div>
+          <div style={{ ...card(theme), overflow: "hidden" }}>
+            <div style={sectionLabel(theme)}>Factor Decomposition (Waterfall)</div>
             <WaterfallChart factors={factors} nodeMap={nodeMap} startProb={45} endProb={rxProb ?? pmProb ?? 0} theme={theme} />
           </div>
         )}
 
-        {/* Aggregated influence bar */}
+        {/* ── Aggregated Pressure ── */}
         {(posTotal > 0 || negTotal > 0) && (
-          <div style={{
-            padding: 14, borderRadius: 10, background: theme.card,
-            border: `1px solid ${theme.border}`, marginBottom: 24,
-          }}>
-            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8 }}>
-              Aggregated Pressure
-            </div>
+          <div style={card(theme)}>
+            <div style={sectionLabel(theme)}>Aggregated Pressure</div>
             <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
               <div style={{ flex: 1 }}>
                 <div style={{ height: 8, borderRadius: 4, background: theme.negativeDim, overflow: "hidden", marginBottom: 4 }}>
@@ -560,12 +558,10 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
           </div>
         )}
 
-        {/* Causal Factors Table */}
+        {/* ── Causal Factors Table ── */}
         {sortedInfluence.length > 0 && (
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 10 }}>
-              Causal Factors ({sortedInfluence.length} events)
-            </div>
+          <div style={{ marginBottom: 16 }}>
+            <div style={sectionLabel(theme)}>Causal Factors ({sortedInfluence.length} events)</div>
             {sortedInfluence.map((link, i) => (
               <InfluenceRow
                 key={link.id + i}
@@ -575,36 +571,6 @@ export const AnchorModal: React.FC<AnchorModalProps> = ({
                 onNavigate={onNavigate}
               />
             ))}
-          </div>
-        )}
-
-        {/* Scenario Branches */}
-        {scenarioNodes.length > 0 && (
-          <div style={{ marginBottom: 24 }}>
-            <div style={{ fontSize: 8, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 10 }}>
-              Scenario Branches
-            </div>
-            <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-              {scenarioNodes.map((sc) => (
-                <ScenarioCard key={sc.id} scenario={sc} theme={theme} onNavigate={onNavigate} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Polymarket link */}
-        {anchor.marketUrl && (
-          <div style={{ textAlign: "center", paddingTop: 8 }}>
-            <a href={anchor.marketUrl} target="_blank" rel="noopener noreferrer"
-              style={{
-                display: "inline-flex", gap: 8, alignItems: "center",
-                padding: "10px 24px", borderRadius: 10,
-                background: theme.complementDim, border: `1px solid ${theme.complement}40`,
-                color: theme.complement, fontSize: 11, fontWeight: 700, textDecoration: "none",
-                fontFamily: theme.monoFontFamily,
-              }}>
-              View on Polymarket
-            </a>
           </div>
         )}
       </div>
