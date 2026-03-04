@@ -1,6 +1,6 @@
 import React from "react";
 import type { EventType, GraphTheme, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../../types";
-import { EVENT_TYPE_META, getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META } from "../../styles/theme";
+import { EVENT_TYPE_META, getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, getNarrativeSignalStyle, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META, NARRATIVE_SIGNAL_META } from "../../styles/theme";
 import { formatNumber } from "../../utils";
 
 // ─── Compact filter button ──────────────────────────────────────
@@ -108,7 +108,7 @@ export function TopBar(props: TopBarProps) {
       {/* Divider before filters */}
       <div style={{ width: 1, height: 16, background: theme.border, flexShrink: 0 }} />
 
-      {/* Filters */}
+      {/* Filters — narrative filters moved to bottom-left overlay */}
       {mode === "events" ? (<>
         <button onClick={onResetEventTypes} aria-pressed={activeEventTypes.size === allEventTypes.length}
           style={filterBtn(theme, activeEventTypes.size === allEventTypes.length)}>All</button>
@@ -121,26 +121,7 @@ export function TopBar(props: TopBarProps) {
               style={filterBtn(theme, on, style.color, style.color)}>{meta?.label}</button>
           );
         })}
-      </>) : mode === "narratives" ? (<>
-        {onResetCategories && (
-          <button onClick={onResetCategories} aria-pressed={activeCategories?.size === allCategories.length}
-            style={filterBtn(theme, activeCategories != null && activeCategories.size === allCategories.length)}>All</button>
-        )}
-        {allCategories.map((cat) => {
-          const style = getNarrativeCategoryStyle(theme, cat);
-          const meta = NARRATIVE_CATEGORY_META[cat];
-          const on = activeCategories?.has(cat) ?? true;
-          return (
-            <button key={cat} onClick={() => onToggleCategory?.(cat)} aria-pressed={on}
-              style={filterBtn(theme, on, style.color, style.color)}>{meta?.label || cat.charAt(0).toUpperCase() + cat.slice(1)}</button>
-          );
-        })}
-        {onToggleHasMarket && (<>
-          <div style={{ width: 1, height: 14, background: theme.border, margin: "0 2px", flexShrink: 0 }} />
-          <button onClick={onToggleHasMarket} aria-pressed={!!hasMarket}
-            style={filterBtn(theme, !!hasMarket, theme.complementUp, theme.complement)}>Prediction</button>
-        </>)}
-      </>) : (<>
+      </>) : mode === "kols" ? (<>
         {allTiers.map((tier) => {
           const style = getKolTierStyle(theme, tier);
           const meta = KOL_TIER_META[tier];
@@ -159,7 +140,7 @@ export function TopBar(props: TopBarProps) {
               style={filterBtn(theme, on)}>{meta.label}</button>
           );
         })}
-      </>)}
+      </>) : null}
     </div>
   );
 }
@@ -238,6 +219,107 @@ export function NarrativeStatsBar({ top, height, panelOffset, theme, stats }: Na
           <div style={{ fontSize: 8, fontWeight: 500, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginTop: 1 }}>{item.l}</div>
         </div>
       ))}
+    </div>
+  );
+}
+
+// ─── Narrative Filter Panel (bottom-left overlay) ────────────
+
+const SIZE_TIERS = [
+  { key: "all", label: "All", min: 0 },
+  { key: "m", label: "M+", min: 0.3 },
+  { key: "l", label: "L+", min: 0.5 },
+  { key: "xl", label: "XL", min: 0.7 },
+] as const;
+
+interface NarrativeFilterPanelProps {
+  theme: GraphTheme;
+  allCategories: NarrativeCategory[];
+  allSignals: NarrativeSignal[];
+  activeCategories: Set<NarrativeCategory>;
+  activeSignals: Set<NarrativeSignal>;
+  onResetCategories: () => void;
+  onToggleCategory: (category: NarrativeCategory) => void;
+  onToggleSignal: (signal: NarrativeSignal) => void;
+  hasMarket?: boolean;
+  onToggleHasMarket?: () => void;
+  minWeight?: number;
+  onSetMinWeight?: (w: number) => void;
+}
+
+export function NarrativeFilterPanel(props: NarrativeFilterPanelProps) {
+  const {
+    theme, allCategories, allSignals,
+    activeCategories, activeSignals,
+    onResetCategories, onToggleCategory, onToggleSignal,
+    hasMarket, onToggleHasMarket,
+    minWeight = 0, onSetMinWeight,
+  } = props;
+
+  const sectionLabel: React.CSSProperties = {
+    fontSize: 8, fontWeight: 700, color: theme.muted,
+    letterSpacing: 1.2, textTransform: "uppercase",
+    marginBottom: 4, marginTop: 6,
+  };
+
+  return (
+    <div style={{
+      position: "absolute", bottom: 12, left: 12,
+      display: "flex", flexDirection: "column", gap: 2,
+      padding: "8px 10px", borderRadius: 10,
+      background: `${theme.bg}ee`, backdropFilter: "blur(12px)",
+      border: `1px solid ${theme.border}`, zIndex: 25,
+      fontFamily: theme.fontFamily, maxWidth: 280,
+    }}>
+      {/* Category filters */}
+      <div style={sectionLabel}>Category</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+        <button onClick={onResetCategories} aria-pressed={activeCategories.size === allCategories.length}
+          style={filterBtn(theme, activeCategories.size === allCategories.length)}>All</button>
+        {allCategories.map((cat) => {
+          const style = getNarrativeCategoryStyle(theme, cat);
+          const meta = NARRATIVE_CATEGORY_META[cat];
+          const on = activeCategories.has(cat);
+          return (
+            <button key={cat} onClick={() => onToggleCategory(cat)} aria-pressed={on}
+              style={filterBtn(theme, on, style.color, style.color)}>{meta?.label || cat.charAt(0).toUpperCase() + cat.slice(1)}</button>
+          );
+        })}
+        {onToggleHasMarket && (
+          <button onClick={onToggleHasMarket} aria-pressed={!!hasMarket}
+            style={filterBtn(theme, !!hasMarket, theme.complementUp, theme.complement)}>Prediction</button>
+        )}
+      </div>
+
+      {/* Signal filters */}
+      <div style={sectionLabel}>Signal</div>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+        {allSignals.map((sig) => {
+          const style = getNarrativeSignalStyle(theme, sig);
+          const meta = NARRATIVE_SIGNAL_META[sig];
+          const on = activeSignals.has(sig);
+          return (
+            <button key={sig} onClick={() => onToggleSignal(sig)} aria-pressed={on}
+              style={filterBtn(theme, on, style.color, style.color)}>{meta?.label}</button>
+          );
+        })}
+      </div>
+
+      {/* Size filter */}
+      {onSetMinWeight && (
+        <>
+          <div style={sectionLabel}>Min Size</div>
+          <div style={{ display: "flex", gap: 3 }}>
+            {SIZE_TIERS.map((tier) => {
+              const on = minWeight === tier.min;
+              return (
+                <button key={tier.key} onClick={() => onSetMinWeight(tier.min)}
+                  aria-pressed={on} style={filterBtn(theme, on)}>{tier.label}</button>
+              );
+            })}
+          </div>
+        </>
+      )}
     </div>
   );
 }

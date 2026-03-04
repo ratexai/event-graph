@@ -95,9 +95,13 @@ export function useGraphFilters(
     setFilters((prev) => ({ ...prev, hasMarket: !prev.hasMarket }));
   }, []);
 
+  const setMinWeight = useCallback((w: number) => {
+    setFilters((prev) => ({ ...prev, minWeight: w || undefined }));
+  }, []);
+
   return {
     filters, setFilters,
     toggleEventType, toggleTier, togglePlatform, toggleCategory, toggleSignal,
-    resetEventTypes, resetCategories, setSortField, setSearchQuery, toggleHasMarket,
+    resetEventTypes, resetCategories, setSortField, setSearchQuery, toggleHasMarket, setMinWeight,
   };
 }
