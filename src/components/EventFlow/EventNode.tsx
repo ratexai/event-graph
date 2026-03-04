@@ -2,7 +2,7 @@ import React, { memo, useCallback } from "react";
 import type { EventNode as EventNodeType, GraphTheme } from "../../types";
 import { getEventTypeStyle, EVENT_TYPE_META } from "../../styles/theme";
 import { nodeRadius, truncateLabel } from "../../utils";
-import { GlowRings, SentimentRing, ImpactRing, NodeImage } from "../Shared/SvgPrimitives";
+import { NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
   event: EventNodeType;
@@ -25,45 +25,72 @@ export const EventNodeComponent = memo<Props>(({
   const r = nodeRadius(event.weight);
   const style = getEventTypeStyle(theme, event.type);
   const meta = EVENT_TYPE_META[event.type];
+  const isActive = isHovered || isSelected;
   const handleEnter = useCallback(() => onHoverStart(event.id), [event.id, onHoverStart]);
   const handleClick = useCallback(() => onSelect(event.id), [event.id, onSelect]);
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelect(event.id); }
   }, [event.id, onSelect]);
 
+  const gradId = `eg-${event.id}`;
+
   return (
     <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s" }}
       role="button" aria-label={`${meta?.label || event.type} event: ${event.label}, impact ${event.impact}`}
       tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
-      opacity={isDimmed ? 0.08 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
-      onFocus={handleEnter} onBlur={onHoverEnd} onClick={handleClick}>
-      <GlowRings radius={r} color={style.color} time={time} isActive={isHovered || isSelected} />
-      <SentimentRing radius={r + 3} sentiment={event.sentiment} theme={theme} isDimmed={isDimmed} />
-      <ImpactRing radius={r} impact={event.impact} color={style.color} />
-      <circle r={r} fill={style.bg} stroke={style.color} strokeWidth={isHovered || isSelected ? 2.5 : 1.2} />
-      {event.imageUrl ? (
-        <NodeImage href={event.imageUrl} radius={r * 0.65} nodeId={event.id} borderColor={style.color} borderWidth={1} />
-      ) : (
-        <text y={-3} textAnchor="middle" fontSize={r > 24 ? 20 : 16} style={{ pointerEvents: "none" }}>{meta?.icon || "●"}</text>
+      opacity={isDimmed ? 0.15 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
+      onFocus={handleEnter} onBlur={onHoverEnd} onClick={handleClick}
+      filter={isSelected ? "url(#glow)" : undefined}>
+
+      {/* §12 BubbleNode radial gradient */}
+      <defs>
+        <radialGradient id={gradId} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={style.color} stopOpacity={0.12} />
+          <stop offset="60%" stopColor={style.color} stopOpacity={0.3} />
+          <stop offset="100%" stopColor={style.color} stopOpacity={0.65} />
+        </radialGradient>
+      </defs>
+
+      {/* §12 Outer ring — dashed on hover, solid on select */}
+      {isActive && (
+        <circle r={r + 5} fill="none" stroke={style.color} strokeWidth={1.5}
+          opacity={0.5} strokeDasharray={isSelected ? "none" : "4,3"} />
       )}
-      {(() => {
-        const lbl = truncateLabel(event.label);
-        const fs = Math.max(7.5, r * 0.32);
-        const ly = r > 24 ? 14 : 11;
-        const tw = lbl.length * fs * 0.58 + 6;
+
+      {/* Main circle — radial gradient fill per §12 */}
+      <circle r={r} fill={`url(#${gradId})`} stroke={style.color}
+        strokeWidth={isActive ? 2 : 1} strokeOpacity={isActive ? 0.85 : 0.35}
+        style={{ transition: "stroke-width 0.3s, stroke-opacity 0.3s" }} />
+
+      {/* Avatar or label */}
+      {event.imageUrl ? (
+        <NodeImage href={event.imageUrl} radius={Math.max(r / 2.8, 10)} nodeId={event.id} borderColor={style.color} borderWidth={1} />
+      ) : r > 24 ? (
+        <text y={1} textAnchor="middle" fontSize={Math.min(r / 4.5, 12)} fontWeight={500}
+          fill={theme.text} fontFamily={theme.fontFamily}
+          style={{ pointerEvents: "none" }}>{meta?.label || event.type}</text>
+      ) : null}
+
+      {/* Name label below (§12 BubbleNode nameLabel) */}
+      {r > 18 && (() => {
+        const lbl = truncateLabel(event.label, 14);
+        const fs = Math.min(r / 4.5, 12);
+        const ly = r + 12;
         return (
-          <>
-            <rect x={-tw / 2} y={ly - fs * 0.75} width={tw} height={fs + 3} rx={3} fill={theme.bg} opacity={0.75} />
-            <text y={ly} textAnchor="middle" fill={theme.text} fontSize={fs}
-              fontWeight={600} fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>{lbl}</text>
-          </>
+          <text y={ly} textAnchor="middle" fill={theme.text} fontSize={fs}
+            fontWeight={500} fontFamily={theme.fontFamily}
+            style={{ pointerEvents: "none" }}>{lbl}</text>
         );
       })()}
-      {event.extra && !isDimmed && (
+
+      {/* §15 Connection count badge — top-right */}
+      {!isDimmed && event.from && event.from.length > 0 && r >= 20 && (
         <g transform={`translate(${r * 0.7},${-r * 0.7})`}>
-          <rect x={-2} y={-8} width={event.extra.length * 5.5 + 8} height={14} rx={7} fill={theme.bgAlt} stroke={style.color} strokeWidth={0.8} />
-          <text x={event.extra.length * 2.75 + 2} y={2} textAnchor="middle" fill={style.color} fontSize={7}
-            fontFamily={theme.monoFontFamily} fontWeight={600} style={{ pointerEvents: "none" }}>{event.extra}</text>
+          <circle r={7} fill={theme.accent} stroke={theme.bg} strokeWidth={1.5} />
+          <text textAnchor="middle" y={3.5} fill="#ffffff" fontSize={8} fontWeight={700}
+            fontFamily={theme.fontFamily} style={{ pointerEvents: "none" }}>
+            {event.from.length}
+          </text>
         </g>
       )}
     </g>

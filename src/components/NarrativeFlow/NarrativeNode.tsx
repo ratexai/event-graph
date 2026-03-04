@@ -2,7 +2,7 @@ import React, { memo, useCallback, useMemo } from "react";
 import type { NarrativeNode as NarrativeNodeType, NarrativeSignal, GraphTheme } from "../../types";
 import { getNarrativeCategoryStyle, getNarrativeSignalStyle, getSentimentColor, NARRATIVE_SIGNAL_META } from "../../styles/theme";
 import { narrativeNodeRadius, wrapLabel, getNodeEmojis, getSourceAbbr } from "../../utils";
-import { GlowRings, ImpactRing, NodeImage } from "../Shared/SvgPrimitives";
+import { NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
   node: NarrativeNodeType;
@@ -66,22 +66,21 @@ function getSignalShapePath(signal: NarrativeSignal, r: number): string | null {
 
 // ─── Polymarket dot (bottom, small, solid purple) ────────────
 
-const PolymarketDot = memo<{ x: number; y: number; prob: number; isHovered: boolean }>(
-  ({ x, y, prob, isHovered }) => (
+const PolymarketDot = memo<{ x: number; y: number; prob: number; isHovered: boolean; theme: GraphTheme }>(
+  ({ x, y, prob, isHovered, theme }) => (
     <g transform={`translate(${x},${y})`}>
-      <circle r={isHovered ? 8 : 5} fill="#901dea" opacity={0.9} />
+      <circle r={isHovered ? 8 : 5} fill={theme.complement} opacity={0.9} />
       {isHovered && (
-        <text y={3} textAnchor="middle" fontSize={6} fontWeight={700} fill="#fff"
-          fontFamily="'JetBrains Mono','SF Mono',monospace" style={{ pointerEvents: "none" }}>
+        <text y={3} textAnchor="middle" fontSize={6} fontWeight={700} fill={theme.text}
+          fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
           {prob}%
         </text>
       )}
       {!isHovered && (
-        <text y={2} textAnchor="middle" fontSize={5.5} fontWeight={700} fill="#fff"
-          fontFamily="'JetBrains Mono','SF Mono',monospace" style={{ pointerEvents: "none" }}>
+        <text y={2} textAnchor="middle" fontSize={5.5} fontWeight={700} fill={theme.text}
+          fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
           PM
         </text>
-
       )}
     </g>
   ),
@@ -185,41 +184,51 @@ export const NarrativeNodeComponent = memo<Props>(({
     <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s" }}
       role="button" aria-label={`${node.signal} ${node.category}: ${node.label}, odds delta ${node.oddsDelta}`}
       tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
-      opacity={isDimmed ? 0.08 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
-      onFocus={handleEnter} onBlur={onHoverEnd} onClick={handleClick}>
+      opacity={isDimmed ? 0.15 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
+      onFocus={handleEnter} onBlur={onHoverEnd} onClick={handleClick}
+      filter={isSelected ? "url(#glow)" : undefined}>
 
-      {/* Glow rings — future nodes get a pulsing outer glow */}
+      {/* §12 BubbleNode radial gradient */}
+      <defs>
+        <radialGradient id={`ng-${node.id}`} cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor={isPredictionEndpoint ? theme.complement : catStyle.color} stopOpacity={0.12} />
+          <stop offset="60%" stopColor={isPredictionEndpoint ? theme.complement : catStyle.color} stopOpacity={0.3} />
+          <stop offset="100%" stopColor={isPredictionEndpoint ? theme.complement : catStyle.color} stopOpacity={0.65} />
+        </radialGradient>
+      </defs>
+
+      {/* Future nodes get a pulsing outer glow */}
       {isFuture && !isDimmed && (
-        <circle r={outerR + 6} fill="none" stroke={isPredictionEndpoint ? "#901dea" : catStyle.color}
+        <circle r={outerR + 6} fill="none" stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
           strokeWidth={1.5} opacity={0.3} strokeDasharray="4 6">
           <animate attributeName="opacity" values="0.15;0.4;0.15" dur="3s" repeatCount="indefinite" />
           <animate attributeName="r" values={`${outerR + 4};${outerR + 8};${outerR + 4}`} dur="3s" repeatCount="indefinite" />
         </circle>
       )}
 
-      <GlowRings radius={r} color={isFuture ? (isPredictionEndpoint ? "#901dea" : catStyle.color) : catStyle.color} time={time} isActive={isHovered || isSelected} />
+      {/* §12 Outer ring — dashed on hover, solid on select */}
+      {(isHovered || isSelected) && (
+        <circle r={outerR} fill="none" stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
+          strokeWidth={1.5} opacity={0.5}
+          strokeDasharray={isSelected ? "none" : "4,3"} />
+      )}
 
-      {/* Impact ring */}
-      <ImpactRing radius={r} impact={node.weight * 100} color={catStyle.color} />
-
-      {/* Momentum ring — dashed for deceleration, always dashed for future */}
-      <circle r={outerR} fill="none" stroke={isFuture ? "#901dea" : sigStyle.color} strokeWidth={1}
-        opacity={isDimmed ? 0.05 : isFuture ? 0.4 : 0.25}
-        strokeDasharray={isFuture || node.momentum < 0 ? "3 4" : "none"}
-        strokeLinecap="round" />
-
-      {/* Main shape — future nodes: dashed border, semi-transparent fill */}
+      {/* Main shape — radial gradient fill, future nodes: dashed border */}
       {isCircle ? (
-        <circle r={r} fill={isFuture ? `${catStyle.bg}` : catStyle.bg}
-          stroke={isPredictionEndpoint ? "#901dea" : catStyle.color}
-          strokeWidth={isHovered || isSelected ? 2.5 : isFuture ? 1.8 : 1.2}
-          strokeDasharray={isFuture ? "5 3" : "none"} />
+        <circle r={r} fill={`url(#ng-${node.id})`}
+          stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
+          strokeWidth={isHovered || isSelected ? 2 : 1}
+          strokeOpacity={isHovered || isSelected ? 0.85 : 0.35}
+          strokeDasharray={isFuture ? "5 3" : "none"}
+          style={{ transition: "stroke-width 0.3s, stroke-opacity 0.3s" }} />
       ) : (
-        <path d={shapePath} fill={isFuture ? `${catStyle.bg}` : catStyle.bg}
-          stroke={isPredictionEndpoint ? "#901dea" : catStyle.color}
-          strokeWidth={isHovered || isSelected ? 2.5 : isFuture ? 1.8 : 1.2}
+        <path d={shapePath} fill={`url(#ng-${node.id})`}
+          stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
+          strokeWidth={isHovered || isSelected ? 2 : 1}
+          strokeOpacity={isHovered || isSelected ? 0.85 : 0.35}
           strokeLinejoin="round"
-          strokeDasharray={isFuture ? "5 3" : "none"} />
+          strokeDasharray={isFuture ? "5 3" : "none"}
+          style={{ transition: "stroke-width 0.3s, stroke-opacity 0.3s" }} />
       )}
 
       {/* Sentiment dot — top-right corner (3-4px) */}
@@ -230,7 +239,7 @@ export const NarrativeNodeComponent = memo<Props>(({
       {/* Avatar image (circular, inside the node shape) — or emoji fallback */}
       {node.imageUrl ? (
         <NodeImage href={node.imageUrl} radius={r * 0.5} nodeId={node.id}
-          borderColor={isPredictionEndpoint ? "#901dea" : catStyle.color} borderWidth={1} />
+          borderColor={isPredictionEndpoint ? theme.complement : catStyle.color} borderWidth={1} />
       ) : emojiLine ? (
         <text y={-r * 0.15 - (lines.length > 1 ? 6 : 3)} textAnchor="middle"
           fontSize={Math.max(12, r * 0.55)} style={{ pointerEvents: "none" }}>
@@ -263,7 +272,7 @@ export const NarrativeNodeComponent = memo<Props>(({
       {/* Signal badge (top-left, small) */}
       <g transform={`translate(${-r * 0.8},${-r * 0.8})`}>
         <circle r={6} fill={isFuture ? theme.complementDim : sigStyle.bg}
-          stroke={isFuture ? "#901dea" : sigStyle.color} strokeWidth={0.6} />
+          stroke={isFuture ? theme.complement : sigStyle.color} strokeWidth={0.6} />
         <text textAnchor="middle" y={3} fill={isFuture ? theme.complementUp : sigStyle.color} fontSize={8}
           style={{ pointerEvents: "none" }}>{isFuture ? "\u{1F52E}" : (sigMeta?.icon || "\u25CF")}</text>
       </g>
@@ -293,7 +302,7 @@ export const NarrativeNodeComponent = memo<Props>(({
 
       {/* Polymarket dot (bottom-center, small solid purple) */}
       {!isDimmed && node.marketProb != null && (
-        <PolymarketDot x={0} y={r + (isHovered ? 10 : 8)} prob={node.marketProb} isHovered={isHovered || isSelected} />
+        <PolymarketDot x={0} y={r + (isHovered ? 10 : 8)} prob={node.marketProb} isHovered={isHovered || isSelected} theme={theme} />
       )}
 
       {/* 🕵️ Cui Bono marker (bottom-right, small) */}
