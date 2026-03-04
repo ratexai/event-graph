@@ -9,7 +9,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { EventGraphProps, EventNode, EventType, FilterState, KolNode, NarrativeNode, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../types";
+import type { EventGraphProps, EventNode, EventType, KolNode, NarrativeNode, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../types";
 import { mergeTheme } from "../styles/theme";
 import {
   useAnimationTime,
@@ -25,21 +25,20 @@ import { isAnchorNode } from "../utils";
 import { DetailPanel, HoverTooltip } from "./Panel/DetailPanel";
 import { GraphCanvas } from "./EventGraph/GraphCanvas";
 import { StatusOverlay, ZoomControls, NarrativeLegend } from "./EventGraph/Overlays";
-import { FilterBar, HeaderBar, KolStatsBar, NarrativeStatsBar } from "./EventGraph/TopBars";
+import { TopBar, KolStatsBar, NarrativeStatsBar } from "./EventGraph/TopBars";
 import { GraphErrorBoundary } from "./Shared/ErrorBoundary";
 import { CuiBonoPanel } from "./CuiBono/CuiBonoPanel";
 import { AnchorModal } from "./NarrativeFlow/AnchorModal";
 
-const HEADER_HEIGHT = 48;
-const FILTER_HEIGHT = 38;
-const KOL_STATS_HEIGHT = 52;
+const TOP_BAR_HEIGHT = 32;
+const KOL_STATS_HEIGHT = 30;
 /** Right sidebar occupies 20 % of the container width (min 260, max 380). */
 const CUI_BONO_PCT = 0.20;
 
 const EMPTY_EVENT_NODES: EventNode[] = [];
 const EMPTY_KOL_NODES: KolNode[] = [];
 const EMPTY_NARRATIVE_NODES: NarrativeNode[] = [];
-const NARRATIVE_STATS_HEIGHT = 52;
+const NARRATIVE_STATS_HEIGHT = 30;
 
 function toIdMap<T extends { id: string }>(items: T[]): Map<string, T> {
   return new Map(items.map((item) => [item.id, item]));
@@ -96,7 +95,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   }, [graphFilters.filters]);
 
   const statsHeight = mode === "kols" && showKolStats ? KOL_STATS_HEIGHT : mode === "narratives" && showNarrativeStats ? NARRATIVE_STATS_HEIGHT : 0;
-  const topOffset = HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0) + statsHeight;
+  const topOffset = (showFilters ? TOP_BAR_HEIGHT : 0) + statsHeight;
   const hasCuiBono = mode === "narratives" && !!narrativeData?.narrative?.cuiBono;
   const hasNarrativeSidebar = mode === "narratives" && (hasCuiBono || narrativeNodes.length > 0);
   const sidebarWidth = Math.max(260, Math.min(380, Math.round(dims.w * CUI_BONO_PCT)));
@@ -191,27 +190,14 @@ export const EventGraph: React.FC<EventGraphProps> = ({
       {/* Disable SVG animations when user prefers reduced motion */}
       <style>{`@media (prefers-reduced-motion: reduce) { animate, animateMotion, animateTransform { display: none; } }`}</style>
 
-      <HeaderBar
-        mode={mode}
-        theme={theme}
-        branding={branding}
-        showModeSwitcher={showModeSwitcher}
-        eventCount={evGraph.filtered.length}
-        eventEdgeCount={evGraph.edges.length}
-        kolCount={kolGraph.filtered.length}
-        totalReach={kolGraph.stats.totalReach}
-        narrativeCount={narGraph.filtered.length}
-        currentProb={narGraph.stats.currentProb}
-        zoom={panZoom.zoom}
-        onModeChange={handleModeChange}
-      />
-
       {showFilters && (
-        <FilterBar
+        <TopBar
           mode={mode}
-          top={HEADER_HEIGHT}
-          panelOffset={panelWidth}
           theme={theme}
+          branding={branding}
+          showModeSwitcher={showModeSwitcher}
+          panelOffset={panelWidth}
+          onModeChange={handleModeChange}
           allEventTypes={allEventTypes}
           allTiers={allTiers}
           allPlatforms={allPlatforms}
@@ -236,7 +222,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
 
       {mode === "kols" && showKolStats && (
         <KolStatsBar
-          top={HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0)}
+          top={showFilters ? TOP_BAR_HEIGHT : 0}
           height={statsHeight}
           panelOffset={panelWidth}
           theme={theme}
@@ -246,7 +232,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
 
       {mode === "narratives" && showNarrativeStats && (
         <NarrativeStatsBar
-          top={HEADER_HEIGHT + (showFilters ? FILTER_HEIGHT : 0)}
+          top={showFilters ? TOP_BAR_HEIGHT : 0}
           height={statsHeight}
           panelOffset={panelWidth}
           theme={theme}
@@ -309,7 +295,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           selectedNodeCuiBono={selectedNarrative?.cuiBono}
           selectedNodeLabel={selectedNarrative?.label}
           theme={theme}
-          topOffset={HEADER_HEIGHT}
+          topOffset={TOP_BAR_HEIGHT}
           narrativeNodes={narrativeNodes}
           onMarketSelect={handleMarketSelect}
           panelWidth={cuiBonoWidth}

@@ -244,7 +244,7 @@ const IndexRow: React.FC<{
   entry: CuiBonoEntry; maxAbsDelta: number; theme: GraphTheme;
 }> = ({ entry, maxAbsDelta, theme }) => {
   const color = entry.delta >= 0 ? theme.positive : theme.negative;
-  const bgColor = entry.delta >= 0 ? theme.positiveDim : theme.negativeDim;
+  const _bgColor = entry.delta >= 0 ? theme.positiveDim : theme.negativeDim;
   const sign = entry.delta >= 0 ? "+" : "";
   const pct = maxAbsDelta > 0 ? (Math.abs(entry.delta) / maxAbsDelta) * 100 : 0;
 
@@ -523,7 +523,7 @@ const MarketCard: React.FC<{
   const pmProb = anchor.marketProb ?? 0;
   const rxProb = anchor.rateXProb ?? pmProb;
   const alpha = anchor.alpha ?? (rxProb - pmProb);
-  const al = alphaLevel(alpha);
+  const _al = alphaLevel(alpha);
   const expiryLabel = anchor.resolvesAt
     ? new Date(anchor.resolvesAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })
     : "";
