@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import type { EventType, GraphTheme, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode, MapItem, ProjectItem, MapStatus, RadiantNavProps } from "../../types";
 import { EVENT_TYPE_META, getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META, NARRATIVE_SIGNAL_META } from "../../styles/theme";
 import { formatNumber } from "../../utils";
@@ -30,16 +30,6 @@ const STATUS_COLOR: Record<MapStatus, string> = {
 const STATUS_LABEL: Record<MapStatus, string> = {
   active: "ACTIVE", developing: "DEVELOPING", monitoring: "MONITORING",
 };
-
-function useClickOutside(ref: React.RefObject<HTMLElement | null>, onClose: () => void) {
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [ref, onClose]);
-}
 
 // ─── Nav flyout item ─────────────────────────────────────────────
 
@@ -93,29 +83,39 @@ export function TopBar(props: TopBarProps) {
     hasMarket, onToggleHasMarket,
   } = props;
 
-  const [openFlyout, setOpenFlyout] = useState<"maps" | "projects" | "search" | null>(null);
+  const [openFlyout, setOpenFlyout] = useState<"maps" | "projects" | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const mapsRef = useRef<HTMLDivElement>(null);
-  const projectsRef = useRef<HTMLDivElement>(null);
-  const searchRef = useRef<HTMLDivElement>(null);
+  const [searchFocused, setSearchFocused] = useState(false);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const searchDropRef = useRef<HTMLDivElement>(null);
 
-  const closeFlyout = useCallback(() => setOpenFlyout(null), []);
-  useClickOutside(mapsRef, closeFlyout);
-  useClickOutside(projectsRef, closeFlyout);
-  useClickOutside(searchRef, closeFlyout);
-
-  // ⌘K shortcut
+  // ⌘K shortcut — focus the always-visible search input
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
-        setOpenFlyout((prev) => prev === "search" ? null : "search");
+        searchInputRef.current?.focus();
       }
-      if (e.key === "Escape") setOpenFlyout(null);
+      if (e.key === "Escape") {
+        setOpenFlyout(null);
+        setSearchFocused(false);
+        searchInputRef.current?.blur();
+      }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
+  }, []);
+
+  // Close search dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (searchDropRef.current && !searchDropRef.current.contains(e.target as Node)) {
+        setSearchFocused(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const hoverOpen = (which: "maps" | "projects") => {
@@ -123,7 +123,7 @@ export function TopBar(props: TopBarProps) {
     setOpenFlyout(which);
   };
   const hoverClose = () => {
-    hoverTimerRef.current = setTimeout(() => setOpenFlyout(null), 200);
+    hoverTimerRef.current = setTimeout(() => setOpenFlyout(null), 250);
   };
   const keepOpen = () => {
     if (hoverTimerRef.current) clearTimeout(hoverTimerRef.current);
@@ -143,13 +143,14 @@ export function TopBar(props: TopBarProps) {
 
   // Search results (unified)
   const sq = searchQuery.trim().toLowerCase();
-  const searchMaps = sq ? maps.filter((m) => m.title.toLowerCase().includes(sq)) : maps.slice(0, 4);
-  const searchProjects = sq ? projects.filter((p) => p.title.toLowerCase().includes(sq)) : projects.slice(0, 4);
+  const searchMaps = sq ? maps.filter((m) => m.title.toLowerCase().includes(sq)) : [];
+  const searchProjects = sq ? projects.filter((p) => p.title.toLowerCase().includes(sq)) : [];
+  const hasSearchResults = searchMaps.length > 0 || searchProjects.length > 0;
 
   const navLabel: React.CSSProperties = {
     fontSize: 11, fontWeight: 500, cursor: "pointer",
     color: theme.textSecondary, display: "inline-flex",
-    alignItems: "center", gap: 4, padding: "2px 6px",
+    alignItems: "center", gap: 4, padding: "4px 8px",
     borderRadius: 4, transition: "background 0.15s",
     whiteSpace: "nowrap", flexShrink: 0,
   };
@@ -164,11 +165,11 @@ export function TopBar(props: TopBarProps) {
 
   return (
     <div style={{
-      position: "absolute", top: 0, left: 0, right: panelOffset, height: 28,
+      position: "absolute", top: 0, left: 0, right: panelOffset, height: 36,
       display: "flex", alignItems: "center", gap: 6, padding: "0 10px",
       borderBottom: `1px solid ${theme.border}`, background: `${theme.bg}f0`,
-      backdropFilter: "blur(16px)", zIndex: 30, overflowX: "auto",
-      scrollbarWidth: "none" as const, fontFamily: theme.fontFamily,
+      backdropFilter: "blur(16px)", zIndex: 30,
+      fontFamily: theme.fontFamily, overflow: "visible",
     }}>
       {/* RADIANT logo */}
       <span style={{
@@ -179,7 +180,7 @@ export function TopBar(props: TopBarProps) {
 
       {/* Prediction Map nav */}
       {nav && (
-        <div ref={mapsRef} style={{ position: "relative", flexShrink: 0 }}
+        <div style={{ position: "relative", flexShrink: 0 }}
           onMouseEnter={() => hoverOpen("maps")}
           onMouseLeave={hoverClose}>
           <span style={{ ...navLabel, background: openFlyout === "maps" ? `${theme.accent}18` : undefined }}>
@@ -221,7 +222,7 @@ export function TopBar(props: TopBarProps) {
 
       {/* HistoryFi nav */}
       {nav && (
-        <div ref={projectsRef} style={{ position: "relative", flexShrink: 0 }}
+        <div style={{ position: "relative", flexShrink: 0 }}
           onMouseEnter={() => hoverOpen("projects")}
           onMouseLeave={hoverClose}>
           <span style={{ ...navLabel, background: openFlyout === "projects" ? `${theme.accent}18` : undefined }}>
@@ -250,7 +251,7 @@ export function TopBar(props: TopBarProps) {
       )}
 
       {/* Divider */}
-      <div style={{ width: 1, height: 14, background: theme.border, flexShrink: 0 }} />
+      <div style={{ width: 1, height: 16, background: theme.border, flexShrink: 0 }} />
 
       {/* Filters */}
       {mode === "events" ? (<>
@@ -308,35 +309,34 @@ export function TopBar(props: TopBarProps) {
       {/* Spacer */}
       <div style={{ flex: 1 }} />
 
-      {/* Search ⌘K */}
+      {/* Always-visible search input */}
       {nav && (
-        <div ref={searchRef} style={{ position: "relative", flexShrink: 0 }}>
-          <span
-            onClick={() => setOpenFlyout(openFlyout === "search" ? null : "search")}
-            style={{ ...navLabel, fontSize: 10, gap: 3, cursor: "pointer" }}
-          >
-            🔍 <span style={{ fontSize: 9, color: theme.muted, fontFamily: theme.monoFontFamily }}>⌘K</span>
-          </span>
-          {openFlyout === "search" && (
-            <div style={{ ...flyoutStyle(theme), right: 0, left: "auto", width: 380 }}>
-              <div style={{ padding: "4px 10px 6px" }}>
-                <input
-                  type="text" placeholder="Search maps, projects..." autoFocus
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter" && sq) nav.onSearch?.(searchQuery); }}
-                  style={{
-                    width: "100%", background: theme.surface,
-                    border: `1px solid ${theme.accent}40`, borderRadius: 5,
-                    padding: "5px 10px", color: theme.text, fontSize: 12,
-                    fontFamily: theme.fontFamily, outline: "none", boxSizing: "border-box",
-                  }}
-                />
-              </div>
+        <div ref={searchDropRef} style={{ position: "relative", flexShrink: 0, width: 180 }}>
+          <input
+            ref={searchInputRef}
+            type="text"
+            placeholder="Search... ⌘K"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onFocus={() => setSearchFocused(true)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && sq) nav.onSearch?.(searchQuery);
+              if (e.key === "Escape") { setSearchFocused(false); searchInputRef.current?.blur(); }
+            }}
+            style={{
+              width: "100%", height: 24, background: theme.surface,
+              border: `1px solid ${searchFocused ? theme.accent + "60" : theme.border}`,
+              borderRadius: 5, padding: "0 8px", color: theme.text, fontSize: 11,
+              fontFamily: theme.fontFamily, outline: "none", boxSizing: "border-box",
+              transition: "border-color 0.15s",
+            }}
+          />
+          {searchFocused && sq && (hasSearchResults || sq) && (
+            <div style={{ ...flyoutStyle(theme), right: 0, left: "auto", width: 340, marginTop: 4 }}>
               {searchMaps.length > 0 && (<>
                 <div style={{ padding: "4px 14px 1px", fontSize: 8, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted }}>🗺️ PREDICTION MAPS</div>
                 {searchMaps.map((m) => (
-                  <button key={m.id} onClick={() => { nav.onNavigateMap?.(m.id); setOpenFlyout(null); setSearchQuery(""); }}
+                  <button key={m.id} onClick={() => { nav.onNavigateMap?.(m.id); setSearchQuery(""); setSearchFocused(false); }}
                     style={rowItem(false)}>
                     <span style={{ fontSize: 12 }}>{m.emoji || "🗺️"}</span>
                     <span style={{ flex: 1 }}>{m.title}</span>
@@ -348,7 +348,7 @@ export function TopBar(props: TopBarProps) {
               {searchProjects.length > 0 && (<>
                 <div style={{ padding: "4px 14px 1px", fontSize: 8, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted, marginTop: 2 }}>⚡ HISTORYFI</div>
                 {searchProjects.map((p) => (
-                  <button key={p.id} onClick={() => { nav.onNavigateProject?.(p.id); setOpenFlyout(null); setSearchQuery(""); }}
+                  <button key={p.id} onClick={() => { nav.onNavigateProject?.(p.id); setSearchQuery(""); setSearchFocused(false); }}
                     style={rowItem(false)}>
                     <span>⚡</span>
                     <span style={{ flex: 1 }}>{p.title}</span>
@@ -357,7 +357,7 @@ export function TopBar(props: TopBarProps) {
                   </button>
                 ))}
               </>)}
-              {sq && searchMaps.length === 0 && searchProjects.length === 0 && (
+              {sq && !hasSearchResults && (
                 <div style={{ padding: 12, textAlign: "center", color: theme.muted, fontSize: 11 }}>No results for "{searchQuery}"</div>
               )}
             </div>

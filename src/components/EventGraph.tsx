@@ -30,7 +30,7 @@ import { GraphErrorBoundary } from "./Shared/ErrorBoundary";
 import { CuiBonoPanel } from "./CuiBono/CuiBonoPanel";
 import { AnchorModal } from "./NarrativeFlow/AnchorModal";
 
-const TOP_BAR_HEIGHT = 28;
+const TOP_BAR_HEIGHT = 36;
 const KOL_STATS_HEIGHT = 30;
 /** Right sidebar occupies 20 % of the container width (min 260, max 380). */
 const CUI_BONO_PCT = 0.20;
