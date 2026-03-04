@@ -33,13 +33,12 @@ export type ViewMode = "events" | "kols" | "narratives";
 export type SortField = "followers" | "engRate" | "reach" | "mentions" | "impact" | "date";
 
 export type NarrativeCategory =
-  | "ai"
   | "war"
-  | "military"
-  | "political"
-  | "retaliation"
+  | "strikes"
+  | "politics"
+  | "economics"
   | "humanitarian"
-  | "casualties"
+  | "ai"
   | "elections"
   | "regulation"
   | "defi"
