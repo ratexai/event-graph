@@ -306,7 +306,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           selectedNodeCuiBono={selectedNarrative?.cuiBono}
           selectedNodeLabel={selectedNarrative?.label}
           theme={theme}
-          topOffset={topOffset}
+          topOffset={HEADER_HEIGHT}
           narrativeNodes={narrativeNodes}
           onMarketSelect={handleMarketSelect}
           panelWidth={cuiBonoWidth}
@@ -327,7 +327,6 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           onClose={selection.closePanel}
           onNavigate={handleNodeSelect}
           panelWidth={sidebarWidth}
-          topOffset={topOffset}
         />
       )}
 
