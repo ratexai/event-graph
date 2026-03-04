@@ -22,6 +22,7 @@ export type {
   KolFlowRequest, KolFlowResponse,
   NarrativeFlowRequest, NarrativeFlowResponse,
   ApiResponse,
+  MapItem, ProjectItem, MapStatus, RadiantNavProps,
 } from "./types";
 
 // API Client
@@ -80,5 +81,3 @@ export type { CuiBonoPanelProps } from "./components/CuiBono/CuiBonoPanel";
 export { GraphErrorBoundary } from "./components/Shared/ErrorBoundary";
 export { NarrativeLegend } from "./components/EventGraph/Overlays";
 export { NarrativeLegendBar } from "./components/EventGraph/TopBars";
-export { RadiantHeader } from "./components/EventGraph/RadiantHeader";
-export type { RadiantHeaderProps } from "./components/EventGraph/RadiantHeader";
