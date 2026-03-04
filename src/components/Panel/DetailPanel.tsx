@@ -64,7 +64,7 @@ const LinkItem: React.FC<{
     <div style={{
       width: 24, height: 24, borderRadius: 8, background: badgeBg || theme.bgAlt,
       display: "flex", alignItems: "center", justifyContent: "center",
-      fontSize: 9, fontWeight: 800, color: badgeColor || theme.muted, fontFamily: "'JetBrains Mono',monospace",
+      fontSize: 9, fontWeight: 800, color: badgeColor || theme.muted, fontFamily: theme.monoFontFamily,
     }}>{avatar}</div>
     <div>
       <div style={{ fontSize: 10, fontWeight: 600 }}>{name}</div>
@@ -217,7 +217,7 @@ const KolDetail: React.FC<KolDetailProps> = ({ kol, allKols, timeSlotLabels, the
           width: 56, height: 56, borderRadius: 16, background: tierStyle.bg,
           border: `2px solid ${tierStyle.color}40`, display: "flex", alignItems: "center",
           justifyContent: "center", fontSize: 20, fontWeight: 800, color: tierStyle.color,
-          fontFamily: "'JetBrains Mono',monospace", flexShrink: 0,
+          fontFamily: theme.monoFontFamily, flexShrink: 0,
         }}>{kol.avatar}</div>
         <div>
           <div style={{ fontSize: 16, fontWeight: 800 }}>{kol.name}</div>
@@ -346,8 +346,8 @@ const CuiBonoSection: React.FC<{ cuiBono: CuiBono; theme: GraphTheme }> = ({ cui
       </div>
     )}
     {cuiBono.hiddenMotives && cuiBono.hiddenMotives.length > 0 && (
-      <div style={{ padding: 10, borderRadius: 8, background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.2)" }}>
-        <div style={{ fontSize: 9, color: "#fbbf24", fontWeight: 700, marginBottom: 4 }}>{"\uD83D\uDD75\uFE0F"} Hidden Motives</div>
+      <div style={{ padding: 10, borderRadius: 10, background: theme.warningDim, border: `1px solid ${theme.warning}30` }}>
+        <div style={{ fontSize: 12, color: theme.warning, fontWeight: 700, marginBottom: 4 }}>{"\uD83D\uDD75\uFE0F"} Hidden Motives</div>
         {cuiBono.hiddenMotives.map((m, i) => (
           <div key={i} style={{ fontSize: 9, color: theme.textSecondary, lineHeight: 1.5, marginBottom: 2 }}>• {m}</div>
         ))}
@@ -482,7 +482,7 @@ const NarrativeDetail: React.FC<NarrativeDetailProps> = ({ node, allNodes, timeS
       {node.tags && node.tags.length > 0 && (
         <div style={{ marginBottom: 20, display: "flex", gap: 6, flexWrap: "wrap" }}>
           {node.tags.map((tag) => (
-            <span key={tag} style={{ padding: "3px 10px", borderRadius: 10, background: theme.bgAlt, border: `1px solid ${theme.border}`, fontSize: 9, color: theme.textSecondary }}>
+            <span key={tag} style={{ padding: "2px 8px", borderRadius: 44, background: theme.bgAlt, border: `1px solid ${theme.border}`, fontSize: 12, color: theme.textSecondary }}>
               #{tag}
             </span>
           ))}
@@ -604,7 +604,7 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)",
         background: theme.surface, border: `1px solid ${style.color}25`, borderRadius: 12,
         padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
-        backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "0 12px 48px rgba(0,0,0,.7)", maxWidth: "92%",
+        backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "none", maxWidth: "92%",
       }}>
         <span style={{ fontSize: 22 }}>{EVENT_TYPE_META[event.type]?.icon}</span>
         <div>
@@ -628,13 +628,13 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         position: "absolute", bottom: 16, left: "50%", transform: "translateX(-50%)",
         background: theme.surface, border: `1px solid ${tierStyle.color}25`, borderRadius: 12,
         padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
-        backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "0 12px 48px rgba(0,0,0,.7)", maxWidth: "92%",
+        backdropFilter: "blur(20px)", zIndex: 30, boxShadow: "none", maxWidth: "92%",
       }}>
         <div style={{
           width: 40, height: 40, borderRadius: 12, background: tierStyle.bg,
           border: `1px solid ${tierStyle.color}30`, display: "flex", alignItems: "center",
           justifyContent: "center", fontSize: 16, fontWeight: 800, color: tierStyle.color,
-          fontFamily: "'JetBrains Mono',monospace",
+          fontFamily: theme.monoFontFamily,
         }}>{kol.avatar}</div>
         <div>
           <div style={{ fontSize: 13, fontWeight: 700 }}>{kol.name}</div>
@@ -666,7 +666,7 @@ const HoverTooltip: React.FC<TooltipProps> = ({ event, kol, narrative, theme }) 
         position: "absolute", bottom: 42, left: "50%", transform: "translateX(-50%)",
         background: theme.surface, border: `1px solid ${catStyle.color}25`, borderRadius: 12,
         padding: "12px 22px", display: "flex", gap: 16, alignItems: "center",
-        backdropFilter: "blur(20px)", zIndex: 35, boxShadow: "0 12px 48px rgba(0,0,0,.7)", maxWidth: "85%",
+        backdropFilter: "blur(20px)", zIndex: 35, boxShadow: "none", maxWidth: "85%",
         pointerEvents: "none",
       }}>
         <span style={{ fontSize: 22 }}>{catMeta?.icon}</span>
@@ -713,7 +713,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
 }) => (
   <div style={{
     position: "absolute", top: 48, right: 0, width: 340, bottom: 0,
-    background: "rgba(8,10,16,0.97)", borderLeft: `1px solid ${theme.border}`,
+    background: "rgba(29,39,50,0.97)", borderLeft: `1px solid ${theme.border}`,
     backdropFilter: "blur(20px)", zIndex: 25,
     transform: isOpen ? "translateX(0)" : "translateX(340px)",
     transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
@@ -721,7 +721,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   }}>
     <button onClick={onClose} style={{
       position: "sticky", top: 0, zIndex: 5, width: "100%", padding: "10px 16px",
-      background: "rgba(8,10,16,0.95)", borderBottom: `1px solid ${theme.border}`,
+      background: "rgba(29,39,50,0.95)", borderBottom: `1px solid ${theme.border}`,
       border: "none", color: theme.muted, fontSize: 10, cursor: "pointer",
       fontFamily: "inherit", textAlign: "left", backdropFilter: "blur(8px)",
     }}>← Close</button>

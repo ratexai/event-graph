@@ -43,12 +43,12 @@ export const StreamPath = memo<StreamProps>(({
   // Influence-colored streams: red for negative, green for positive
   const isInfluenceEdge = influence != null && influence !== 0;
   const influenceColor = isInfluenceEdge
-    ? (influence! > 0 ? "#22c55e" : "#ef4444")
+    ? (influence! > 0 ? "#30fd82" : "#ff495f")
     : toColor;
 
   // Scenario edges: green for YES, red for NO
   const scenarioColor = isScenarioEdge
-    ? (scenarioOutcome === "YES" || scenarioOutcome === "PARTIAL" ? "#22c55e" : "#ef4444")
+    ? (scenarioOutcome === "YES" || scenarioOutcome === "PARTIAL" ? "#30fd82" : "#ff495f")
     : undefined;
 
   const effectiveColor = scenarioColor || (isInfluenceEdge ? influenceColor : toColor);
@@ -112,7 +112,7 @@ export const StreamPath = memo<StreamProps>(({
           x={(from.x + to.x) / 2}
           y={(from.y + to.y) / 2 - 8}
           textAnchor="middle" fill={influenceColor} fontSize={7} fontWeight={700}
-          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          fontFamily="'JetBrains Mono','SF Mono',monospace" style={{ pointerEvents: "none" }}>
           {influence! > 0 ? "+" : ""}{influence}pp{mechanism ? `: ${mechanism}` : ""}
         </text>
       )}
@@ -139,13 +139,13 @@ export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, them
   return (
     <g>
       <line x1={x} y1={topY - 14} x2={x} y2={bottomY + 14}
-        stroke={isSpecial ? "#6366f1" : theme.border}
+        stroke={isSpecial ? "#901dea" : theme.border}
         strokeWidth={isAnchorDate ? 1.5 : isFuture ? 1.2 : 1}
         strokeDasharray={isAnchorDate ? "6 6" : isFuture ? "4 8" : "1 6"}
         opacity={isAnchorDate ? 0.5 : isFuture ? 0.35 : 0.5} />
       {isSpecial && (
         <rect x={x - 30} y={topY - 14} width={60} height={bottomY - topY + 28}
-          fill={isAnchorDate ? "rgba(99,102,241,0.06)" : "rgba(99,102,241,0.03)"} rx={4} />
+          fill={isAnchorDate ? "rgba(144,29,234,0.06)" : "rgba(144,29,234,0.03)"} rx={4} />
       )}
       {isAnchorDate && (
         <>
@@ -155,16 +155,16 @@ export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, them
         </>
       )}
       <rect x={x - 28} y={bottomY + 18} width={56} height={18} rx={9}
-        fill={isSpecial ? "rgba(99,102,241,0.15)" : theme.bgAlt}
-        stroke={isAnchorDate ? "#6366f1" : isFuture ? "#6366f1" : theme.border}
+        fill={isSpecial ? "rgba(144,29,234,0.15)" : theme.bgAlt}
+        stroke={isAnchorDate ? "#901dea" : isFuture ? "#901dea" : theme.border}
         strokeWidth={isAnchorDate ? 1 : isFuture ? 0.8 : 0.5} />
       <text x={x} y={bottomY + 30} textAnchor="middle"
-        fill={isSpecial ? "#a78bfa" : theme.muted}
-        fontSize={8.5} fontFamily="'JetBrains Mono',monospace"
+        fill={isSpecial ? "#b659ff" : theme.muted}
+        fontSize={8.5} fontFamily="'JetBrains Mono','SF Mono',monospace"
         fontWeight={isSpecial ? 700 : 500}>{label}</text>
       {isAnchorDate && (
-        <text x={x} y={bottomY + 41} textAnchor="middle" fill="#a78bfa"
-          fontSize={6} fontWeight={600} fontFamily="'JetBrains Mono',monospace">
+        <text x={x} y={bottomY + 41} textAnchor="middle" fill="#b659ff"
+          fontSize={6} fontWeight={600} fontFamily="'JetBrains Mono','SF Mono',monospace">
           expiry
         </text>
       )}
@@ -217,11 +217,12 @@ interface GlowRingsProps { radius: number; color: string; time: number; isActive
 
 export const GlowRings = memo<GlowRingsProps>(({ radius, color, time, isActive }) => {
   if (!isActive) return null;
+  // Subdued glow per RateXAI dashboard spec (stdDeviation 4→3, 8→5)
   return (
     <>
-      <circle r={radius + 22 + Math.sin(time * 1.8) * 5} fill="none" stroke={color} strokeWidth={0.6} opacity={0.08 + Math.sin(time * 2) * 0.03} />
-      <circle r={radius + 14 + Math.sin(time * 2.5) * 3} fill="none" stroke={color} strokeWidth={0.8} opacity={0.12} />
-      <circle r={radius + 6} fill={color} opacity={0.05} />
+      <circle r={radius + 18 + Math.sin(time * 1.8) * 3} fill="none" stroke={color} strokeWidth={0.5} opacity={0.06 + Math.sin(time * 2) * 0.02} />
+      <circle r={radius + 10 + Math.sin(time * 2.5) * 2} fill="none" stroke={color} strokeWidth={0.6} opacity={0.08} />
+      <circle r={radius + 5} fill={color} opacity={0.04} />
     </>
   );
 });
@@ -245,7 +246,7 @@ export const TierBadge = memo<TierBadgeProps>(({ label, color, bg, offsetX, offs
   <g transform={`translate(${offsetX},${offsetY})`}>
     <rect x={-12} y={-7} width={24} height={14} rx={7} fill={bg} stroke={color} strokeWidth={0.8} />
     <text x={0} y={3} textAnchor="middle" fill={color} fontSize={6.5} fontWeight={800}
-      fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>{label}</text>
+      fontFamily="'JetBrains Mono','SF Mono',monospace" style={{ pointerEvents: "none" }}>{label}</text>
   </g>
 ));
 TierBadge.displayName = "TierBadge";

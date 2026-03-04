@@ -35,6 +35,7 @@ export function ZoomControls({ theme, panelOffset, onZoomIn, onZoomOut, onReset 
             alignItems: "center",
             justifyContent: "center",
             fontFamily: "inherit",
+            transition: "background-color 0.3s ease",
           }}
         >
           {button.label}
@@ -99,7 +100,7 @@ export const NarrativeLegend = memo<LegendBarProps>(({ theme, panelOffset }) => 
       display: "flex", alignItems: "center", gap: 14, padding: "5px 12px",
       background: theme.surface, borderRadius: 8,
       border: `1px solid ${theme.border}`, zIndex: 20,
-      fontSize: 9, fontFamily: "'JetBrains Mono',monospace",
+      fontSize: 12, fontFamily: theme.fontFamily,
       color: theme.textSecondary, opacity: 0.85,
       pointerEvents: "none",
     }}>

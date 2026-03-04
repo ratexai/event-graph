@@ -1,27 +1,86 @@
 /* ═══════════════════════════════════════════════════════════════
-   @ratexai/event-graph — Theme System
+   @ratexai/event-graph — Theme System (RateXAI Dashboard v3)
+
+   Color mapping from RateXAI dashboard SCSS:
+     _colors.scss, _text-size.scss, _vars.scss, buttons.scss,
+     bubbleMapTooltip.module.scss, bubbleMapMetric.module.scss
    ═══════════════════════════════════════════════════════════════ */
 
 import type { GraphTheme, EventType, KolTier, NarrativeCategory, NarrativeSignal, Sentiment } from "../types";
 
+// ─── RateXAI SCSS Variable Equivalents ───────────────────────
+// $base-strong:       #11161b   (page bg)
+// $base-weak-back:    #161d26   (alt bg, metric items)
+// $base-strong-down:  #1d2732   (surface, panels)
+// $base-strong-back:  #1b2b3e   (card fill)
+// $base-weak:         #ffffff   (primary text)
+// $faint-strong:      #353742   (standard border)
+// $faint-strong-down: #626578   (lighter divider)
+// $faint-weak-down:   #a7abc3   (secondary text)
+// $faint-strong-up:   #848798   (muted/hint text)
+// $accent-strong:     #1c64f2   (brand blue)
+// $accent-strong-down:#1e429f   (accent hover)
+// $success-strong:    #30fd82   (positive/winners)
+// $success-strong-down:#19bd5b  (positive border)
+// $success-weak-back: #15392b   (positive dim bg)
+// $critic-strong:     #ff495f   (negative/losers)
+// $critic-strong-down:#c11a2e   (negative border)
+// $critic-weak-back:  #2c141b   (negative dim bg)
+// $warning-strong:    #ff9f44   (catalyst/warning)
+// $warning-weak-back: #2c2117   (warning dim bg)
+// $complement:        #901dea   (Polymarket purple)
+// $complement-strong-up:#b659ff
+
 export const DEFAULT_THEME: GraphTheme = {
-  bg: "#050608",
-  bgAlt: "#0a0c12",
-  surface: "rgba(12,14,22,0.95)",
-  card: "rgba(16,18,28,0.85)",
-  border: "#151828",
-  borderLight: "#1e2240",
-  text: "#e8e6e0",
-  textSecondary: "#9ca0b8",
-  muted: "#454966",
-  accent: "#00e5a0",
-  accentDim: "rgba(0,229,160,0.12)",
-  positive: "#34d399",
-  positiveDim: "rgba(52,211,153,0.15)",
-  negative: "#f87171",
-  negativeDim: "rgba(248,113,113,0.15)",
-  neutral: "#94a3b8",
-  neutralDim: "rgba(148,163,184,0.1)",
+  // ─── Backgrounds ─────────────────────────────────────────
+  bg: "#11161b",                        // $base-strong
+  bgAlt: "#161d26",                     // $base-weak-back
+  surface: "rgba(29,39,50,0.97)",       // $base-strong-down with alpha
+  card: "rgba(27,43,62,0.94)",          // $base-strong-back with alpha
+
+  // ─── Borders ─────────────────────────────────────────────
+  border: "#353742",                    // $faint-strong
+  borderLight: "#626578",              // $faint-strong-down
+
+  // ─── Text ────────────────────────────────────────────────
+  text: "#ffffff",                      // $base-weak
+  textSecondary: "#a7abc3",            // $faint-weak-down
+  muted: "#848798",                    // $faint-strong-up
+  disabled: "#353742",                 // $faint-strong (disabled level)
+
+  // ─── Accent (Blue — not green!) ──────────────────────────
+  accent: "#1c64f2",                   // $accent-strong
+  accentDim: "rgba(28,100,242,0.12)",  // accent bg
+  accentHover: "#1e429f",              // $accent-strong-down
+
+  // ─── Success / Positive ──────────────────────────────────
+  positive: "#30fd82",                 // $success-strong
+  positiveDim: "#15392b",              // $success-weak-back
+  positiveDown: "#19bd5b",             // $success-strong-down
+
+  // ─── Critic / Negative ───────────────────────────────────
+  negative: "#ff495f",                 // $critic-strong
+  negativeDim: "#2c141b",              // $critic-weak-back
+  negativeDown: "#c11a2e",             // $critic-strong-down
+
+  // ─── Neutral ─────────────────────────────────────────────
+  neutral: "#848798",                  // $faint-strong-up
+  neutralDim: "rgba(132,135,152,0.1)",
+
+  // ─── Warning / Catalyst ──────────────────────────────────
+  warning: "#ff9f44",                  // $warning-strong
+  warningDim: "#2c2117",               // $warning-weak-back
+
+  // ─── Complement / Polymarket ─────────────────────────────
+  complement: "#901dea",               // $complement
+  complementUp: "#b659ff",             // $complement-strong-up
+  complementDim: "rgba(144,29,234,0.15)",
+
+  // ─── Font Families ───────────────────────────────────────
+  fontFamily: "'Work Sans', sans-serif",
+  monoFontFamily: "'JetBrains Mono', 'SF Mono', monospace",
+
+  // ─── Event Type Colors ───────────────────────────────────
   eventTypeColors: {
     blogger:     { color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
     media:       { color: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
@@ -29,26 +88,30 @@ export const DEFAULT_THEME: GraphTheme = {
     partnership: { color: "#2dd4bf", bg: "rgba(45,212,191,0.12)" },
     listing:     { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
     launch:      { color: "#fb923c", bg: "rgba(251,146,60,0.12)" },
-    fud:         { color: "#f87171", bg: "rgba(248,113,113,0.12)" },
-    security:    { color: "#4ade80", bg: "rgba(74,222,128,0.12)" },
+    fud:         { color: "#ff495f", bg: "rgba(255,73,95,0.12)" },
+    security:    { color: "#30fd82", bg: "rgba(48,253,130,0.12)" },
     event:       { color: "#e879f9", bg: "rgba(232,121,249,0.12)" },
     onchain:     { color: "#22d3ee", bg: "rgba(34,211,238,0.12)" },
-    resolution:  { color: "#86efac", bg: "rgba(134,239,172,0.12)" },
+    resolution:  { color: "#30fd82", bg: "rgba(48,253,130,0.12)" },
     milestone:   { color: "#fde047", bg: "rgba(253,224,71,0.12)" },
     community:   { color: "#f0abfc", bg: "rgba(240,171,252,0.12)" },
     governance:  { color: "#67e8f9", bg: "rgba(103,232,249,0.12)" },
     airdrop:     { color: "#fca5a5", bg: "rgba(252,165,165,0.12)" },
   },
+
+  // ─── KOL Tier Colors ─────────────────────────────────────
   kolTierColors: {
     mega:  { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
     macro: { color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
     mid:   { color: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
     micro: { color: "#a78bfa", bg: "rgba(167,139,250,0.12)" },
-    nano:  { color: "#6b7280", bg: "rgba(107,114,128,0.1)" },
+    nano:  { color: "#848798", bg: "rgba(132,135,152,0.1)" },
   },
+
+  // ─── Narrative Category Colors ───────────────────────────
   narrativeCategoryColors: {
     ai:         { color: "#818cf8", bg: "rgba(129,140,248,0.12)" },
-    war:        { color: "#f87171", bg: "rgba(248,113,113,0.12)" },
+    war:        { color: "#ff495f", bg: "rgba(255,73,95,0.12)" },
     elections:  { color: "#fbbf24", bg: "rgba(251,191,36,0.12)" },
     regulation: { color: "#67e8f9", bg: "rgba(103,232,249,0.12)" },
     defi:       { color: "#2dd4bf", bg: "rgba(45,212,191,0.12)" },
@@ -56,16 +119,23 @@ export const DEFAULT_THEME: GraphTheme = {
     macro:      { color: "#38bdf8", bg: "rgba(56,189,248,0.12)" },
     tech:       { color: "#a78bfa", bg: "rgba(167,139,250,0.12)" },
     scandal:    { color: "#fb923c", bg: "rgba(251,146,60,0.12)" },
-    climate:    { color: "#4ade80", bg: "rgba(74,222,128,0.12)" },
+    climate:    { color: "#30fd82", bg: "rgba(48,253,130,0.12)" },
     sports:     { color: "#22d3ee", bg: "rgba(34,211,238,0.12)" },
-    other:      { color: "#94a3b8", bg: "rgba(148,163,184,0.1)" },
+    other:      { color: "#848798", bg: "rgba(132,135,152,0.1)" },
   },
+
+  // ─── Narrative Signal Colors (Semantic Mapping) ──────────
+  // escalation → $critic-strong
+  // catalyst   → $warning-strong
+  // resolution → $success-strong
+  // reversal   → $complement-strong-up
+  // noise      → $faint-strong-up
   narrativeSignalColors: {
-    catalyst:   { color: "#fbbf24", bg: "rgba(251,191,36,0.15)" },
-    escalation: { color: "#f87171", bg: "rgba(248,113,113,0.15)" },
-    resolution: { color: "#34d399", bg: "rgba(52,211,153,0.15)" },
-    reversal:   { color: "#e879f9", bg: "rgba(232,121,249,0.15)" },
-    noise:      { color: "#6b7280", bg: "rgba(107,114,128,0.08)" },
+    catalyst:   { color: "#ff9f44", bg: "rgba(255,159,68,0.15)" },
+    escalation: { color: "#ff495f", bg: "rgba(255,73,95,0.15)" },
+    resolution: { color: "#30fd82", bg: "rgba(48,253,130,0.15)" },
+    reversal:   { color: "#b659ff", bg: "rgba(182,89,255,0.15)" },
+    noise:      { color: "#848798", bg: "rgba(132,135,152,0.08)" },
   },
 };
 

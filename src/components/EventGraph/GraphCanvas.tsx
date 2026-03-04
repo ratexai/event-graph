@@ -198,8 +198,8 @@ export function GraphCanvas({
               from={from}
               to={to}
               width={streamWidthResolver(edge)}
-              fromColor={edgeToAnchor ? colorResolver(edge.from) : edgeIsFuture ? "#6366f1" : colorResolver(edge.from)}
-              toColor={edgeToAnchor ? "#6366f1" : edgeIsFuture ? "#6366f1" : colorResolver(edge.to)}
+              fromColor={edgeToAnchor ? colorResolver(edge.from) : edgeIsFuture ? "#901dea" : colorResolver(edge.from)}
+              toColor={edgeToAnchor ? "#901dea" : edgeIsFuture ? "#901dea" : colorResolver(edge.to)}
               isActive={active}
               isDimmed={!!hoveredId && !active}
               isFuture={edgeIsFuture && !edgeIsInfluence && !edgeToScenario}

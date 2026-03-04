@@ -67,7 +67,7 @@ export const ScenarioNodeComponent = memo<Props>(({
           fill={outcomeBg} stroke={outcomeColor} strokeWidth={0.6} />
         <text textAnchor="middle" x={(probText.length * 4) / 2} y={2.5}
           fill={outcomeColor} fontSize={7} fontWeight={800}
-          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
           {outcomeIcon} {node.outcome} {probText}
         </text>
       </g>
@@ -75,9 +75,9 @@ export const ScenarioNodeComponent = memo<Props>(({
       {/* "prog" badge (top-right) */}
       <g transform={`translate(${r * 0.6},${-r * 0.85})`}>
         <rect x={-2} y={-6} width={22} height={12} rx={6}
-          fill="rgba(99,102,241,0.15)" stroke="#6366f1" strokeWidth={0.4} />
-        <text x={9} y={1.5} textAnchor="middle" fill="#a78bfa" fontSize={5.5} fontWeight={700}
-          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          fill={theme.complementDim} stroke={theme.complement} strokeWidth={0.4} />
+        <text x={9} y={1.5} textAnchor="middle" fill={theme.complementUp} fontSize={5.5} fontWeight={700}
+          fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
           prog
         </text>
       </g>
@@ -87,7 +87,7 @@ export const ScenarioNodeComponent = memo<Props>(({
         <text key={i} y={-labelFontSize * 0.3 + i * (labelFontSize + 1.5)}
           textAnchor="middle" fill={theme.text}
           fontSize={labelFontSize} fontWeight={isHovered ? 700 : 600}
-          fontFamily="'JetBrains Mono',monospace"
+          fontFamily={theme.monoFontFamily}
           style={{ pointerEvents: "none" }}>
           {line}
         </text>
@@ -98,7 +98,7 @@ export const ScenarioNodeComponent = memo<Props>(({
         <g transform={`translate(0,${r + 10})`}>
           {node.conditions.slice(0, 3).map((cond, i) => (
             <text key={i} y={i * 9} textAnchor="middle" fill={theme.textSecondary}
-              fontSize={6} fontFamily="'JetBrains Mono',monospace"
+              fontSize={6} fontFamily={theme.monoFontFamily}
               style={{ pointerEvents: "none" }}>
               • {cond.length > 35 ? cond.slice(0, 33) + "…" : cond}
             </text>
@@ -109,7 +109,7 @@ export const ScenarioNodeComponent = memo<Props>(({
       {/* Cui Bono micro-indicator */}
       {!isDimmed && node.cuiBono && (
         <g transform={`translate(${r * 0.7},${r * 0.6})`}>
-          <circle r={4} fill="rgba(251,191,36,0.25)" stroke="#fbbf24" strokeWidth={0.4} />
+          <circle r={4} fill={theme.warningDim} stroke={theme.warning} strokeWidth={0.4} />
           <text textAnchor="middle" y={2.5} fontSize={5.5} style={{ pointerEvents: "none" }}>🕵️</text>
         </g>
       )}

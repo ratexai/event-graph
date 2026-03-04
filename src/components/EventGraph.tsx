@@ -176,11 +176,12 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         width,
         height,
         background: theme.bg,
-        fontFamily: "'JetBrains Mono','SF Mono',monospace",
+        fontFamily: theme.fontFamily,
         color: theme.text,
         overflow: "hidden",
         position: "relative",
         userSelect: "none",
+        boxSizing: "border-box",
         ...style,
       }}
     >

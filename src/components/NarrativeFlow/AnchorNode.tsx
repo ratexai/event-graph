@@ -22,9 +22,10 @@ interface Props {
   onSelect: (id: string) => void;
 }
 
-const PURPLE = "#6366f1";
-const PURPLE_DIM = "rgba(99,102,241,0.15)";
-const PURPLE_GLOW = "rgba(99,102,241,0.25)";
+// Polymarket complement color constants (from theme.complement family)
+const COMPLEMENT = "#901dea";
+const COMPLEMENT_DIM = "rgba(144,29,234,0.15)";
+const COMPLEMENT_GLOW = "rgba(144,29,234,0.25)";
 
 /** Mini sparkline for probHistory inside the anchor node */
 const MiniSparkline = memo<{ data: number[]; width: number; height: number }>(
@@ -38,13 +39,13 @@ const MiniSparkline = memo<{ data: number[]; width: number; height: number }>(
     ).join(" ");
     return (
       <g>
-        <polyline points={pts} fill="none" stroke={PURPLE} strokeWidth={1.2}
+        <polyline points={pts} fill="none" stroke={COMPLEMENT} strokeWidth={1.2}
           strokeLinecap="round" opacity={0.7} />
         {/* Endpoint dot */}
         {data.length > 0 && (() => {
           const lastX = width;
           const lastY = height - ((data[data.length - 1] - min) / range) * height;
-          return <circle cx={lastX} cy={lastY} r={2} fill={PURPLE} opacity={0.9} />;
+          return <circle cx={lastX} cy={lastY} r={2} fill={COMPLEMENT} opacity={0.9} />;
         })()}
       </g>
     );
@@ -79,9 +80,9 @@ export const AnchorNodeComponent = memo<Props>(({
     const abs = Math.abs(alpha);
     let color = "#888";
     let icon = "≈";
-    if (abs > 10) { color = alpha > 0 ? "#22c55e" : "#ef4444"; icon = alpha > 0 ? "▲▲" : "▼▼"; }
-    else if (abs > 5) { color = alpha > 0 ? "#22c55e" : "#ef4444"; icon = alpha > 0 ? "▲" : "▼"; }
-    else if (abs > 2) { color = "#eab308"; icon = alpha > 0 ? "△" : "▽"; }
+    if (abs > 10) { color = alpha > 0 ? "#30fd82" : "#ff495f"; icon = alpha > 0 ? "▲▲" : "▼▼"; }
+    else if (abs > 5) { color = alpha > 0 ? "#30fd82" : "#ff495f"; icon = alpha > 0 ? "▲" : "▼"; }
+    else if (abs > 2) { color = "#ff9f44"; icon = alpha > 0 ? "△" : "▽"; }
     return { color, icon, text: `${alpha > 0 ? "+" : ""}${alpha}pp` };
   }, [alpha]);
 
@@ -107,7 +108,7 @@ export const AnchorNodeComponent = memo<Props>(({
 
       {/* Outer pulsing glow */}
       {!isDimmed && (
-        <circle r={r + 12} fill="none" stroke={PURPLE} strokeWidth={1.2}
+        <circle r={r + 12} fill="none" stroke={COMPLEMENT} strokeWidth={1.2}
           opacity={0.2} strokeDasharray="6 4">
           <animate attributeName="opacity" values="0.1;0.35;0.1" dur="3s" repeatCount="indefinite" />
           <animate attributeName="r" values={`${r + 10};${r + 16};${r + 10}`} dur="3s" repeatCount="indefinite" />
@@ -116,19 +117,19 @@ export const AnchorNodeComponent = memo<Props>(({
 
       {/* Second pulsing ring */}
       {!isDimmed && (
-        <circle r={r + 6} fill="none" stroke={PURPLE} strokeWidth={0.8}
+        <circle r={r + 6} fill="none" stroke={COMPLEMENT} strokeWidth={0.8}
           opacity={0.15}>
           <animate attributeName="opacity" values="0.08;0.25;0.08" dur="2.5s" repeatCount="indefinite" />
         </circle>
       )}
 
       {/* Inner glow fill */}
-      <circle r={r + 3} fill={PURPLE_GLOW} opacity={0.15} />
+      <circle r={r + 3} fill={COMPLEMENT_GLOW} opacity={0.15} />
 
       {/* Double ring: outer white + inner purple */}
       <circle r={r + 2} fill="none" stroke="rgba(255,255,255,0.15)" strokeWidth={2} />
-      <circle r={r} fill={PURPLE_DIM}
-        stroke={PURPLE} strokeWidth={isHovered || isSelected ? 3 : 2}
+      <circle r={r} fill={COMPLEMENT_DIM}
+        stroke={COMPLEMENT} strokeWidth={isHovered || isSelected ? 3 : 2}
         style={{ transition: "stroke-width 0.2s" }} />
 
       {/* Dual probability display: PM (small gray) + RX (large green bold) */}
@@ -136,18 +137,18 @@ export const AnchorNodeComponent = memo<Props>(({
         <>
           {/* PM prob — small, muted, top */}
           <text y={-10} textAnchor="middle" fill={theme.muted} fontSize={8} fontWeight={600}
-            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
             PM: {probText}
           </text>
           {/* RX prob — large, green, bold, center */}
-          <text y={5} textAnchor="middle" fill="#22c55e" fontSize={14} fontWeight={800}
-            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          <text y={5} textAnchor="middle" fill={theme.positive} fontSize={14} fontWeight={800}
+            fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
             RX: {rxText}
           </text>
           {/* Alpha badge — bottom */}
           {alphaInfo && (
             <text y={16} textAnchor="middle" fill={alphaInfo.color} fontSize={7.5} fontWeight={800}
-              fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+              fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
               α {alphaInfo.text}
             </text>
           )}
@@ -155,7 +156,7 @@ export const AnchorNodeComponent = memo<Props>(({
       ) : (
         /* Fallback: single probability */
         <text y={-1} textAnchor="middle" fill="#fff" fontSize={16} fontWeight={800}
-          fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+          fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
           {probText}
         </text>
       )}
@@ -176,7 +177,7 @@ export const AnchorNodeComponent = memo<Props>(({
       {lines.map((line, i) => (
         <text key={i} y={r + 14 + i * 10} textAnchor="middle" fill={theme.text}
           fontSize={8.5} fontWeight={isHovered ? 700 : 600}
-          fontFamily="'JetBrains Mono',monospace"
+          fontFamily={theme.monoFontFamily}
           style={{ pointerEvents: "none" }}>
           {line}
         </text>
@@ -186,9 +187,9 @@ export const AnchorNodeComponent = memo<Props>(({
       {expiryLabel && (
         <g transform={`translate(0,${r + 14 + lines.length * 10 + 4})`}>
           <rect x={-22} y={-6} width={44} height={12} rx={6}
-            fill="rgba(99,102,241,0.3)" stroke={PURPLE} strokeWidth={0.5} />
-          <text textAnchor="middle" y={2} fill="#a78bfa" fontSize={6.5} fontWeight={700}
-            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            fill="rgba(144,29,234,0.3)" stroke={COMPLEMENT} strokeWidth={0.5} />
+          <text textAnchor="middle" y={2} fill={theme.complementUp} fontSize={6.5} fontWeight={700}
+            fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
             ⏰ {expiryLabel}
           </text>
         </g>
@@ -198,10 +199,10 @@ export const AnchorNodeComponent = memo<Props>(({
       {(isHovered || isSelected) && node.tradingVolume && (
         <g transform={`translate(${r + 6},${-8})`}>
           <rect x={0} y={-7} width={node.tradingVolume.length * 5.5 + 10} height={14} rx={7}
-            fill="rgba(99,102,241,0.2)" stroke={PURPLE} strokeWidth={0.5} />
+            fill="rgba(144,29,234,0.2)" stroke={COMPLEMENT} strokeWidth={0.5} />
           <text x={(node.tradingVolume.length * 5.5 + 10) / 2} y={2} textAnchor="middle"
-            fill="#a78bfa" fontSize={7} fontWeight={700}
-            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            fill={theme.complementUp} fontSize={7} fontWeight={700}
+            fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
             {node.tradingVolume}
           </text>
         </g>
@@ -217,11 +218,11 @@ export const AnchorNodeComponent = memo<Props>(({
           <rect x={0} y={6} width={Math.min(r * 1.4 * (influenceData.posTotal / (influenceData.total || 1)), r * 1.4)} height={4}
             rx={2} fill={theme.positive} opacity={0.6} />
           <text x={r * 1.4 + 4} y={3} fill={theme.negative} fontSize={5.5} fontWeight={700}
-            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
             −{influenceData.negTotal.toFixed(0)}pp
           </text>
           <text x={r * 1.4 + 4} y={9} fill={theme.positive} fontSize={5.5} fontWeight={700}
-            fontFamily="'JetBrains Mono',monospace" style={{ pointerEvents: "none" }}>
+            fontFamily={theme.monoFontFamily} style={{ pointerEvents: "none" }}>
             +{influenceData.posTotal.toFixed(0)}pp
           </text>
         </g>
