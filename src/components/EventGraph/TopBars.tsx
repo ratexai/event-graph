@@ -3,18 +3,15 @@ import type { EventType, GraphTheme, KolTier, Platform, NarrativeCategory, Narra
 import { EVENT_TYPE_META, getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META } from "../../styles/theme";
 import { formatNumber } from "../../utils";
 
-// ─── BubbleMap filter button base style ─────────────────────────
-// §4 FilterButton_CSS: height 30, borderRadius 8, border none,
-// bg faintStrong (#353742), color white, fontSize 11, fontWeight 500
-
+// ─── Compact filter button ──────────────────────────────────────
 const filterBtn = (theme: GraphTheme, on: boolean, activeColor?: string, activeBg?: string): React.CSSProperties => ({
-  height: 30,
-  padding: "0 12px",
-  borderRadius: 8,
+  height: 24,
+  padding: "0 8px",
+  borderRadius: 6,
   border: "none",
-  background: on ? (activeBg || theme.accent) : theme.border,      // §4: active=accentStrong, inactive=faintStrong
-  color: on ? "#ffffff" : theme.text,                                // §4: always white text
-  fontSize: 11,
+  background: on ? (activeBg || theme.accent) : theme.border,
+  color: on ? "#ffffff" : theme.text,
+  fontSize: 10,
   fontWeight: 500,
   fontFamily: "inherit",
   cursor: "pointer",
@@ -22,86 +19,33 @@ const filterBtn = (theme: GraphTheme, on: boolean, activeColor?: string, activeB
   whiteSpace: "nowrap",
   display: "inline-flex",
   alignItems: "center",
-  gap: 5,
+  gap: 4,
 });
 
-// ─── Header Bar ─────────────────────────────────────────────────
+// ─── Mode switcher button ───────────────────────────────────────
+const modeBtn = (theme: GraphTheme, active: boolean, isDemo: boolean): React.CSSProperties => ({
+  padding: "3px 10px",
+  border: "none",
+  background: active ? theme.accent : "transparent",
+  color: active ? "#ffffff" : theme.muted,
+  fontSize: 10,
+  fontWeight: active ? 600 : 400,
+  cursor: "pointer",
+  fontFamily: "inherit",
+  transition: "background 0.3s ease",
+  opacity: isDemo ? 0.6 : 1,
+});
 
-interface HeaderBarProps {
+// ─── Unified Top Bar (branding + mode + filters in one row) ─────
+
+interface TopBarProps {
   mode: ViewMode;
   theme: GraphTheme;
   branding: { name: string; logo?: React.ReactNode | string; accentColor?: string };
   showModeSwitcher: boolean;
-  eventCount: number;
-  eventEdgeCount: number;
-  kolCount: number;
-  totalReach: number;
-  narrativeCount?: number;
-  currentProb?: number;
-  zoom: number;
-  onModeChange: (mode: ViewMode) => void;
-}
-
-export function HeaderBar({
-  mode, theme, branding, showModeSwitcher,
-  eventCount, eventEdgeCount, kolCount, totalReach,
-  narrativeCount = 0, currentProb, zoom, onModeChange,
-}: HeaderBarProps) {
-  return (
-    <div style={{
-      position: "absolute", top: 0, left: 0, right: 0, height: 48,
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      padding: "0 20px", borderBottom: `1px solid ${theme.border}`,
-      background: `${theme.bg}f0`, backdropFilter: "blur(16px)", zIndex: 30,
-    }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        {typeof branding.logo === "string"
-          ? <img src={branding.logo} alt={branding.name} style={{ height: 20 }} />
-          : branding.logo
-            ? branding.logo
-            : <span style={{ color: branding.accentColor || theme.accent, fontWeight: 700, fontSize: 14, letterSpacing: 2, fontFamily: theme.monoFontFamily, textTransform: "uppercase" as const }}>{branding.name}</span>}
-        <div style={{ width: 1, height: 20, background: theme.border }} />
-        {showModeSwitcher && (
-          <div style={{ display: "flex", borderRadius: 8, border: `1px solid ${theme.border}`, overflow: "hidden" }}>
-            {([ ["narratives", "Narratives"], ["events", "Events (Demo)"], ["kols", "KOLs (Demo)"] ] as [ViewMode, string][]).map(([key, label]) => (
-              <button key={key} onClick={() => onModeChange(key)} style={{
-                padding: "5px 14px", border: "none",
-                background: mode === key ? theme.accent : "transparent",
-                color: mode === key ? "#ffffff" : theme.muted,
-                fontSize: 11, fontWeight: mode === key ? 600 : 400, cursor: "pointer",
-                fontFamily: "inherit", transition: "background 0.3s ease",
-                opacity: key === "narratives" ? 1 : 0.6,
-              }}>{label}</button>
-            ))}
-          </div>
-        )}
-        <div style={{ padding: "2px 8px", borderRadius: 8, background: theme.accent, fontSize: 9, color: "#ffffff", fontWeight: 700 }}>LIVE</div>
-      </div>
-      <div style={{
-        display: "flex", gap: 8, alignItems: "center",
-        padding: "4px 10px", borderRadius: 8,
-        background: theme.surface, border: `1px solid ${theme.border}`,
-        fontSize: 12, fontWeight: 400, color: theme.textSecondary,
-      }}>
-        {mode === "events"
-          ? <>{eventCount} entities · {eventEdgeCount} links</>
-          : mode === "narratives"
-            ? <>{narrativeCount} events{currentProb != null ? ` · ${currentProb.toFixed(0)}% prob` : ""}</>
-            : <>{kolCount} KOLs · {formatNumber(totalReach)} reach</>}
-        <span style={{ color: theme.border }}>|</span>
-        <span>Zoom {(zoom * 100).toFixed(0)}%</span>
-      </div>
-    </div>
-  );
-}
-
-// ─── Filter Bar ─────────────────────────────────────────────────
-
-interface FilterBarProps {
-  mode: ViewMode;
-  top: number;
   panelOffset: number;
-  theme: GraphTheme;
+  onModeChange: (mode: ViewMode) => void;
+  // Filters
   allEventTypes: EventType[];
   allTiers: KolTier[];
   allPlatforms: Platform[];
@@ -123,9 +67,9 @@ interface FilterBarProps {
   onToggleHasMarket?: () => void;
 }
 
-export function FilterBar(props: FilterBarProps) {
+export function TopBar(props: TopBarProps) {
   const {
-    mode, top, panelOffset, theme,
+    mode, theme, branding, showModeSwitcher, panelOffset, onModeChange,
     allEventTypes, allTiers, allPlatforms,
     allCategories = [],
     activeEventTypes, activeTiers, activePlatforms,
@@ -138,12 +82,33 @@ export function FilterBar(props: FilterBarProps) {
 
   return (
     <div style={{
-      position: "absolute", top, left: 0, right: panelOffset, height: 38,
-      display: "flex", alignItems: "center", gap: 8, padding: "0 16px",
-      borderBottom: `1px solid ${theme.border}`, background: `${theme.bg}e0`,
-      backdropFilter: "blur(8px)", zIndex: 25, overflowX: "auto",
+      position: "absolute", top: 0, left: 0, right: panelOffset, height: 32,
+      display: "flex", alignItems: "center", gap: 8, padding: "0 12px",
+      borderBottom: `1px solid ${theme.border}`, background: `${theme.bg}f0`,
+      backdropFilter: "blur(16px)", zIndex: 30, overflowX: "auto",
       scrollbarWidth: "none" as const,
     }}>
+      {/* Branding */}
+      {typeof branding.logo === "string"
+        ? <img src={branding.logo} alt={branding.name} style={{ height: 14, flexShrink: 0 }} />
+        : branding.logo
+          ? branding.logo
+          : <span style={{ color: branding.accentColor || theme.accent, fontWeight: 700, fontSize: 11, letterSpacing: 1.5, fontFamily: theme.monoFontFamily, textTransform: "uppercase" as const, flexShrink: 0 }}>{branding.name}</span>}
+
+      {/* Mode switcher */}
+      {showModeSwitcher && (<>
+        <div style={{ width: 1, height: 16, background: theme.border, flexShrink: 0 }} />
+        <div style={{ display: "flex", borderRadius: 6, border: `1px solid ${theme.border}`, overflow: "hidden", flexShrink: 0 }}>
+          {([ ["narratives", "Narratives", false], ["events", "Events (Demo)", true], ["kols", "KOLs (Demo)", true] ] as [ViewMode, string, boolean][]).map(([key, label, isDemo]) => (
+            <button key={key} onClick={() => onModeChange(key)} style={modeBtn(theme, mode === key, isDemo)}>{label}</button>
+          ))}
+        </div>
+      </>)}
+
+      {/* Divider before filters */}
+      <div style={{ width: 1, height: 16, background: theme.border, flexShrink: 0 }} />
+
+      {/* Filters */}
       {mode === "events" ? (<>
         <button onClick={onResetEventTypes} aria-pressed={activeEventTypes.size === allEventTypes.length}
           style={filterBtn(theme, activeEventTypes.size === allEventTypes.length)}>All</button>
@@ -171,7 +136,7 @@ export function FilterBar(props: FilterBarProps) {
           );
         })}
         {onToggleHasMarket && (<>
-          <div style={{ width: 1, height: 18, background: theme.border, margin: "0 4px", flexShrink: 0 }} />
+          <div style={{ width: 1, height: 14, background: theme.border, margin: "0 2px", flexShrink: 0 }} />
           <button onClick={onToggleHasMarket} aria-pressed={!!hasMarket}
             style={filterBtn(theme, !!hasMarket, theme.complementUp, theme.complement)}>Prediction</button>
         </>)}
@@ -185,7 +150,7 @@ export function FilterBar(props: FilterBarProps) {
               style={filterBtn(theme, on, style.color, style.color)}>{meta.label}</button>
           );
         })}
-        <div style={{ width: 1, height: 18, background: theme.border, margin: "0 4px", flexShrink: 0 }} />
+        <div style={{ width: 1, height: 14, background: theme.border, margin: "0 2px", flexShrink: 0 }} />
         {allPlatforms.map((platform) => {
           const on = activePlatforms.has(platform);
           const meta = PLATFORM_META[platform] || PLATFORM_META.other;
@@ -199,7 +164,7 @@ export function FilterBar(props: FilterBarProps) {
   );
 }
 
-// ─── Stats Bars ─────────────────────────────────────────────────
+// ─── Compact Stats Bars ─────────────────────────────────────────
 
 interface KolStatsBarProps {
   top: number;
@@ -224,14 +189,14 @@ export function KolStatsBar({ top, height, panelOffset, theme, stats }: KolStats
     }}>
       {[
         { l: "KOLs", v: String(stats.totalKols), c: theme.accent },
-        { l: "Total Reach", v: formatNumber(stats.totalReach), c: getKolTierStyle(theme, "mega").color },
+        { l: "Reach", v: formatNumber(stats.totalReach), c: getKolTierStyle(theme, "mega").color },
         { l: "Mentions", v: String(stats.totalMentions), c: getKolTierStyle(theme, "macro").color },
-        { l: "Avg Eng.", v: `${stats.avgEngRate.toFixed(1)}%`, c: getKolTierStyle(theme, "mid").color },
+        { l: "Eng.", v: `${stats.avgEngRate.toFixed(1)}%`, c: getKolTierStyle(theme, "mid").color },
         { l: "Positive", v: `${stats.positiveRatio}%`, c: theme.positive },
       ].map((item, i) => (
-        <div key={item.l} style={{ flex: 1, textAlign: "center", borderRight: i < 4 ? `1px solid ${theme.border}` : "none", padding: "4px 0" }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: item.c }}>{item.v}</div>
-          <div style={{ fontSize: 11, fontWeight: 500, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>{item.l}</div>
+        <div key={item.l} style={{ flex: 1, textAlign: "center", borderRight: i < 4 ? `1px solid ${theme.border}` : "none", padding: "2px 0" }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: item.c }}>{item.v}</div>
+          <div style={{ fontSize: 8, fontWeight: 500, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginTop: 1 }}>{item.l}</div>
         </div>
       ))}
     </div>
@@ -263,14 +228,14 @@ export function NarrativeStatsBar({ top, height, panelOffset, theme, stats }: Na
     }}>
       {[
         { l: "Events", v: String(stats.totalEvents), c: theme.accent },
-        { l: "Probability", v: `${stats.currentProb.toFixed(1)}%`, c: theme.accent },
-        { l: "Net Odds", v: `${stats.netOddsDelta > 0 ? "+" : ""}${stats.netOddsDelta.toFixed(1)}pp`, c: deltaColor },
-        { l: "Momentum", v: stats.avgMomentum > 0 ? `+${stats.avgMomentum.toFixed(1)}` : stats.avgMomentum.toFixed(1), c: momentumColor },
-        { l: "Volume", v: formatNumber(stats.totalVolume), c: getNarrativeCategoryStyle(theme, "ai").color },
+        { l: "Prob", v: `${stats.currentProb.toFixed(1)}%`, c: theme.accent },
+        { l: "Odds", v: `${stats.netOddsDelta > 0 ? "+" : ""}${stats.netOddsDelta.toFixed(1)}pp`, c: deltaColor },
+        { l: "Mtm", v: stats.avgMomentum > 0 ? `+${stats.avgMomentum.toFixed(1)}` : stats.avgMomentum.toFixed(1), c: momentumColor },
+        { l: "Vol", v: formatNumber(stats.totalVolume), c: getNarrativeCategoryStyle(theme, "ai").color },
       ].map((item, i) => (
-        <div key={item.l} style={{ flex: 1, textAlign: "center", borderRight: i < 4 ? `1px solid ${theme.border}` : "none", padding: "4px 0" }}>
-          <div style={{ fontSize: 14, fontWeight: 600, color: item.c }}>{item.v}</div>
-          <div style={{ fontSize: 11, fontWeight: 500, color: theme.muted, letterSpacing: 1.5, textTransform: "uppercase", marginTop: 2 }}>{item.l}</div>
+        <div key={item.l} style={{ flex: 1, textAlign: "center", borderRight: i < 4 ? `1px solid ${theme.border}` : "none", padding: "2px 0" }}>
+          <div style={{ fontSize: 11, fontWeight: 600, color: item.c }}>{item.v}</div>
+          <div style={{ fontSize: 8, fontWeight: 500, color: theme.muted, letterSpacing: 1, textTransform: "uppercase", marginTop: 1 }}>{item.l}</div>
         </div>
       ))}
     </div>
