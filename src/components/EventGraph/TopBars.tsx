@@ -225,15 +225,26 @@ export function NarrativeStatsBar({ top, height, panelOffset, theme, stats }: Na
 
 // ─── Narrative Filter Panel (bottom-left overlay) ────────────
 
+const SIGNAL_SHAPES: Record<NarrativeSignal, { label: string; svg: string }> = {
+  escalation: { label: "Escalation", svg: "M5,0 L10,8.66 L0,8.66Z" },
+  catalyst:   { label: "Catalyst",   svg: "M5,0 L10,5 L5,10 L0,5Z" },
+  resolution: { label: "Resolution", svg: "M1,0 L9,0 Q10,0 10,1 L10,7 Q10,8 9,8 L1,8 Q0,8 0,7 L0,1 Q0,0 1,0Z" },
+  reversal:   { label: "Reversal",   svg: "M5,0.5 L9.5,5 L5,9.5 L0.5,5Z" },
+  noise:      { label: "Noise",      svg: "" },
+};
+
 const SIZE_TIERS = [
-  { key: "all", label: "All", min: 0 },
-  { key: "m", label: "M+", min: 0.3 },
-  { key: "l", label: "L+", min: 0.5 },
-  { key: "xl", label: "XL", min: 0.7 },
+  { key: "all", label: "All", min: 0, svgSize: 0 },
+  { key: "xs", label: "XS", min: 0, svgSize: 8 },
+  { key: "s", label: "S", min: 0.15, svgSize: 11 },
+  { key: "m", label: "M", min: 0.3, svgSize: 14 },
+  { key: "l", label: "L", min: 0.5, svgSize: 17 },
+  { key: "xl", label: "XL", min: 0.7, svgSize: 20 },
 ] as const;
 
 interface NarrativeFilterPanelProps {
   theme: GraphTheme;
+  panelOffset: number;
   allCategories: NarrativeCategory[];
   allSignals: NarrativeSignal[];
   activeCategories: Set<NarrativeCategory>;
@@ -249,31 +260,31 @@ interface NarrativeFilterPanelProps {
 
 export function NarrativeFilterPanel(props: NarrativeFilterPanelProps) {
   const {
-    theme, allCategories, allSignals,
+    theme, panelOffset, allCategories, allSignals,
     activeCategories, activeSignals,
     onResetCategories, onToggleCategory, onToggleSignal,
     hasMarket, onToggleHasMarket,
     minWeight = 0, onSetMinWeight,
   } = props;
 
-  const sectionLabel: React.CSSProperties = {
-    fontSize: 8, fontWeight: 700, color: theme.muted,
-    letterSpacing: 1.2, textTransform: "uppercase",
-    marginBottom: 4, marginTop: 6,
-  };
+  const legendItem = (on: boolean): React.CSSProperties => ({
+    display: "inline-flex", alignItems: "center", gap: 4,
+    cursor: "pointer", opacity: on ? 1 : 0.35,
+    transition: "opacity 0.2s ease",
+  });
 
   return (
     <div style={{
-      position: "absolute", bottom: 12, left: 12,
-      display: "flex", flexDirection: "column", gap: 2,
-      padding: "8px 10px", borderRadius: 10,
+      position: "absolute", bottom: 8, left: 12, right: panelOffset + 12,
+      display: "flex", flexDirection: "column", gap: 6,
+      padding: "8px 12px", borderRadius: 10,
       background: `${theme.bg}ee`, backdropFilter: "blur(12px)",
       border: `1px solid ${theme.border}`, zIndex: 25,
-      fontFamily: theme.fontFamily, maxWidth: 280,
+      fontFamily: theme.fontFamily, fontSize: 12, color: theme.textSecondary,
     }}>
-      {/* Category filters */}
-      <div style={sectionLabel}>Category</div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+      {/* Row 1: Category filters */}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 3, alignItems: "center" }}>
+        <span style={{ fontWeight: 700, fontSize: 8, letterSpacing: 1, textTransform: "uppercase", color: theme.muted, marginRight: 2 }}>Category</span>
         <button onClick={onResetCategories} aria-pressed={activeCategories.size === allCategories.length}
           style={filterBtn(theme, activeCategories.size === allCategories.length)}>All</button>
         {allCategories.map((cat) => {
@@ -291,35 +302,61 @@ export function NarrativeFilterPanel(props: NarrativeFilterPanelProps) {
         )}
       </div>
 
-      {/* Signal filters */}
-      <div style={sectionLabel}>Signal</div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 3 }}>
+      {/* Row 2: Legend — Shapes (signal filters) | Size | Sentiment */}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+        {/* Shapes = signal filters */}
+        <span style={{ fontWeight: 700, fontSize: 8, letterSpacing: 1, textTransform: "uppercase", color: theme.muted }}>Shapes</span>
         {allSignals.map((sig) => {
-          const style = getNarrativeSignalStyle(theme, sig);
           const meta = NARRATIVE_SIGNAL_META[sig];
+          const shape = SIGNAL_SHAPES[sig];
+          const sigColor = theme.narrativeSignalColors[sig]?.color ?? theme.muted;
           const on = activeSignals.has(sig);
           return (
-            <button key={sig} onClick={() => onToggleSignal(sig)} aria-pressed={on}
-              style={filterBtn(theme, on, style.color, style.color)}>{meta?.label}</button>
+            <span key={sig} style={legendItem(on)} onClick={() => onToggleSignal(sig)}>
+              <svg width={12} height={12} viewBox="0 0 10 10">
+                {sig === "noise" ? (
+                  <circle cx={5} cy={5} r={4} fill={on ? sigColor : "none"} stroke={sigColor} strokeWidth={1.2} fillOpacity={on ? 0.3 : 0} />
+                ) : (
+                  <path d={shape.svg} fill={on ? sigColor : "none"} stroke={sigColor} strokeWidth={1.2} strokeLinejoin="round" fillOpacity={on ? 0.3 : 0} />
+                )}
+              </svg>
+              <span>{meta?.icon} {shape?.label}</span>
+            </span>
           );
         })}
-      </div>
 
-      {/* Size filter */}
-      {onSetMinWeight && (
-        <>
-          <div style={sectionLabel}>Min Size</div>
-          <div style={{ display: "flex", gap: 3 }}>
-            {SIZE_TIERS.map((tier) => {
-              const on = minWeight === tier.min;
-              return (
-                <button key={tier.key} onClick={() => onSetMinWeight(tier.min)}
-                  aria-pressed={on} style={filterBtn(theme, on)}>{tier.label}</button>
-              );
-            })}
-          </div>
-        </>
-      )}
+        <span style={{ margin: "0 2px", color: theme.border }}>|</span>
+
+        {/* Size filter */}
+        <span style={{ fontWeight: 700, fontSize: 8, letterSpacing: 1, textTransform: "uppercase", color: theme.muted }}>Size</span>
+        {SIZE_TIERS.filter(t => t.key !== "all").map((tier) => {
+          const on = minWeight <= tier.min;
+          const isActive = onSetMinWeight != null;
+          return (
+            <span key={tier.key}
+              style={{ ...legendItem(on || minWeight === 0), cursor: isActive ? "pointer" : "default" }}
+              onClick={() => onSetMinWeight?.(minWeight === tier.min ? 0 : tier.min)}>
+              <svg width={tier.svgSize} height={tier.svgSize} viewBox="0 0 10 10">
+                <circle cx={5} cy={5} r={4} fill="none" stroke={minWeight === tier.min ? theme.accent : theme.muted} strokeWidth={minWeight === tier.min ? 1.5 : 0.8} />
+              </svg>
+              <span>{tier.label}</span>
+            </span>
+          );
+        })}
+
+        <span style={{ margin: "0 2px", color: theme.border }}>|</span>
+
+        {/* Sentiment legend (non-interactive, informational) */}
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+          <svg width={8} height={8}><circle cx={4} cy={4} r={3} fill={theme.positive} /></svg> pos
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+          <svg width={8} height={8}><circle cx={4} cy={4} r={3} fill={theme.negative} /></svg> neg
+        </span>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: 3 }}>
+          <svg width={8} height={8}><circle cx={4} cy={4} r={3} fill={theme.neutral} /></svg> neu
+        </span>
+      </div>
     </div>
   );
 }
