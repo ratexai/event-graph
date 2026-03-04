@@ -1,6 +1,6 @@
 import React from "react";
 import type { EventType, GraphTheme, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../../types";
-import { EVENT_TYPE_META, getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, getNarrativeSignalStyle, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META, NARRATIVE_SIGNAL_META } from "../../styles/theme";
+import { EVENT_TYPE_META, getEventTypeStyle, getKolTierStyle, getNarrativeCategoryStyle, KOL_TIER_META, PLATFORM_META, NARRATIVE_CATEGORY_META } from "../../styles/theme";
 import { formatNumber } from "../../utils";
 
 // ─── BubbleMap filter button base style ─────────────────────────
@@ -63,13 +63,14 @@ export function HeaderBar({
         <div style={{ width: 1, height: 20, background: theme.border }} />
         {showModeSwitcher && (
           <div style={{ display: "flex", borderRadius: 8, border: `1px solid ${theme.border}`, overflow: "hidden" }}>
-            {([ ["events", "Events"], ["kols", "KOLs"], ["narratives", "Narratives"] ] as [ViewMode, string][]).map(([key, label]) => (
+            {([ ["narratives", "Narratives"], ["events", "Events (Demo)"], ["kols", "KOLs (Demo)"] ] as [ViewMode, string][]).map(([key, label]) => (
               <button key={key} onClick={() => onModeChange(key)} style={{
                 padding: "5px 14px", border: "none",
                 background: mode === key ? theme.accent : "transparent",
                 color: mode === key ? "#ffffff" : theme.muted,
                 fontSize: 11, fontWeight: mode === key ? 600 : 400, cursor: "pointer",
                 fontFamily: "inherit", transition: "background 0.3s ease",
+                opacity: key === "narratives" ? 1 : 0.6,
               }}>{label}</button>
             ))}
           </div>
@@ -169,18 +170,6 @@ export function FilterBar(props: FilterBarProps) {
               style={filterBtn(theme, on, style.color, style.color)}>{meta?.label}</button>
           );
         })}
-        {allSignals.length > 0 && (<>
-          <div style={{ width: 1, height: 18, background: theme.border, margin: "0 4px", flexShrink: 0 }} />
-          {allSignals.map((sig) => {
-            const style = getNarrativeSignalStyle(theme, sig);
-            const meta = NARRATIVE_SIGNAL_META[sig];
-            const on = activeSignals?.has(sig) ?? true;
-            return (
-              <button key={sig} onClick={() => onToggleSignal?.(sig)} aria-pressed={on}
-                style={filterBtn(theme, on, style.color, style.color)}>{meta?.label}</button>
-            );
-          })}
-        </>)}
         {onToggleHasMarket && (<>
           <div style={{ width: 1, height: 18, background: theme.border, margin: "0 4px", flexShrink: 0 }} />
           <button onClick={onToggleHasMarket} aria-pressed={!!hasMarket}

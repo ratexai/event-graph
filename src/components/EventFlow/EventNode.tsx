@@ -35,7 +35,7 @@ export const EventNodeComponent = memo<Props>(({
   const gradId = `eg-${event.id}`;
 
   return (
-    <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s" }}
+    <g className="nd" transform={`translate(${x},${y})`} style={{ cursor: "pointer", transition: "opacity 0.3s", outline: "none" }}
       role="button" aria-label={`${meta?.label || event.type} event: ${event.label}, impact ${event.impact}`}
       tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
       opacity={isDimmed ? 0.15 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
@@ -66,7 +66,7 @@ export const EventNodeComponent = memo<Props>(({
       {event.imageUrl ? (
         <NodeImage href={event.imageUrl} radius={Math.max(r / 2.8, 10)} nodeId={event.id} borderColor={style.color} borderWidth={1} />
       ) : r > 24 ? (
-        <text y={1} textAnchor="middle" fontSize={Math.min(r / 4.5, 12)} fontWeight={500}
+        <text x={-r * 0.8} y={1} textAnchor="start" fontSize={Math.min(r / 4.5, 12)} fontWeight={500}
           fill={theme.text} fontFamily={theme.fontFamily}
           style={{ pointerEvents: "none" }}>{meta?.label || event.type}</text>
       ) : null}

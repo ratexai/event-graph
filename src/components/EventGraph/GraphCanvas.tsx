@@ -161,7 +161,7 @@ export function GraphCanvas({
       <g transform={`translate(${panZoom.pan.x},${panZoom.pan.y}) scale(${panZoom.zoom})`}>
         {timeSlots.map((slot, i) => {
           if (i > maxCol) return null;
-          const MIN_COL_PX = 100;
+          const MIN_COL_PX = 115;
           const effectiveWidth = Math.max(graphWidth, maxCol * MIN_COL_PX);
           const x = layoutPadding.left + (effectiveWidth / maxCol) * i;
           const slotIsFuture = isNarrativeMode && (

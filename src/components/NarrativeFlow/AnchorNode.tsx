@@ -94,7 +94,7 @@ export const AnchorNodeComponent = memo<Props>(({
 
   return (
     <g className="anchor-nd" transform={`translate(${x},${y})`}
-      style={{ cursor: "pointer", transition: "opacity 0.3s" }}
+      style={{ cursor: "pointer", transition: "opacity 0.3s", outline: "none" }}
       role="button" aria-label={`Polymarket anchor: ${node.label}, ${probText}`}
       tabIndex={isDimmed ? -1 : 0} onKeyDown={handleKeyDown}
       opacity={isDimmed ? 0.15 : 1} onMouseEnter={handleEnter} onMouseLeave={onHoverEnd}
