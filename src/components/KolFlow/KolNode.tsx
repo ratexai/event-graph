@@ -41,7 +41,7 @@ export const KolNodeComponent = memo<Props>(({
       <GlowRings radius={r} color={tierStyle.color} time={time} isActive={isHovered || isSelected} />
       {/* Engagement ring */}
       <circle r={r + 5} fill="none" stroke={tierStyle.color} strokeWidth={1} opacity={0.2}
-        strokeDasharray={`${kol.engRate * 8} ${(10 - kol.engRate) * 8}`} strokeDashoffset={-15} strokeLinecap="round" />
+        strokeDasharray={`${Math.min(kol.engRate, 10) * 8} ${Math.max(10 - kol.engRate, 0) * 8}`} strokeDashoffset={-15} strokeLinecap="round" />
       <SentimentRing radius={r + 3} sentiment={kol.sentiment} theme={theme} isDimmed={isDimmed} />
       <circle r={r} fill={tierStyle.bg} stroke={tierStyle.color} strokeWidth={isHovered || isSelected ? 2.5 : 1.2} />
       {/* Avatar: image or initials */}

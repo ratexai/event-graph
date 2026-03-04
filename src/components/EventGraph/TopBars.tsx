@@ -119,7 +119,7 @@ export function FilterBar(props: FilterBarProps) {
       backdropFilter: "blur(8px)", zIndex: 25, overflowX: "auto",
     }}>
       {mode === "events" ? (<>
-        <button onClick={onResetEventTypes} style={{
+        <button onClick={onResetEventTypes} aria-pressed={activeEventTypes.size === allEventTypes.length} style={{
           padding: "3px 10px", borderRadius: 44,
           border: `1px solid ${activeEventTypes.size === allEventTypes.length ? theme.accent : theme.border}`,
           background: activeEventTypes.size === allEventTypes.length ? theme.accentDim : "transparent",
@@ -131,7 +131,7 @@ export function FilterBar(props: FilterBarProps) {
           const meta = EVENT_TYPE_META[type];
           const on = activeEventTypes.has(type);
           return (
-            <button key={type} onClick={() => onToggleEventType(type)} style={{
+            <button key={type} onClick={() => onToggleEventType(type)} aria-pressed={on} style={{
               padding: "3px 10px", borderRadius: 44,
               border: `1px solid ${on ? style.color + "50" : theme.border}`,
               background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
@@ -155,7 +155,7 @@ export function FilterBar(props: FilterBarProps) {
           const meta = NARRATIVE_CATEGORY_META[cat];
           const on = activeCategories?.has(cat) ?? true;
           return (
-            <button key={cat} onClick={() => onToggleCategory?.(cat)} style={{
+            <button key={cat} onClick={() => onToggleCategory?.(cat)} aria-pressed={on} style={{
               padding: "3px 10px", borderRadius: 44,
               border: `1px solid ${on ? style.color + "50" : theme.border}`,
               background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
@@ -172,7 +172,7 @@ export function FilterBar(props: FilterBarProps) {
             const meta = NARRATIVE_SIGNAL_META[sig];
             const on = activeSignals?.has(sig) ?? true;
             return (
-              <button key={sig} onClick={() => onToggleSignal?.(sig)} style={{
+              <button key={sig} onClick={() => onToggleSignal?.(sig)} aria-pressed={on} style={{
                 padding: "3px 10px", borderRadius: 44,
                 border: `1px solid ${on ? style.color + "50" : theme.border}`,
                 background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
@@ -183,7 +183,7 @@ export function FilterBar(props: FilterBarProps) {
         </>)}
         {onToggleHasMarket && (<>
           <div style={{ width: 1, height: 18, background: theme.border, margin: "0 6px" }} />
-          <button onClick={onToggleHasMarket} style={{
+          <button onClick={onToggleHasMarket} aria-pressed={!!hasMarket} style={{
             padding: "3px 10px", borderRadius: 44,
             border: `1px solid ${hasMarket ? theme.complement + "80" : theme.border}`,
             background: hasMarket ? theme.complementDim : "transparent",
@@ -199,7 +199,7 @@ export function FilterBar(props: FilterBarProps) {
           const meta = KOL_TIER_META[tier];
           const on = activeTiers.has(tier);
           return (
-            <button key={tier} onClick={() => onToggleTier(tier)} style={{
+            <button key={tier} onClick={() => onToggleTier(tier)} aria-pressed={on} style={{
               padding: "3px 10px", borderRadius: 44,
               border: `1px solid ${on ? style.color + "50" : theme.border}`,
               background: on ? style.bg : "transparent", color: on ? style.color : theme.muted,
@@ -213,7 +213,7 @@ export function FilterBar(props: FilterBarProps) {
           const on = activePlatforms.has(platform);
           const meta = PLATFORM_META[platform] || PLATFORM_META.other;
           return (
-            <button key={platform} onClick={() => onTogglePlatform(platform)} style={{
+            <button key={platform} onClick={() => onTogglePlatform(platform)} aria-pressed={on} style={{
               padding: "3px 10px", borderRadius: 44,
               border: `1px solid ${on ? theme.accent + "40" : theme.border}`,
               background: on ? theme.accentDim : "transparent", color: on ? theme.accent : theme.muted,

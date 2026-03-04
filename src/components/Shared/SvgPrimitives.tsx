@@ -139,13 +139,13 @@ export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, them
   return (
     <g>
       <line x1={x} y1={topY - 14} x2={x} y2={bottomY + 14}
-        stroke={isSpecial ? "#901dea" : theme.border}
+        stroke={isSpecial ? theme.complement : theme.border}
         strokeWidth={isAnchorDate ? 1.5 : isFuture ? 1.2 : 1}
         strokeDasharray={isAnchorDate ? "6 6" : isFuture ? "4 8" : "1 6"}
         opacity={isAnchorDate ? 0.5 : isFuture ? 0.35 : 0.5} />
       {isSpecial && (
         <rect x={x - 30} y={topY - 14} width={60} height={bottomY - topY + 28}
-          fill={isAnchorDate ? "#191628" : "#151621"} rx={4} />
+          fill={theme.complementDim} rx={4} />
       )}
       {isAnchorDate && (
         <>
@@ -155,16 +155,16 @@ export const GridColumn = memo<GridColumnProps>(({ x, topY, bottomY, label, them
         </>
       )}
       <rect x={x - 28} y={bottomY + 18} width={56} height={18} rx={9}
-        fill={isSpecial ? "#24173a" : theme.bgAlt}
-        stroke={isAnchorDate ? "#901dea" : isFuture ? "#901dea" : theme.border}
+        fill={isSpecial ? theme.complementDim : theme.bgAlt}
+        stroke={isSpecial ? theme.complement : theme.border}
         strokeWidth={isAnchorDate ? 1 : isFuture ? 0.8 : 0.5} />
       <text x={x} y={bottomY + 30} textAnchor="middle"
-        fill={isSpecial ? "#b659ff" : theme.muted}
-        fontSize={8.5} fontFamily="'JetBrains Mono','SF Mono',monospace"
+        fill={isSpecial ? theme.complementUp : theme.muted}
+        fontSize={8.5} fontFamily={theme.monoFontFamily}
         fontWeight={isSpecial ? 700 : 500}>{label}</text>
       {isAnchorDate && (
-        <text x={x} y={bottomY + 41} textAnchor="middle" fill="#b659ff"
-          fontSize={6} fontWeight={600} fontFamily="'JetBrains Mono','SF Mono',monospace">
+        <text x={x} y={bottomY + 41} textAnchor="middle" fill={theme.complementUp}
+          fontSize={6} fontWeight={600} fontFamily={theme.monoFontFamily}>
           expiry
         </text>
       )}
