@@ -88,6 +88,6 @@ export const aiRevolutionData = {
   },
   timeSlots: [
     ...baseData.timeSlots,
-    { index: 10, label: "H2 2026 (prog)", startDate: "2026-07-01", endDate: "2026-12-31", type: "anchor_date" as const },
+    { index: 17, label: "2027+ (prog)", startDate: "2027-01-01", endDate: "2027-12-31", type: "anchor_date" as const },
   ],
 };

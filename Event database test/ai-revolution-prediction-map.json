@@ -24,39 +24,67 @@
     },
     {
       "col": 1,
-      "label": "Feb-Mar 2025"
+      "label": "Feb–Mar 2025"
     },
     {
       "col": 2,
-      "label": "Apr-Jun 2025"
+      "label": "Apr–May 2025"
     },
     {
       "col": 3,
-      "label": "Jul-Sep 2025"
+      "label": "Jun 2025"
     },
     {
       "col": 4,
-      "label": "Oct-Dec 2025"
+      "label": "Jul–Aug 2025"
     },
     {
       "col": 5,
-      "label": "Jan 2026"
+      "label": "Sep–Oct 2025"
     },
     {
       "col": 6,
-      "label": "Feb 2026"
+      "label": "Nov 2025"
     },
     {
       "col": 7,
-      "label": "Mar 1-5 2026"
+      "label": "Dec 2025"
     },
     {
       "col": 8,
-      "label": "Mar 6-15 (prog)"
+      "label": "Jan 1–15 ʼ26"
     },
     {
       "col": 9,
-      "label": "Mar-Jun (prog)"
+      "label": "Jan 16–31 ʼ26"
+    },
+    {
+      "col": 10,
+      "label": "Feb 1–14 ʼ26"
+    },
+    {
+      "col": 11,
+      "label": "Feb 15–28 ʼ26"
+    },
+    {
+      "col": 12,
+      "label": "Mar 1–15 ʼ26"
+    },
+    {
+      "col": 13,
+      "label": "Mar 16–31 ʼ26"
+    },
+    {
+      "col": 14,
+      "label": "Apr 2026"
+    },
+    {
+      "col": 15,
+      "label": "May–Jun 2026"
+    },
+    {
+      "col": 16,
+      "label": "H2 2026"
     }
   ],
   "branches": [
@@ -389,7 +417,7 @@
     },
     {
       "id": "n10_ai_funding_record",
-      "col": 2,
+      "col": 3,
       "label": "💰📈 AI Captures 50% of Startup Funding",
       "category": "investment",
       "signal": "escalation",
@@ -421,7 +449,7 @@
     },
     {
       "id": "n11_nvidia_5t",
-      "col": 2,
+      "col": 3,
       "label": "📈 Nvidia Hits $5T Valuation",
       "category": "investment",
       "signal": "catalyst",
@@ -454,7 +482,7 @@
     },
     {
       "id": "n12_stargate_norway",
-      "col": 3,
+      "col": 4,
       "label": "🏗️🇳🇴 Stargate Norway (Europe 1st)",
       "category": "infrastructure",
       "signal": "resolution",
@@ -482,7 +510,7 @@
     },
     {
       "id": "n13_qwen_llama_war",
-      "col": 3,
+      "col": 4,
       "label": "🇨🇳🆚🇺🇸 Chinese Open Models Lead",
       "category": "models",
       "signal": "escalation",
@@ -513,7 +541,7 @@
     },
     {
       "id": "n15_photonic_chip",
-      "col": 3,
+      "col": 5,
       "label": "💡🔬 Photonic AI Chip Breakthrough",
       "category": "models",
       "signal": "resolution",
@@ -541,7 +569,7 @@
     },
     {
       "id": "n14_stargate_5sites",
-      "col": 3,
+      "col": 5,
       "label": "🏗️ Stargate: 5 New US Sites, 7GW",
       "category": "infrastructure",
       "signal": "catalyst",
@@ -574,7 +602,7 @@
     },
     {
       "id": "n55_stargate_argentina",
-      "col": 3,
+      "col": 5,
       "label": "🏗️🇦🇷 Stargate Argentina $25B",
       "category": "infrastructure",
       "signal": "noise",
@@ -604,7 +632,7 @@
     },
     {
       "id": "n16_bubble_fears_grow",
-      "col": 4,
+      "col": 5,
       "label": "📉⚠️ AI Bubble Fears Intensify",
       "category": "investment",
       "signal": "escalation",
@@ -636,7 +664,7 @@
     },
     {
       "id": "n76_humane_ai_pin_fails",
-      "col": 4,
+      "col": 5,
       "label": "📱❌ Humane AI Pin Sold to HP (Flop)",
       "category": "adoption",
       "signal": "noise",
@@ -667,7 +695,7 @@
     },
     {
       "id": "n56_ai_military_debate",
-      "col": 4,
+      "col": 6,
       "label": "🎖️⚠️ Military AI Debate Escalates",
       "category": "regulation",
       "signal": "escalation",
@@ -694,7 +722,7 @@
     },
     {
       "id": "n17_stargate_stalls",
-      "col": 4,
+      "col": 6,
       "label": "🏗️❌ Stargate Project Stalls",
       "category": "infrastructure",
       "signal": "escalation",
@@ -724,7 +752,7 @@
     },
     {
       "id": "n72_musk_altman_lawsuit",
-      "col": 4,
+      "col": 6,
       "label": "⚖️ Musk vs Altman Lawsuit Escalates",
       "category": "regulation",
       "signal": "noise",
@@ -755,7 +783,7 @@
     },
     {
       "id": "n19_waymo_tesla_robo",
-      "col": 4,
+      "col": 6,
       "label": "🚗🤖 Self-Driving Breakthrough Year",
       "category": "adoption",
       "signal": "catalyst",
@@ -783,7 +811,7 @@
     },
     {
       "id": "n18_ai_202b_investment",
-      "col": 4,
+      "col": 7,
       "label": "💰 AI Funding Hits $202B in 2025",
       "category": "investment",
       "signal": "catalyst",
@@ -814,7 +842,7 @@
     },
     {
       "id": "n21_biotech_ai_trials",
-      "col": 4,
+      "col": 7,
       "label": "🧬💊 AI Drug Discovery Hits Clinical Trials",
       "category": "adoption",
       "signal": "resolution",
@@ -842,7 +870,7 @@
     },
     {
       "id": "n57_noaa_ai_weather",
-      "col": 4,
+      "col": 7,
       "label": "🌦️🤖 NOAA AI Weather Models Deploy",
       "category": "adoption",
       "signal": "resolution",
@@ -870,7 +898,7 @@
     },
     {
       "id": "n20_market_correction",
-      "col": 4,
+      "col": 7,
       "label": "📉 AI Market Sell-Off Dec 2025",
       "category": "investment",
       "signal": "escalation",
@@ -897,7 +925,7 @@
     },
     {
       "id": "n23_agentic_shift",
-      "col": 5,
+      "col": 8,
       "label": "🤖📋 Agentic AI: Hype → Deployment",
       "category": "adoption",
       "signal": "catalyst",
@@ -927,7 +955,7 @@
     },
     {
       "id": "n25_world_models_rise",
-      "col": 5,
+      "col": 8,
       "label": "🌐🧠 World Models: Next AI Frontier",
       "category": "models",
       "signal": "catalyst",
@@ -957,7 +985,7 @@
     },
     {
       "id": "n58_ai_slop_crisis",
-      "col": 5,
+      "col": 8,
       "label": "🗑️ AI Slop Crisis: 50%+ Content AI",
       "category": "adoption",
       "signal": "escalation",
@@ -988,7 +1016,7 @@
     },
     {
       "id": "n26_ces2026_ai",
-      "col": 5,
+      "col": 8,
       "label": "🎮📱 CES 2026: AI Everywhere",
       "category": "adoption",
       "signal": "noise",
@@ -1019,7 +1047,7 @@
     },
     {
       "id": "n24_big_tech_500b_capex",
-      "col": 5,
+      "col": 8,
       "label": "💰 Big Tech CapEx to Exceed $500B",
       "category": "investment",
       "signal": "escalation",
@@ -1049,7 +1077,7 @@
     },
     {
       "id": "n22_sovereign_ai_wave",
-      "col": 5,
+      "col": 8,
       "label": "🌍🏛️ Sovereign AI Wave 2026",
       "category": "regulation",
       "signal": "escalation",
@@ -1078,7 +1106,7 @@
     },
     {
       "id": "n61_open_source_2025_review",
-      "col": 5,
+      "col": 9,
       "label": "📖 Open-Source AI Becomes Default",
       "category": "models",
       "signal": "resolution",
@@ -1105,7 +1133,7 @@
     },
     {
       "id": "n77_ai_glasses_100m",
-      "col": 5,
+      "col": 9,
       "label": "👓 AI Glasses: 10M→100M Units 2026",
       "category": "adoption",
       "signal": "catalyst",
@@ -1137,7 +1165,7 @@
     },
     {
       "id": "n68_openai_jony_ive_device",
-      "col": 5,
+      "col": 9,
       "label": "📱🎨 OpenAI 'Gumdrop': Jony Ive Device H2",
       "category": "adoption",
       "signal": "catalyst",
@@ -1170,7 +1198,7 @@
     },
     {
       "id": "n66_tesla_robotaxi_austin_unsupervised",
-      "col": 5,
+      "col": 9,
       "label": "🚗🤖 Tesla Unsupervised Robotaxi Austin",
       "category": "adoption",
       "signal": "catalyst",
@@ -1203,7 +1231,7 @@
     },
     {
       "id": "n73_waymo_450k_rides",
-      "col": 5,
+      "col": 9,
       "label": "🚗 Waymo: 450K Weekly Rides, 11 Cities",
       "category": "adoption",
       "signal": "catalyst",
@@ -1235,7 +1263,7 @@
     },
     {
       "id": "n78_deepmind_acquisitions",
-      "col": 6,
+      "col": 10,
       "label": "🧠 DeepMind: CSM + Hume AI + Sakana",
       "category": "models",
       "signal": "noise",
@@ -1265,7 +1293,7 @@
     },
     {
       "id": "n27_openai_cerebras_10b",
-      "col": 6,
+      "col": 10,
       "label": "🔧 OpenAI × Cerebras $10B+ Deal",
       "category": "infrastructure",
       "signal": "catalyst",
@@ -1297,7 +1325,7 @@
     },
     {
       "id": "n59_tsmc_record_profit",
-      "col": 6,
+      "col": 10,
       "label": "🇹🇼📈 TSMC Record Profit, $165B US",
       "category": "infrastructure",
       "signal": "catalyst",
@@ -1330,7 +1358,7 @@
     },
     {
       "id": "n35_openai_snowflake_200m",
-      "col": 6,
+      "col": 10,
       "label": "🤝 OpenAI × Snowflake $200M",
       "category": "adoption",
       "signal": "noise",
@@ -1360,7 +1388,7 @@
     },
     {
       "id": "n28_meta_amd_100b",
-      "col": 6,
+      "col": 10,
       "label": "💰🔴 Meta × AMD $100B Chip Deal",
       "category": "infrastructure",
       "signal": "catalyst",
@@ -1391,7 +1419,7 @@
     },
     {
       "id": "n32_eu_ai_act_code",
-      "col": 6,
+      "col": 10,
       "label": "🇪🇺📜 EU AI Act Transparency Code",
       "category": "regulation",
       "signal": "noise",
@@ -1422,7 +1450,7 @@
     },
     {
       "id": "n36_anthropic_111m_office",
-      "col": 6,
+      "col": 10,
       "label": "🏢 Anthropic $111M SF Office Lease",
       "category": "investment",
       "signal": "noise",
@@ -1451,7 +1479,7 @@
     },
     {
       "id": "n29_xai_spacex_merge",
-      "col": 6,
+      "col": 11,
       "label": "🚀🤖 xAI Merges with SpaceX",
       "category": "investment",
       "signal": "catalyst",
@@ -1482,7 +1510,7 @@
     },
     {
       "id": "n39_uk_fusion_magnets",
-      "col": 6,
+      "col": 11,
       "label": "🇬🇧⚡ UK Fusion Magnet Breakthrough",
       "category": "infrastructure",
       "signal": "resolution",
@@ -1511,7 +1539,7 @@
     },
     {
       "id": "n67_tesla_cybercab_production",
-      "col": 6,
+      "col": 11,
       "label": "🚗🏭 Tesla Cybercab Production Starts",
       "category": "adoption",
       "signal": "catalyst",
@@ -1542,7 +1570,7 @@
     },
     {
       "id": "n33_micron_100b_fab",
-      "col": 6,
+      "col": 11,
       "label": "🏭 Micron $100B Megafab NY",
       "category": "infrastructure",
       "signal": "catalyst",
@@ -1575,7 +1603,7 @@
     },
     {
       "id": "n30_gemini31_pro",
-      "col": 6,
+      "col": 11,
       "label": "🧠 Gemini 3.1 Pro: 77% ARC-AGI-2",
       "category": "models",
       "signal": "catalyst",
@@ -1608,7 +1636,7 @@
     },
     {
       "id": "n38_meta_news_deals",
-      "col": 6,
+      "col": 11,
       "label": "📰 Meta Signs News AI Deals",
       "category": "adoption",
       "signal": "noise",
@@ -1636,7 +1664,7 @@
     },
     {
       "id": "n31_glm5_china",
-      "col": 6,
+      "col": 11,
       "label": "🇨🇳 GLM-5: 744B on Huawei Chips",
       "category": "models",
       "signal": "escalation",
@@ -1669,7 +1697,7 @@
     },
     {
       "id": "n34_anthropic_safety_gov",
-      "col": 6,
+      "col": 11,
       "label": "🛡️ Anthropic Refuses Gov Safety Removal",
       "category": "regulation",
       "signal": "catalyst",
@@ -1697,7 +1725,7 @@
     },
     {
       "id": "n37_espionage_conviction",
-      "col": 6,
+      "col": 11,
       "label": "🇨🇳🔒 First AI Espionage Conviction",
       "category": "regulation",
       "signal": "escalation",
@@ -1728,7 +1756,7 @@
     },
     {
       "id": "n60_adobe_kills_animate",
-      "col": 6,
+      "col": 11,
       "label": "🎨❌ Adobe Kills Animate for AI",
       "category": "adoption",
       "signal": "catalyst",
@@ -1755,7 +1783,7 @@
     },
     {
       "id": "n74_openai_pentagon_safeguards",
-      "col": 6,
+      "col": 11,
       "label": "🎖️📝 OpenAI Adds Pentagon Safeguards",
       "category": "regulation",
       "signal": "resolution",
@@ -1783,7 +1811,7 @@
     },
     {
       "id": "n45_apple_siri_gemini",
-      "col": 7,
+      "col": 12,
       "label": "🍎🤖 Apple: AI Siri via Gemini, March",
       "category": "adoption",
       "signal": "catalyst",
@@ -1816,7 +1844,7 @@
     },
     {
       "id": "n41_claude_opus_46",
-      "col": 7,
+      "col": 12,
       "label": "🧠 Claude Opus 4.6 — New Frontier",
       "category": "models",
       "signal": "catalyst",
@@ -1847,7 +1875,7 @@
     },
     {
       "id": "n42_openai_pentagon",
-      "col": 7,
+      "col": 12,
       "label": "🎖️ OpenAI Pentagon Contract Controversy",
       "category": "regulation",
       "signal": "escalation",
@@ -1877,7 +1905,7 @@
     },
     {
       "id": "n62_collectiviq_ensemble",
-      "col": 7,
+      "col": 12,
       "label": "🤝 CollectivIQ: Multi-Model Ensemble",
       "category": "adoption",
       "signal": "noise",
@@ -1905,7 +1933,7 @@
     },
     {
       "id": "n64_amazon_ai_cybersec",
-      "col": 7,
+      "col": 12,
       "label": "🔒🤖 Russia Uses GenAI to Hack 600 Devices",
       "category": "regulation",
       "signal": "escalation",
@@ -1936,7 +1964,7 @@
     },
     {
       "id": "n44_agencies_claude_code",
-      "col": 7,
+      "col": 12,
       "label": "🏢 Ad Agencies Adopt Claude Code",
       "category": "adoption",
       "signal": "resolution",
@@ -1965,7 +1993,7 @@
     },
     {
       "id": "n63_ai_lawyer_citation_fraud",
-      "col": 7,
+      "col": 12,
       "label": "⚖️🤖 AI Fabricated Citations Case CT",
       "category": "regulation",
       "signal": "noise",
@@ -1992,7 +2020,7 @@
     },
     {
       "id": "n47_iran_war_ai_impact",
-      "col": 7,
+      "col": 12,
       "label": "🇮🇷📉 Iran War Hits AI Markets",
       "category": "investment",
       "signal": "escalation",
@@ -2026,7 +2054,7 @@
     },
     {
       "id": "n46_china_ai_gdc_gtc",
-      "col": 7,
+      "col": 12,
       "label": "🇨🇳 Chinese AI at GDC & GTC",
       "category": "models",
       "signal": "noise",
@@ -2054,7 +2082,7 @@
     },
     {
       "id": "n40_gpt53_instant",
-      "col": 7,
+      "col": 12,
       "label": "🧠 GPT-5.3 Instant Released",
       "category": "models",
       "signal": "noise",
@@ -2083,7 +2111,7 @@
     },
     {
       "id": "n71_anthropic_no_ipo",
-      "col": 7,
+      "col": 12,
       "label": "🏢 Anthropic: No IPO Rush (83% NO)",
       "category": "investment",
       "signal": "noise",
@@ -2114,7 +2142,7 @@
     },
     {
       "id": "n43_circular_financing_report",
-      "col": 7,
+      "col": 12,
       "label": "🔄💰 Circular Financing Scrutiny Peaks",
       "category": "investment",
       "signal": "escalation",
@@ -2143,7 +2171,7 @@
     },
     {
       "id": "n69_google_model_dominance",
-      "col": 7,
+      "col": 12,
       "label": "🏆 Google Leads AI Model Race (79%)",
       "category": "models",
       "signal": "catalyst",
@@ -2176,7 +2204,7 @@
     },
     {
       "id": "n49_pred_apple_siri_launch",
-      "col": 8,
+      "col": 12,
       "label": "🔮🍎 AI Siri Launch (iOS 26.4)",
       "category": "adoption",
       "signal": "catalyst",
@@ -2204,7 +2232,7 @@
     },
     {
       "id": "n51_pred_war_capex_risk",
-      "col": 8,
+      "col": 12,
       "label": "🔮📉 War Threatens AI CapEx Wave",
       "category": "investment",
       "signal": "escalation",
@@ -2234,7 +2262,7 @@
     },
     {
       "id": "n50_pred_eu_ai_draft2",
-      "col": 8,
+      "col": 12,
       "label": "🔮🇪🇺 EU AI Act Draft 2 (March)",
       "category": "regulation",
       "signal": "noise",
@@ -2261,7 +2289,7 @@
     },
     {
       "id": "n48_pred_nvidia_gtc",
-      "col": 8,
+      "col": 13,
       "label": "🔮 Nvidia GTC: Next-Gen Reveal",
       "category": "models",
       "signal": "catalyst",
@@ -2292,7 +2320,7 @@
     },
     {
       "id": "n70_grok_420_expected",
-      "col": 8,
+      "col": 14,
       "label": "🔮 Grok 4.20 Expected April 20 (97%)",
       "category": "models",
       "signal": "noise",
@@ -2323,7 +2351,7 @@
     },
     {
       "id": "n52_pred_openai_ipo",
-      "col": 9,
+      "col": 15,
       "label": "🔮 OpenAI IPO Decision H1 2026",
       "category": "investment",
       "signal": "catalyst",
@@ -2351,7 +2379,7 @@
     },
     {
       "id": "n53_pred_agi_announce",
-      "col": 9,
+      "col": 15,
       "label": "🔮 AGI Announcement Before 2027?",
       "category": "models",
       "signal": "catalyst",
@@ -2382,7 +2410,7 @@
     },
     {
       "id": "n54_pred_bubble_verdict",
-      "col": 9,
+      "col": 15,
       "label": "🔮📊 AI Bubble: Burst or Sustain?",
       "category": "investment",
       "signal": "catalyst",
@@ -2415,7 +2443,7 @@
     },
     {
       "id": "n81_pred_model_race_june",
-      "col": 9,
+      "col": 15,
       "label": "🔮🏆 AI Model Race H1: Google vs All",
       "category": "models",
       "signal": "catalyst",
@@ -2450,7 +2478,7 @@
     },
     {
       "id": "n65_pred_eu_ai_act_aug",
-      "col": 9,
+      "col": 16,
       "label": "🔮🇪🇺 EU AI Act Transparency (Aug 2026)",
       "category": "regulation",
       "signal": "escalation",
@@ -2481,7 +2509,7 @@
     },
     {
       "id": "n79_pred_openai_device_h2",
-      "col": 9,
+      "col": 16,
       "label": "🔮📱 OpenAI Device Unveil H2 2026",
       "category": "adoption",
       "signal": "catalyst",
@@ -2513,7 +2541,7 @@
     },
     {
       "id": "n80_pred_tesla_fsd_scale",
-      "col": 9,
+      "col": 16,
       "label": "🔮🚗 Tesla FSD Nationwide by EOY?",
       "category": "adoption",
       "signal": "catalyst",

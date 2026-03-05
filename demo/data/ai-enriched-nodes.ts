@@ -10,7 +10,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Polymarket Anchor: Best AI Model March 2026 ─────────────
     {
       id: "pm_best_model_march",
-      col: 8,
+      col: 13,
       label: "PM: Best AI Model End of March?",
       category: "ai",
       signal: "catalyst",
@@ -64,7 +64,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Polymarket Anchor: AI Bubble Burst ──────────────────────
     {
       id: "pm_ai_bubble_burst",
-      col: 9,
+      col: 16,
       label: "PM: AI Bubble Burst by End 2026?",
       category: "ai",
       signal: "catalyst",
@@ -118,7 +118,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Polymarket Anchor: OpenAI IPO ───────────────────────────
     {
       id: "pm_openai_ipo",
-      col: 9,
+      col: 16,
       label: "PM: OpenAI IPO in 2026?",
       category: "ai",
       signal: "catalyst",
@@ -160,7 +160,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Polymarket Anchor: AGI Announcement ─────────────────────
     {
       id: "pm_agi_announce",
-      col: 9,
+      col: 16,
       label: "PM: AGI Announced Before 2027?",
       category: "ai",
       signal: "catalyst",
@@ -202,7 +202,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Polymarket Anchor: Grok 4.20 Release ───────────────────
     {
       id: "pm_grok_420",
-      col: 8,
+      col: 14,
       label: "PM: Grok 4.20 by April 20? (97%)",
       category: "ai",
       signal: "catalyst",
@@ -234,7 +234,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Scenarios: Best Model ───────────────────────────────────
     {
       id: "sc_model_anthropic",
-      col: 9,
+      col: 13,
       label: "Anthropic holds Arena #1",
       category: "ai",
       signal: "catalyst",
@@ -258,7 +258,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     },
     {
       id: "sc_model_google",
-      col: 9,
+      col: 13,
       label: "Google overtakes with Gemini update",
       category: "ai",
       signal: "catalyst",
@@ -284,7 +284,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Scenarios: AI Bubble ────────────────────────────────────
     {
       id: "sc_bubble_yes",
-      col: 9,
+      col: 16,
       label: "AI bubble bursts: tech crash",
       category: "ai",
       signal: "escalation",
@@ -319,7 +319,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     },
     {
       id: "sc_bubble_no",
-      col: 9,
+      col: 16,
       label: "AI growth sustains: no burst",
       category: "ai",
       signal: "resolution",
@@ -345,7 +345,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Scenarios: OpenAI IPO ───────────────────────────────────
     {
       id: "sc_ipo_yes",
-      col: 9,
+      col: 16,
       label: "OpenAI IPOs in 2026",
       category: "ai",
       signal: "catalyst",
@@ -369,7 +369,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     },
     {
       id: "sc_ipo_no",
-      col: 9,
+      col: 16,
       label: "OpenAI stays private in 2026",
       category: "ai",
       signal: "noise",
@@ -395,7 +395,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     // ─── Scenarios: AGI ──────────────────────────────────────────
     {
       id: "sc_agi_yes",
-      col: 9,
+      col: 16,
       label: "AGI declared: paradigm shift",
       category: "ai",
       signal: "catalyst",
@@ -419,7 +419,7 @@ export const aiEnrichedNodes: NarrativeNode[] = [
     },
     {
       id: "sc_agi_no",
-      col: 9,
+      col: 16,
       label: "No AGI declaration: incremental progress",
       category: "ai",
       signal: "noise",
