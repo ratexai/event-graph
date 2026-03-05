@@ -111,8 +111,8 @@ const kolData: KolFlowData = {
 // ─── Radiant Navigation Data ──────────────────────────────
 
 const sampleMaps: MapItem[] = [
-  { id: "iran-2026-conflict-expanded", title: "Iran–US–Israel War", status: "active", nodeCount: 113, headlineProb: 8, trend: "down" },
-  { id: "ai-revolution", title: "AI Changes the World", status: "active", nodeCount: 81, headlineProb: 22, trend: "up" },
+  { id: "iran-2026-conflict-expanded", title: "Iran–US–Israel War", status: "active", nodeCount: 128, headlineProb: 8, trend: "down" },
+  { id: "ai-revolution", title: "AI Changes the World", status: "active", nodeCount: 96, headlineProb: 22, trend: "up" },
   { id: "web3-world", title: "Web3 World", status: "active", nodeCount: 0 },
   { id: "russia-ukraine", title: "Russia-Ukraine War", status: "active", nodeCount: 0 },
   { id: "global-crisis", title: "Global Economic Crisis", status: "developing", nodeCount: 0 },
