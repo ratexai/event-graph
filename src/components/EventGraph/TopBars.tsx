@@ -33,9 +33,17 @@ const STATUS_LABEL: Record<MapStatus, string> = {
 
 // ─── Nav flyout item ─────────────────────────────────────────────
 
+// ─── Placeholder logo icon (circle with initial) ────────────────
+const LogoPlaceholder = ({ size = 16, color, letter }: { size?: number; color: string; letter: string }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
+    <rect x={0.5} y={0.5} width={15} height={15} rx={4} fill={`${color}20`} stroke={color} strokeWidth={0.8} />
+    <text x={8} y={11.5} textAnchor="middle" fontSize={9} fontWeight={700} fill={color} fontFamily="inherit">{letter}</text>
+  </svg>
+);
+
 const flyoutStyle = (theme: GraphTheme): React.CSSProperties => ({
   position: "absolute", top: "100%", left: 0, marginTop: 2,
-  width: 340, maxHeight: 400, overflowY: "auto",
+  width: 380, maxHeight: 440, overflowY: "auto",
   background: theme.bg, border: `1px solid ${theme.border}`, borderRadius: 8,
   padding: "6px 0", zIndex: 100,
   boxShadow: "0 8px 32px rgba(0,0,0,0.5)", fontFamily: theme.fontFamily,
@@ -150,18 +158,18 @@ export function TopBar(props: TopBarProps) {
   const hasSearchResults = searchMaps.length > 0 || searchProjects.length > 0;
 
   const navLabel: React.CSSProperties = {
-    fontSize: 11, fontWeight: 500, cursor: "pointer",
+    fontSize: 13, fontWeight: 500, cursor: "pointer",
     color: theme.textSecondary, display: "inline-flex",
-    alignItems: "center", gap: 4, padding: "4px 8px",
+    alignItems: "center", gap: 5, padding: "4px 8px",
     borderRadius: 4, transition: "background 0.15s",
     whiteSpace: "nowrap", flexShrink: 0,
   };
 
   const rowItem = (active: boolean): React.CSSProperties => ({
     display: "flex", width: "100%", alignItems: "center", gap: 8,
-    padding: "5px 14px",
+    padding: "6px 14px",
     background: active ? `${theme.accent}12` : "transparent",
-    border: "none", color: theme.text, fontSize: 11,
+    border: "none", color: theme.text, fontSize: 13,
     fontFamily: theme.fontFamily, cursor: "pointer", textAlign: "left",
   });
 
@@ -188,9 +196,10 @@ export function TopBar(props: TopBarProps) {
           onMouseEnter={() => hoverOpen("maps")}
           onMouseLeave={hoverClose}>
           <span style={{ ...navLabel, background: openFlyout === "maps" ? `${theme.accent}18` : undefined }}>
-            🗺️ Prediction Map <span style={{ fontSize: 9, color: theme.muted }}>▾</span>
+            <LogoPlaceholder size={14} color={theme.accent} letter="P" /> Prediction Map <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
+            {maps.length === 0 && <span style={{ fontSize: 9, color: theme.muted, fontStyle: "italic", marginLeft: 2 }}>soon</span>}
           </span>
-          {openFlyout === "maps" && (
+          {openFlyout === "maps" && maps.length > 0 && (
             <div style={flyoutStyle(theme)} onMouseEnter={keepOpen} onMouseLeave={hoverClose}>
               {(["active", "developing", "monitoring"] as MapStatus[]).map((status) => {
                 const group = mapsByStatus[status];
@@ -198,7 +207,7 @@ export function TopBar(props: TopBarProps) {
                 return (
                   <React.Fragment key={status}>
                     <div style={{
-                      padding: "6px 14px 2px", fontSize: 8, fontWeight: 700,
+                      padding: "6px 14px 2px", fontSize: 9, fontWeight: 700,
                       letterSpacing: 1.5, textTransform: "uppercase",
                       color: STATUS_COLOR[status],
                       display: "flex", alignItems: "center", gap: 5,
@@ -209,16 +218,21 @@ export function TopBar(props: TopBarProps) {
                     {group.map((m) => (
                       <button key={m.id} onClick={() => { nav.onNavigateMap?.(m.id); setOpenFlyout(null); }}
                         style={rowItem(m.id === nav.activeMapId)}>
-                        <span style={{ fontSize: 13, flexShrink: 0 }}>{m.emoji || "🗺️"}</span>
+                        <LogoPlaceholder size={18} color={theme.accent} letter={m.title.charAt(0)} />
                         <span style={{ flex: 1, fontWeight: m.id === nav.activeMapId ? 600 : 400 }}>{m.title}</span>
-                        <span style={{ fontSize: 9, color: theme.muted, padding: "0 4px", borderRadius: 3, background: theme.surface }}>{m.nodeCount}</span>
-                        {m.headlineProb != null && <span style={{ fontSize: 10, fontWeight: 600, color: theme.accent }}>{m.headlineProb}%</span>}
-                        {m.trend && m.trend !== "flat" && <span style={{ fontSize: 9, color: m.trend === "up" ? theme.positive : theme.negative }}>{m.trend === "up" ? "↑" : "↓"}</span>}
+                        <span style={{ fontSize: 10, color: theme.muted, padding: "0 4px", borderRadius: 3, background: theme.surface }}>{m.nodeCount}</span>
+                        {m.headlineProb != null && <span style={{ fontSize: 11, fontWeight: 600, color: theme.accent }}>{m.headlineProb}%</span>}
+                        {m.trend && m.trend !== "flat" && <span style={{ fontSize: 10, color: m.trend === "up" ? theme.positive : theme.negative }}>{m.trend === "up" ? "↑" : "↓"}</span>}
                       </button>
                     ))}
                   </React.Fragment>
                 );
               })}
+            </div>
+          )}
+          {openFlyout === "maps" && maps.length === 0 && (
+            <div style={flyoutStyle(theme)} onMouseEnter={keepOpen} onMouseLeave={hoverClose}>
+              <div style={{ padding: 20, textAlign: "center", color: theme.muted, fontSize: 12 }}>Coming soon</div>
             </div>
           )}
         </div>
@@ -230,25 +244,31 @@ export function TopBar(props: TopBarProps) {
           onMouseEnter={() => hoverOpen("projects")}
           onMouseLeave={hoverClose}>
           <span style={{ ...navLabel, background: openFlyout === "projects" ? `${theme.accent}18` : undefined }}>
-            ⚡ HistoryFi <span style={{ fontSize: 9, color: theme.muted }}>▾</span>
+            <LogoPlaceholder size={14} color={theme.complement} letter="H" /> HistoryFi <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
+            {projects.length === 0 && <span style={{ fontSize: 9, color: theme.muted, fontStyle: "italic", marginLeft: 2 }}>soon</span>}
           </span>
-          {openFlyout === "projects" && (
+          {openFlyout === "projects" && projects.length > 0 && (
             <div style={flyoutStyle(theme)} onMouseEnter={keepOpen} onMouseLeave={hoverClose}>
               {Object.entries(projectsByCategory).map(([cat, items]) => (
                 <React.Fragment key={cat}>
-                  <div style={{ padding: "6px 14px 2px", fontSize: 8, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted }}>{cat}</div>
+                  <div style={{ padding: "6px 14px 2px", fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted }}>{cat}</div>
                   {items.map((p) => (
                     <button key={p.id} onClick={() => { nav.onNavigateProject?.(p.id); setOpenFlyout(null); }}
                       style={rowItem(p.id === nav.activeProjectId)}>
-                      <span style={{ fontSize: 11 }}>⚡</span>
+                      <LogoPlaceholder size={18} color={theme.complement} letter={p.title.charAt(0)} />
                       <span style={{ flex: 1, fontWeight: p.id === nav.activeProjectId ? 600 : 400 }}>{p.title}</span>
-                      <span style={{ fontSize: 9, color: theme.muted }}>{p.eventCount} ev</span>
-                      {p.rating && <span style={{ fontSize: 9, fontWeight: 700, color: theme.accent, padding: "0 3px", borderRadius: 3, background: `${theme.accent}18` }}>{p.rating}</span>}
-                      {p.price && <span style={{ fontSize: 10, color: theme.text }}>{p.price}{p.priceChange && <span style={{ fontSize: 9, marginLeft: 2, color: p.priceChange.startsWith("+") || p.priceChange.startsWith("-") ? (p.priceChange.startsWith("+") ? theme.positive : theme.negative) : theme.muted }}>{p.priceChange}</span>}</span>}
+                      <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} ev</span>
+                      {p.rating && <span style={{ fontSize: 10, fontWeight: 700, color: theme.accent, padding: "0 3px", borderRadius: 3, background: `${theme.accent}18` }}>{p.rating}</span>}
+                      {p.price && <span style={{ fontSize: 11, color: theme.text }}>{p.price}{p.priceChange && <span style={{ fontSize: 10, marginLeft: 2, color: p.priceChange.startsWith("+") || p.priceChange.startsWith("-") ? (p.priceChange.startsWith("+") ? theme.positive : theme.negative) : theme.muted }}>{p.priceChange}</span>}</span>}
                     </button>
                   ))}
                 </React.Fragment>
               ))}
+            </div>
+          )}
+          {openFlyout === "projects" && projects.length === 0 && (
+            <div style={flyoutStyle(theme)} onMouseEnter={keepOpen} onMouseLeave={hoverClose}>
+              <div style={{ padding: 20, textAlign: "center", color: theme.muted, fontSize: 12 }}>Coming soon</div>
             </div>
           )}
         </div>
@@ -259,7 +279,7 @@ export function TopBar(props: TopBarProps) {
 
       {/* Filters — horizontally scrollable on mobile */}
       <div style={{
-        display: "flex", alignItems: "center", gap: isMobile ? 3 : undefined,
+        display: "flex", alignItems: "center", gap: isMobile ? 3 : 2,
         ...(isMobile ? { flex: 1, overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const, msOverflowStyle: "none" as const } : {}),
       }}>
       {mode === "events" ? (<>
@@ -344,26 +364,30 @@ export function TopBar(props: TopBarProps) {
           {searchFocused && sq && (hasSearchResults || sq) && (
             <div style={{ ...flyoutStyle(theme), right: 0, left: "auto", width: 340, marginTop: 4 }}>
               {searchMaps.length > 0 && (<>
-                <div style={{ padding: "4px 14px 1px", fontSize: 8, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted }}>🗺️ PREDICTION MAPS</div>
+                <div style={{ padding: "4px 14px 1px", fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted }}>
+                  <LogoPlaceholder size={12} color={theme.accent} letter="P" /> PREDICTION MAPS
+                </div>
                 {searchMaps.map((m) => (
                   <button key={m.id} onClick={() => { nav.onNavigateMap?.(m.id); setSearchQuery(""); setSearchFocused(false); }}
                     style={rowItem(false)}>
-                    <span style={{ fontSize: 12 }}>{m.emoji || "🗺️"}</span>
+                    <LogoPlaceholder size={16} color={theme.accent} letter={m.title.charAt(0)} />
                     <span style={{ flex: 1 }}>{m.title}</span>
-                    <span style={{ fontSize: 9, color: theme.muted }}>{m.nodeCount}</span>
-                    <span style={{ fontSize: 8, padding: "0 4px", borderRadius: 44, background: `${STATUS_COLOR[m.status]}18`, color: STATUS_COLOR[m.status] }}>● {m.status}</span>
+                    <span style={{ fontSize: 10, color: theme.muted }}>{m.nodeCount}</span>
+                    <span style={{ fontSize: 9, padding: "0 4px", borderRadius: 44, background: `${STATUS_COLOR[m.status]}18`, color: STATUS_COLOR[m.status] }}>● {m.status}</span>
                   </button>
                 ))}
               </>)}
               {searchProjects.length > 0 && (<>
-                <div style={{ padding: "4px 14px 1px", fontSize: 8, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted, marginTop: 2 }}>⚡ HISTORYFI</div>
+                <div style={{ padding: "4px 14px 1px", fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted, marginTop: 2 }}>
+                  <LogoPlaceholder size={12} color={theme.complement} letter="H" /> HISTORYFI
+                </div>
                 {searchProjects.map((p) => (
                   <button key={p.id} onClick={() => { nav.onNavigateProject?.(p.id); setSearchQuery(""); setSearchFocused(false); }}
                     style={rowItem(false)}>
-                    <span>⚡</span>
+                    <LogoPlaceholder size={16} color={theme.complement} letter={p.title.charAt(0)} />
                     <span style={{ flex: 1 }}>{p.title}</span>
-                    <span style={{ fontSize: 9, color: theme.muted }}>{p.eventCount} ev</span>
-                    {p.rating && <span style={{ fontSize: 9, color: theme.accent, fontWeight: 600 }}>{p.rating}</span>}
+                    <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} ev</span>
+                    {p.rating && <span style={{ fontSize: 10, color: theme.accent, fontWeight: 600 }}>{p.rating}</span>}
                   </button>
                 ))}
               </>)}
@@ -498,8 +522,8 @@ export function NarrativeLegendBar(props: NarrativeLegendBarProps) {
 
   return (
     <div style={{
-      position: "absolute", bottom: 8, left: 12, right: panelOffset + 12,
-      display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
+      position: "absolute", bottom: 8, left: 12,
+      display: "inline-flex", alignItems: "center", gap: 12,
       padding: "5px 12px", borderRadius: 8,
       background: `${theme.bg}ee`, backdropFilter: "blur(12px)",
       border: `1px solid ${theme.border}`, zIndex: 25,

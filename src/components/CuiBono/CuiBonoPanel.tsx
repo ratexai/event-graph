@@ -495,7 +495,7 @@ const DualProbBar: React.FC<{
       </div>
       {/* Model bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-        <span style={{ fontSize: 9, color: theme.positive, width: 28, flexShrink: 0, fontWeight: 700 }}>MDL</span>
+        <span style={{ fontSize: 9, color: theme.positive, width: 28, flexShrink: 0, fontWeight: 700 }}>RXAI</span>
         <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
           <div style={{ height: 6, borderRadius: 3, background: theme.positive, width: `${rxProb}%`, transition: "width 0.3s" }} />
         </div>
@@ -642,7 +642,7 @@ const AlphaSignals: React.FC<{
               {s.label.replace(/^PM:\s*/, "").slice(0, 35)}
             </span>
             <span style={{ color: theme.muted, flexShrink: 0 }}>PM {s.pm}%</span>
-            <span style={{ color: theme.positive, fontWeight: 700, flexShrink: 0 }}>MDL {s.rx}%</span>
+            <span style={{ color: theme.positive, fontWeight: 700, flexShrink: 0 }}>RXAI {s.rx}%</span>
             <span style={{ color: al.color, fontWeight: 800, flexShrink: 0 }}>
               {s.alpha > 0 ? "+" : ""}{s.alpha}pp
             </span>
@@ -714,7 +714,7 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
   const panelStyle: React.CSSProperties = isMobile
     ? {
         position: "absolute", left: 0, right: 0, bottom: 0,
-        height: "75vh", maxHeight: "75vh",
+        height: "92vh", maxHeight: "92vh",
         background: theme.bg,
         borderTop: `1px solid ${theme.border}`,
         borderRadius: "16px 16px 0 0",
