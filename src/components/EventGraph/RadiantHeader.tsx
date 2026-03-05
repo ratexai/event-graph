@@ -167,7 +167,6 @@ export function RadiantHeader(props: RadiantHeaderProps) {
           style={navBtn(openFlyout === "maps" || (!activeProjectId && !!activeMapId))}
         >
           <LogoPlaceholder size={14} color={theme.accent} letter="P" /> Prediction Map <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
-          {maps.length === 0 && <span style={{ fontSize: 9, color: theme.muted, fontStyle: "italic", marginLeft: 2 }}>soon</span>}
         </button>
 
         {openFlyout === "maps" && (
@@ -218,46 +217,54 @@ export function RadiantHeader(props: RadiantHeaderProps) {
                     }} />
                     {statusLabel[status]}
                   </div>
-                  {group.map((m) => (
-                    <button
-                      key={m.id}
-                      onClick={() => { onNavigateMap?.(m.id); setOpenFlyout(null); }}
-                      style={{
-                        display: "flex",
-                        width: "100%",
-                        alignItems: "center",
-                        gap: 8,
-                        padding: "7px 16px",
-                        background: m.id === activeMapId ? `${theme.accent}12` : "transparent",
-                        border: "none",
-                        color: theme.text,
-                        fontSize: 13,
-                        fontFamily: theme.fontFamily,
-                        cursor: "pointer",
-                        textAlign: "left",
-                      }}
-                    >
-                      <LogoPlaceholder size={18} color={theme.accent} letter={m.title.charAt(0)} />
-                      <span style={{ flex: 1, fontWeight: m.id === activeMapId ? 600 : 400 }}>{m.title}</span>
-                      <span style={{
-                        fontSize: 10, color: theme.muted,
-                        padding: "1px 5px", borderRadius: 4,
-                        background: theme.surface,
-                      }}>{m.nodeCount}</span>
-                      {m.headlineProb != null && (
-                        <span style={{
-                          fontSize: 12, fontWeight: 600,
-                          color: theme.accent,
-                        }}>{m.headlineProb}%</span>
-                      )}
-                      {m.trend && m.trend !== "flat" && (
-                        <span style={{
-                          fontSize: 11,
-                          color: m.trend === "up" ? theme.positive : theme.negative,
-                        }}>{m.trend === "up" ? "↑" : "↓"}</span>
-                      )}
-                    </button>
-                  ))}
+                  {group.map((m) => {
+                    const isSoon = !m.nodeCount;
+                    return (
+                      <button
+                        key={m.id}
+                        onClick={() => { if (!isSoon) { onNavigateMap?.(m.id); setOpenFlyout(null); } }}
+                        style={{
+                          display: "flex",
+                          width: "100%",
+                          alignItems: "center",
+                          gap: 8,
+                          padding: "7px 16px",
+                          background: m.id === activeMapId ? `${theme.accent}12` : "transparent",
+                          border: "none",
+                          color: theme.text,
+                          fontSize: 13,
+                          fontFamily: theme.fontFamily,
+                          cursor: isSoon ? "default" : "pointer",
+                          textAlign: "left",
+                          opacity: isSoon ? 0.5 : 1,
+                        }}
+                      >
+                        <LogoPlaceholder size={18} color={isSoon ? theme.muted : theme.accent} letter={m.title.charAt(0)} />
+                        <span style={{ flex: 1, fontWeight: m.id === activeMapId ? 600 : 400 }}>{m.title}</span>
+                        {isSoon ? (
+                          <span style={{ fontSize: 9, fontStyle: "italic", color: theme.muted, padding: "1px 6px", borderRadius: 4, background: `${theme.muted}18` }}>soon</span>
+                        ) : (<>
+                          <span style={{
+                            fontSize: 10, color: theme.muted,
+                            padding: "1px 5px", borderRadius: 4,
+                            background: theme.surface,
+                          }}>{m.nodeCount}</span>
+                          {m.headlineProb != null && (
+                            <span style={{
+                              fontSize: 12, fontWeight: 600,
+                              color: theme.accent,
+                            }}>{m.headlineProb}%</span>
+                          )}
+                          {m.trend && m.trend !== "flat" && (
+                            <span style={{
+                              fontSize: 11,
+                              color: m.trend === "up" ? theme.positive : theme.negative,
+                            }}>{m.trend === "up" ? "↑" : "↓"}</span>
+                          )}
+                        </>)}
+                      </button>
+                    );
+                  })}
                 </React.Fragment>
               );
             })}
@@ -272,7 +279,6 @@ export function RadiantHeader(props: RadiantHeaderProps) {
           style={navBtn(openFlyout === "projects" || !!activeProjectId)}
         >
           <LogoPlaceholder size={14} color={theme.accent} letter="H" /> HistoryFi <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
-          {projects.length === 0 && <span style={{ fontSize: 9, color: theme.muted, fontStyle: "italic", marginLeft: 2 }}>soon</span>}
         </button>
 
         {openFlyout === "projects" && (
@@ -309,50 +315,58 @@ export function RadiantHeader(props: RadiantHeaderProps) {
                   textTransform: "uppercase",
                   color: theme.muted,
                 }}>{cat}</div>
-                {items.map((p) => (
-                  <button
-                    key={p.id}
-                    onClick={() => { onNavigateProject?.(p.id); setOpenFlyout(null); }}
-                    style={{
-                      display: "flex",
-                      width: "100%",
-                      alignItems: "center",
-                      gap: 8,
-                      padding: "7px 16px",
-                      background: p.id === activeProjectId ? `${theme.accent}12` : "transparent",
-                      border: "none",
-                      color: theme.text,
-                      fontSize: 13,
-                      fontFamily: theme.fontFamily,
-                      cursor: "pointer",
-                      textAlign: "left",
-                    }}
-                  >
-                    <LogoPlaceholder size={18} color={theme.accent} letter={p.title.charAt(0)} />
-                    <span style={{ flex: 1, fontWeight: p.id === activeProjectId ? 600 : 400 }}>{p.title}</span>
-                    <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} events</span>
-                    {p.rating && (
-                      <span style={{
-                        fontSize: 10, fontWeight: 700,
-                        color: theme.accent,
-                        padding: "0 4px",
-                        borderRadius: 3,
-                        background: `${theme.accent}18`,
-                      }}>{p.rating}</span>
-                    )}
-                    {p.price && (
-                      <span style={{ fontSize: 12, color: theme.text, fontWeight: 500 }}>
-                        {p.price}
-                        {p.priceChange && (
+                {items.map((p) => {
+                  const isSoon = !p.eventCount;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => { if (!isSoon) { onNavigateProject?.(p.id); setOpenFlyout(null); } }}
+                      style={{
+                        display: "flex",
+                        width: "100%",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "7px 16px",
+                        background: p.id === activeProjectId ? `${theme.accent}12` : "transparent",
+                        border: "none",
+                        color: theme.text,
+                        fontSize: 13,
+                        fontFamily: theme.fontFamily,
+                        cursor: isSoon ? "default" : "pointer",
+                        textAlign: "left",
+                        opacity: isSoon ? 0.5 : 1,
+                      }}
+                    >
+                      <LogoPlaceholder size={18} color={isSoon ? theme.muted : theme.accent} letter={p.title.charAt(0)} />
+                      <span style={{ flex: 1, fontWeight: p.id === activeProjectId ? 600 : 400 }}>{p.title}</span>
+                      {isSoon ? (
+                        <span style={{ fontSize: 9, fontStyle: "italic", color: theme.muted, padding: "1px 6px", borderRadius: 4, background: `${theme.muted}18` }}>soon</span>
+                      ) : (<>
+                        <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} events</span>
+                        {p.rating && (
                           <span style={{
-                            fontSize: 10, marginLeft: 3,
-                            color: p.priceChange.startsWith("+") ? theme.positive : theme.negative,
-                          }}>{p.priceChange}</span>
+                            fontSize: 10, fontWeight: 700,
+                            color: theme.accent,
+                            padding: "0 4px",
+                            borderRadius: 3,
+                            background: `${theme.accent}18`,
+                          }}>{p.rating}</span>
                         )}
-                      </span>
-                    )}
-                  </button>
-                ))}
+                        {p.price && (
+                          <span style={{ fontSize: 12, color: theme.text, fontWeight: 500 }}>
+                            {p.price}
+                            {p.priceChange && (
+                              <span style={{
+                                fontSize: 10, marginLeft: 3,
+                                color: p.priceChange.startsWith("+") ? theme.positive : theme.negative,
+                              }}>{p.priceChange}</span>
+                            )}
+                          </span>
+                        )}
+                      </>)}
+                    </button>
+                  );
+                })}
               </React.Fragment>
             ))}
           </div>

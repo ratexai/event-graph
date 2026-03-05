@@ -197,11 +197,12 @@ export function TopBar(props: TopBarProps) {
           onMouseLeave={hoverClose}>
           <span style={{ ...navLabel, background: openFlyout === "maps" ? `${theme.accent}18` : undefined }}>
             <LogoPlaceholder size={14} color={theme.accent} letter="P" /> Prediction Map <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
-            {maps.length === 0 && <span style={{ fontSize: 9, color: theme.muted, fontStyle: "italic", marginLeft: 2 }}>soon</span>}
           </span>
-          {openFlyout === "maps" && maps.length > 0 && (
+          {openFlyout === "maps" && (
             <div style={flyoutStyle(theme)} onMouseEnter={keepOpen} onMouseLeave={hoverClose}>
-              {(["active", "developing", "monitoring"] as MapStatus[]).map((status) => {
+              {maps.length === 0 ? (
+                <div style={{ padding: 20, textAlign: "center", color: theme.muted, fontSize: 12 }}>Coming soon</div>
+              ) : (["active", "developing", "monitoring"] as MapStatus[]).map((status) => {
                 const group = mapsByStatus[status];
                 if (!group?.length) return null;
                 return (
@@ -215,24 +216,27 @@ export function TopBar(props: TopBarProps) {
                       <span style={{ width: 5, height: 5, borderRadius: "50%", background: STATUS_COLOR[status], display: "inline-block" }} />
                       {STATUS_LABEL[status]}
                     </div>
-                    {group.map((m) => (
-                      <button key={m.id} onClick={() => { nav.onNavigateMap?.(m.id); setOpenFlyout(null); }}
-                        style={rowItem(m.id === nav.activeMapId)}>
-                        <LogoPlaceholder size={18} color={theme.accent} letter={m.title.charAt(0)} />
-                        <span style={{ flex: 1, fontWeight: m.id === nav.activeMapId ? 600 : 400 }}>{m.title}</span>
-                        <span style={{ fontSize: 10, color: theme.muted, padding: "0 4px", borderRadius: 3, background: theme.surface }}>{m.nodeCount}</span>
-                        {m.headlineProb != null && <span style={{ fontSize: 11, fontWeight: 600, color: theme.accent }}>{m.headlineProb}%</span>}
-                        {m.trend && m.trend !== "flat" && <span style={{ fontSize: 10, color: m.trend === "up" ? theme.positive : theme.negative }}>{m.trend === "up" ? "↑" : "↓"}</span>}
-                      </button>
-                    ))}
+                    {group.map((m) => {
+                      const isSoon = !m.nodeCount;
+                      return (
+                        <button key={m.id}
+                          onClick={() => { if (!isSoon) { nav.onNavigateMap?.(m.id); setOpenFlyout(null); } }}
+                          style={{ ...rowItem(m.id === nav.activeMapId), opacity: isSoon ? 0.5 : 1, cursor: isSoon ? "default" : "pointer" }}>
+                          <LogoPlaceholder size={18} color={isSoon ? theme.muted : theme.accent} letter={m.title.charAt(0)} />
+                          <span style={{ flex: 1, fontWeight: m.id === nav.activeMapId ? 600 : 400 }}>{m.title}</span>
+                          {isSoon ? (
+                            <span style={{ fontSize: 9, fontStyle: "italic", color: theme.muted, padding: "1px 6px", borderRadius: 4, background: `${theme.muted}18` }}>soon</span>
+                          ) : (<>
+                            <span style={{ fontSize: 10, color: theme.muted, padding: "0 4px", borderRadius: 3, background: theme.surface }}>{m.nodeCount}</span>
+                            {m.headlineProb != null && <span style={{ fontSize: 11, fontWeight: 600, color: theme.accent }}>{m.headlineProb}%</span>}
+                            {m.trend && m.trend !== "flat" && <span style={{ fontSize: 10, color: m.trend === "up" ? theme.positive : theme.negative }}>{m.trend === "up" ? "↑" : "↓"}</span>}
+                          </>)}
+                        </button>
+                      );
+                    })}
                   </React.Fragment>
                 );
               })}
-            </div>
-          )}
-          {openFlyout === "maps" && maps.length === 0 && (
-            <div style={flyoutStyle(theme)} onMouseEnter={keepOpen} onMouseLeave={hoverClose}>
-              <div style={{ padding: 20, textAlign: "center", color: theme.muted, fontSize: 12 }}>Coming soon</div>
             </div>
           )}
         </div>
@@ -245,30 +249,34 @@ export function TopBar(props: TopBarProps) {
           onMouseLeave={hoverClose}>
           <span style={{ ...navLabel, background: openFlyout === "projects" ? `${theme.accent}18` : undefined }}>
             <LogoPlaceholder size={14} color={theme.complement} letter="H" /> HistoryFi <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
-            {projects.length === 0 && <span style={{ fontSize: 9, color: theme.muted, fontStyle: "italic", marginLeft: 2 }}>soon</span>}
           </span>
-          {openFlyout === "projects" && projects.length > 0 && (
+          {openFlyout === "projects" && (
             <div style={flyoutStyle(theme)} onMouseEnter={keepOpen} onMouseLeave={hoverClose}>
-              {Object.entries(projectsByCategory).map(([cat, items]) => (
+              {projects.length === 0 ? (
+                <div style={{ padding: 20, textAlign: "center", color: theme.muted, fontSize: 12 }}>Coming soon</div>
+              ) : Object.entries(projectsByCategory).map(([cat, items]) => (
                 <React.Fragment key={cat}>
                   <div style={{ padding: "6px 14px 2px", fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted }}>{cat}</div>
-                  {items.map((p) => (
-                    <button key={p.id} onClick={() => { nav.onNavigateProject?.(p.id); setOpenFlyout(null); }}
-                      style={rowItem(p.id === nav.activeProjectId)}>
-                      <LogoPlaceholder size={18} color={theme.complement} letter={p.title.charAt(0)} />
-                      <span style={{ flex: 1, fontWeight: p.id === nav.activeProjectId ? 600 : 400 }}>{p.title}</span>
-                      <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} ev</span>
-                      {p.rating && <span style={{ fontSize: 10, fontWeight: 700, color: theme.accent, padding: "0 3px", borderRadius: 3, background: `${theme.accent}18` }}>{p.rating}</span>}
-                      {p.price && <span style={{ fontSize: 11, color: theme.text }}>{p.price}{p.priceChange && <span style={{ fontSize: 10, marginLeft: 2, color: p.priceChange.startsWith("+") || p.priceChange.startsWith("-") ? (p.priceChange.startsWith("+") ? theme.positive : theme.negative) : theme.muted }}>{p.priceChange}</span>}</span>}
-                    </button>
-                  ))}
+                  {items.map((p) => {
+                    const isSoon = !p.eventCount;
+                    return (
+                      <button key={p.id}
+                        onClick={() => { if (!isSoon) { nav.onNavigateProject?.(p.id); setOpenFlyout(null); } }}
+                        style={{ ...rowItem(p.id === nav.activeProjectId), opacity: isSoon ? 0.5 : 1, cursor: isSoon ? "default" : "pointer" }}>
+                        <LogoPlaceholder size={18} color={isSoon ? theme.muted : theme.complement} letter={p.title.charAt(0)} />
+                        <span style={{ flex: 1, fontWeight: p.id === nav.activeProjectId ? 600 : 400 }}>{p.title}</span>
+                        {isSoon ? (
+                          <span style={{ fontSize: 9, fontStyle: "italic", color: theme.muted, padding: "1px 6px", borderRadius: 4, background: `${theme.muted}18` }}>soon</span>
+                        ) : (<>
+                          <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} ev</span>
+                          {p.rating && <span style={{ fontSize: 10, fontWeight: 700, color: theme.accent, padding: "0 3px", borderRadius: 3, background: `${theme.accent}18` }}>{p.rating}</span>}
+                          {p.price && <span style={{ fontSize: 11, color: theme.text }}>{p.price}{p.priceChange && <span style={{ fontSize: 10, marginLeft: 2, color: p.priceChange.startsWith("+") || p.priceChange.startsWith("-") ? (p.priceChange.startsWith("+") ? theme.positive : theme.negative) : theme.muted }}>{p.priceChange}</span>}</span>}
+                        </>)}
+                      </button>
+                    );
+                  })}
                 </React.Fragment>
               ))}
-            </div>
-          )}
-          {openFlyout === "projects" && projects.length === 0 && (
-            <div style={flyoutStyle(theme)} onMouseEnter={keepOpen} onMouseLeave={hoverClose}>
-              <div style={{ padding: 20, textAlign: "center", color: theme.muted, fontSize: 12 }}>Coming soon</div>
             </div>
           )}
         </div>
@@ -339,9 +347,9 @@ export function TopBar(props: TopBarProps) {
       {/* Spacer */}
       {!isMobile && <div style={{ flex: 1 }} />}
 
-      {/* Always-visible search input — hidden on mobile */}
+      {/* Always-visible search input — top-right corner, hidden on mobile */}
       {nav && !isMobile && (
-        <div ref={searchDropRef} style={{ position: "relative", flexShrink: 0, width: 180 }}>
+        <div ref={searchDropRef} style={{ position: "fixed", top: 6, right: 10, width: 180, zIndex: 35 }}>
           <input
             ref={searchInputRef}
             type="text"
