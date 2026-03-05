@@ -1,0 +1,54 @@
+{
+  "maps": [
+    {
+      "id": "iran-war-2026",
+      "title": "Iran-US-Israel War",
+      "status": "active",
+      "updateCycle": "12h",
+      "lastUpdated": "2026-03-04T18:00:00Z",
+      "nodeCount": 74,
+      "headlineProb": 8,
+      "trend": "down"
+    },
+    {
+      "id": "ai-revolution",
+      "title": "AI Changes the World",
+      "status": "active",
+      "updateCycle": "12h",
+      "lastUpdated": null,
+      "nodeCount": 0,
+      "headlineProb": null,
+      "trend": null
+    },
+    {
+      "id": "web3-world",
+      "title": "Web3 World",
+      "status": "active",
+      "updateCycle": "12h",
+      "lastUpdated": null,
+      "nodeCount": 0,
+      "headlineProb": null,
+      "trend": null
+    },
+    {
+      "id": "russia-ukraine",
+      "title": "Russia-Ukraine War",
+      "status": "active",
+      "updateCycle": "12h",
+      "lastUpdated": null,
+      "nodeCount": 0,
+      "headlineProb": null,
+      "trend": null
+    },
+    {
+      "id": "global-crisis",
+      "title": "Global Economic Crisis",
+      "status": "developing",
+      "updateCycle": "24h",
+      "lastUpdated": null,
+      "nodeCount": 0,
+      "headlineProb": null,
+      "trend": null
+    }
+  ]
+}

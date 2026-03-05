@@ -1,0 +1,16 @@
+{
+  "id": "global-crisis",
+  "title": "Global Economic Crisis",
+  "currentProb": null,
+  "probHistory": [],
+  "timeSlots": [],
+  "nodes": [],
+  "branches": [],
+  "cuiBono": { "benefits": [], "loses": [] },
+  "rightPanel": {
+    "states": [],
+    "corps": [],
+    "indices": [],
+    "polymarketAnchors": []
+  }
+}

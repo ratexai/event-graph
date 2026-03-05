@@ -111,24 +111,19 @@ const kolData: KolFlowData = {
 // ─── Radiant Navigation Data ──────────────────────────────
 
 const sampleMaps: MapItem[] = [
-  { id: "iran-war-2026", title: "Iran–US–Israel War", emoji: "🇮🇷", status: "active", nodeCount: 74, headlineProb: 8, trend: "down" },
-  { id: "ai-revolution", title: "AI Changes the World", emoji: "🤖", status: "active", nodeCount: 89 },
-  { id: "web3-world", title: "Web3 World", emoji: "🌐", status: "active", nodeCount: 156 },
-  { id: "russia-ukraine", title: "Russia–Ukraine War", emoji: "🇷🇺", status: "active", nodeCount: 312, headlineProb: 24, trend: "down" },
-  { id: "china-taiwan", title: "China–Taiwan Tensions", emoji: "🇨🇳", status: "developing", nodeCount: 41 },
-  { id: "global-crisis", title: "Global Economic Crisis", emoji: "🌍", status: "developing", nodeCount: 63 },
-  { id: "us-elections", title: "US Elections", emoji: "🗳️", status: "monitoring", nodeCount: 28 },
-  { id: "opec-energy", title: "OPEC+ & Energy", emoji: "🛢️", status: "monitoring", nodeCount: 35 },
+  { id: "iran-2026-conflict-expanded", title: "Iran-US-Israel War", status: "active", nodeCount: 74, headlineProb: 8, trend: "down" },
+  { id: "ai-revolution", title: "AI Changes the World", status: "active", nodeCount: 0 },
+  { id: "web3-world", title: "Web3 World", status: "active", nodeCount: 0 },
+  { id: "russia-ukraine", title: "Russia-Ukraine War", status: "active", nodeCount: 0 },
+  { id: "global-crisis", title: "Global Economic Crisis", status: "developing", nodeCount: 0 },
 ];
 
 const sampleProjects: ProjectItem[] = [
-  { id: "solana", title: "Solana", category: "CRYPTO", eventCount: 42, rating: "AA", price: "$185", priceChange: "+4.2%" },
-  { id: "ethereum", title: "Ethereum", category: "CRYPTO", eventCount: 67, rating: "AAA", price: "$3.2K", priceChange: "+1.8%" },
-  { id: "bitcoin", title: "Bitcoin", category: "CRYPTO", eventCount: 38, rating: "AAA", price: "$92K", priceChange: "-0.5%" },
-  { id: "hyperliquid", title: "Hyperliquid", category: "CRYPTO", eventCount: 24, rating: "AA" },
-  { id: "nvidia", title: "Nvidia", category: "AI & TECH", eventCount: 31 },
-  { id: "openai", title: "OpenAI", category: "AI & TECH", eventCount: 28 },
-  { id: "anthropic", title: "Anthropic", category: "AI & TECH", eventCount: 12 },
+  { id: "solana", title: "Solana", category: "CRYPTO", eventCount: 0 },
+  { id: "ethereum", title: "Ethereum", category: "CRYPTO", eventCount: 0 },
+  { id: "bitcoin", title: "Bitcoin", category: "CRYPTO", eventCount: 0 },
+  { id: "nvidia", title: "Nvidia", category: "AI & TECH", eventCount: 0 },
+  { id: "openai", title: "OpenAI", category: "AI & TECH", eventCount: 0 },
 ];
 
 // ─── App ────────────────────────────────────────────────────
