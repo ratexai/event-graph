@@ -1,8 +1,8 @@
 /**
- * AI Revolution Prediction Map — 81 JSON + 15 enriched = 96 nodes
+ * AI Revolution Prediction Map — 81 JSON + 22 enriched = 103 nodes
  *
  * Source: Event database test/ai-revolution-prediction-map.json
- * Enriched: 5 Polymarket anchors + 10 YES/NO scenarios
+ * Enriched: 12 Polymarket anchors (verified) + 10 YES/NO scenarios
  * Normalized to NarrativeFlowData via normalize.ts
  */
 import type { RawAiRevolutionJson } from "./normalize";

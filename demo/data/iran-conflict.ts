@@ -1,8 +1,8 @@
 /**
- * Iran–US–Israel War: 74 JSON + 18 supplementary + 21 enriched + 23 Day-6 = 136 nodes
+ * Iran–US–Israel War: 74 JSON + 18 fact + 14 anchors + 16 scenarios + 23 Day-6 = 145 nodes
  *
  * Fact nodes: Event database test/iran-2026-conflict-graph-expanded.json
- * Enriched nodes: 7 Polymarket anchors + 14 YES/NO scenarios (hand-curated)
+ * Enriched nodes: 14 Polymarket anchors (verified) + 16 scenario branches
  * Normalized to NarrativeFlowData via normalize.ts
  */
 import type { RawIranConflictJson } from "./normalize";
