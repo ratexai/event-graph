@@ -120,6 +120,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const graphHeight = svgHeight - currentGraph.layout.padding.top - currentGraph.layout.padding.bottom;
 
   // Auto-fit: zoom to show all content when data first loads or mode changes
+  // Mobile: zoom out further (0.8x) so user sees the full map overview and wants to zoom in
   const autoFitKey = useRef("");
   const doFitContent = useCallback(() => {
     const maxCol = currentGraph.maxCol;
@@ -128,8 +129,8 @@ export const EventGraph: React.FC<EventGraphProps> = ({
     const pad = currentGraph.layout.padding;
     const contentW = Math.max(graphWidth, maxCol * MIN_COL_PX) + pad.left + pad.right;
     const contentH = Math.max(graphHeight, 300) + pad.top + pad.bottom;
-    panZoom.fitContent(contentW, contentH, svgWidth, svgHeight);
-  }, [currentGraph.maxCol, svgWidth, svgHeight, graphWidth, graphHeight, currentGraph.layout.padding, panZoom.fitContent]);
+    panZoom.fitContent(contentW, contentH, svgWidth, svgHeight, isMobile ? 0.8 : 1);
+  }, [currentGraph.maxCol, svgWidth, svgHeight, graphWidth, graphHeight, currentGraph.layout.padding, panZoom.fitContent, isMobile]);
 
   useEffect(() => {
     const key = `${mode}-${currentGraph.maxCol}-${svgWidth}`;
