@@ -119,6 +119,25 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const graphWidth = svgWidth - currentGraph.layout.padding.left - currentGraph.layout.padding.right;
   const graphHeight = svgHeight - currentGraph.layout.padding.top - currentGraph.layout.padding.bottom;
 
+  // Auto-fit: zoom to show all content when data first loads or mode changes
+  const autoFitKey = useRef("");
+  const doFitContent = useCallback(() => {
+    const maxCol = currentGraph.maxCol;
+    if (maxCol <= 1 || svgWidth <= 0 || svgHeight <= 0) return;
+    const MIN_COL_PX = 115;
+    const pad = currentGraph.layout.padding;
+    const contentW = Math.max(graphWidth, maxCol * MIN_COL_PX) + pad.left + pad.right;
+    const contentH = Math.max(graphHeight, 300) + pad.top + pad.bottom;
+    panZoom.fitContent(contentW, contentH, svgWidth, svgHeight);
+  }, [currentGraph.maxCol, svgWidth, svgHeight, graphWidth, graphHeight, currentGraph.layout.padding, panZoom.fitContent]);
+
+  useEffect(() => {
+    const key = `${mode}-${currentGraph.maxCol}-${svgWidth}`;
+    if (key === autoFitKey.current) return;
+    autoFitKey.current = key;
+    doFitContent();
+  }, [mode, currentGraph.maxCol, svgWidth, doFitContent]);
+
   const eventById = useMemo(() => toIdMap(eventNodes), [eventNodes]);
   const kolById = useMemo(() => toIdMap(kolNodes), [kolNodes]);
   const narrativeById = useMemo(() => toIdMap(narrativeNodes), [narrativeNodes]);
@@ -281,7 +300,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           panelOffset={isMobile ? 0 : panelWidth}
           onZoomIn={panZoom.zoomIn}
           onZoomOut={panZoom.zoomOut}
-          onReset={panZoom.reset}
+          onReset={doFitContent}
           isMobile={isMobile}
         />
       )}

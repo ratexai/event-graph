@@ -21,6 +21,8 @@ export interface PanZoomState {
   zoomIn: () => void;
   zoomOut: () => void;
   reset: () => void;
+  /** Fit all content into the viewport. Call once after data loads. */
+  fitContent: (contentWidth: number, contentHeight: number, viewportWidth: number, viewportHeight: number) => void;
 }
 
 export function usePanZoom(opts?: {
@@ -113,11 +115,26 @@ export function usePanZoom(opts?: {
     onTouchStart, onTouchMove, onTouchEnd,
   }), [onWheel, onMouseDown, onMouseMove, onMouseUp, onTouchStart, onTouchMove, onTouchEnd]);
 
+  const fitContent = useCallback((contentWidth: number, contentHeight: number, viewportWidth: number, viewportHeight: number) => {
+    if (contentWidth <= 0 || viewportWidth <= 0) return;
+    const zx = viewportWidth / contentWidth;
+    const zy = viewportHeight / contentHeight;
+    const fitZoom = Math.max(minZoom, Math.min(1, Math.min(zx, zy)));
+    setZoom(fitZoom);
+    // Center content horizontally
+    const scaledW = contentWidth * fitZoom;
+    const offsetX = (viewportWidth - scaledW) / 2;
+    const scaledH = contentHeight * fitZoom;
+    const offsetY = (viewportHeight - scaledH) / 2;
+    setPan({ x: Math.max(0, offsetX), y: Math.max(0, offsetY) });
+  }, [minZoom]);
+
   return {
     zoom, pan, isPanning,
     handlers,
     zoomIn: useCallback(() => setZoom((z) => Math.min(maxZoom, z + zoomStep)), [maxZoom, zoomStep]),
     zoomOut: useCallback(() => setZoom((z) => Math.max(minZoom, z - zoomStep)), [minZoom, zoomStep]),
     reset: useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []),
+    fitContent,
   };
 }
