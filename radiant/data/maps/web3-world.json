@@ -1,0 +1,16 @@
+{
+  "id": "web3-world",
+  "title": "Web3 World",
+  "currentProb": null,
+  "probHistory": [],
+  "timeSlots": [],
+  "nodes": [],
+  "branches": [],
+  "cuiBono": { "benefits": [], "loses": [] },
+  "rightPanel": {
+    "states": [],
+    "corps": [],
+    "indices": [],
+    "polymarketAnchors": []
+  }
+}

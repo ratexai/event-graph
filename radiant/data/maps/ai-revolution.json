@@ -1,0 +1,16 @@
+{
+  "id": "ai-revolution",
+  "title": "AI Changes the World",
+  "currentProb": null,
+  "probHistory": [],
+  "timeSlots": [],
+  "nodes": [],
+  "branches": [],
+  "cuiBono": { "benefits": [], "loses": [] },
+  "rightPanel": {
+    "states": [],
+    "corps": [],
+    "indices": [],
+    "polymarketAnchors": []
+  }
+}

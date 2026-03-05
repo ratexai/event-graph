@@ -1,0 +1,16 @@
+{
+  "id": "russia-ukraine",
+  "title": "Russia-Ukraine War",
+  "currentProb": null,
+  "probHistory": [],
+  "timeSlots": [],
+  "nodes": [],
+  "branches": [],
+  "cuiBono": { "benefits": [], "loses": [] },
+  "rightPanel": {
+    "states": [],
+    "corps": [],
+    "indices": [],
+    "polymarketAnchors": []
+  }
+}
