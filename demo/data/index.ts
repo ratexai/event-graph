@@ -5,9 +5,11 @@
  * Add new narratives by creating a file in demo/data/ and registering here.
  */
 export { iranConflictData } from "./iran-conflict";
+export { aiRevolutionData } from "./ai-revolution";
 
 import type { Narrative } from "../../src";
 import { iranConflictData } from "./iran-conflict";
+import { aiRevolutionData } from "./ai-revolution";
 import type { NarrativeFlowData } from "../../src";
 
 // ─── Narrative catalogue (for switcher UI) ───────────────────
@@ -15,15 +17,16 @@ import type { NarrativeFlowData } from "../../src";
 /** All available narratives indexed by id */
 export const narrativeCatalogue: Record<string, NarrativeFlowData> = {
   "iran-2026-conflict-expanded": iranConflictData,
+  "ai-revolution": aiRevolutionData,
   // "ukraine-2026-spring-offensive": ukraineData,   // TODO
   // "us-china-tariffs-2026": tariffData,             // TODO
-  // "ai-regulation-2026": aiRegData,                 // TODO
   // "crypto-sec-2026": cryptoData,                   // TODO
 };
 
 /** Slim narrative summaries for the switcher dropdown */
 export const narrativeList: Narrative[] = [
   iranConflictData.narrative!,
+  aiRevolutionData.narrative!,
   // ── Stubs for upcoming narratives ──
   {
     id: "ukraine-2026-spring",
@@ -55,22 +58,6 @@ export const narrativeList: Narrative[] = [
       "tech \u2014 chip export controls / Huawei / TikTok",
       "markets \u2014 S&P / Hang Seng / CNY impact",
       "diplomacy \u2014 G20 / bilateral summits",
-    ],
-  },
-  {
-    id: "ai-regulation-2026",
-    title: "AI Regulation: Global Frameworks Race",
-    category: "regulation",
-    status: "active",
-    sentimentTrend: "neg",
-    currentProb: 58,
-    startProb: 45,
-    probHistory: [45, 48, 52, 55, 58],
-    branches: [
-      "us \u2014 Senate bills / executive orders",
-      "eu \u2014 AI Act enforcement + fines",
-      "china \u2014 MIIT rules / model registration",
-      "industry \u2014 self-regulation / safety commitments",
     ],
   },
   {
