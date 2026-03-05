@@ -1,5 +1,5 @@
 /**
- * Iran–US–Israel War: 74 JSON + 18 supplementary + 21 enriched + 15 Day-6 = 128 nodes
+ * Iran–US–Israel War: 74 JSON + 18 supplementary + 21 enriched + 23 Day-6 = 136 nodes
  *
  * Fact nodes: Event database test/iran-2026-conflict-graph-expanded.json
  * Enriched nodes: 7 Polymarket anchors + 14 YES/NO scenarios (hand-curated)
@@ -71,9 +71,9 @@ const cuiBono: NarrativeCuiBono = {
     { name: "S&P 500", delta: -4.2, reason: "Broad risk-off, defense up but energy volatility" },
     { name: "Dow Jones", delta: -5.1, reason: "Industrial + transport hit hard" },
     { name: "NASDAQ", delta: -3.8, reason: "Tech sell-off: AWS damage, cloud risk" },
-    { name: "Brent Crude", delta: 22, reason: "$72 → $88, Hormuz closure + Gulf strikes" },
-    { name: "WTI Crude", delta: 18, reason: "$68 → $82, sympathy move" },
-    { name: "Gold", delta: 8, reason: "Safe haven: $2080 → $2250" },
+    { name: "Brent Crude", delta: 17, reason: "$72 → $84.30, Hormuz closure + Gulf strikes" },
+    { name: "WTI Crude", delta: 15, reason: "$68 → $80, +5.9-8% day" },
+    { name: "Gold", delta: 5, reason: "Safe haven: $5,100 → $5,400/oz" },
     { name: "VIX", delta: 85, reason: "Fear index 18 → 34" },
     { name: "Tadawul (Saudi)", delta: -8.5, reason: "Gulf infrastructure strikes" },
     { name: "ADX (Abu Dhabi)", delta: -12, reason: "Airport + data center attacks" },
