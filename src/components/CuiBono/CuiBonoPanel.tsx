@@ -23,6 +23,8 @@ export interface CuiBonoPanelProps {
   onMarketSelect?: (anchorId: string) => void;
   /** Dynamic panel width — defaults to 300 */
   panelWidth?: number;
+  isMobile?: boolean;
+  onClose?: () => void;
 }
 
 // ─── Tab Type ────────────────────────────────────────────────────
@@ -699,6 +701,8 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
   narrativeNodes,
   onMarketSelect,
   panelWidth: externalWidth,
+  isMobile = false,
+  onClose,
 }) => {
   const PANEL_W = externalWidth ?? PANEL_WIDTH;
   const [activeTab, setActiveTab] = useState<TabKey>("markets");
@@ -707,25 +711,50 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
     setActiveTab(key);
   }, []);
 
+  const panelStyle: React.CSSProperties = isMobile
+    ? {
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        height: "75vh", maxHeight: "75vh",
+        background: theme.bg,
+        borderTop: `1px solid ${theme.border}`,
+        borderRadius: "16px 16px 0 0",
+        zIndex: 34,
+        transform: isOpen ? "translateY(0)" : "translateY(100%)",
+        transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
+        display: "flex", flexDirection: "column",
+        fontFamily: theme.fontFamily, color: theme.text,
+        overflow: "hidden",
+        boxShadow: "0 -8px 32px rgba(0,0,0,0.4)",
+      }
+    : {
+        position: "absolute",
+        top: topOffset, right: 0, width: PANEL_W, bottom: 0,
+        background: theme.bg,
+        borderLeft: `1px solid ${theme.border}`,
+        backdropFilter: "blur(20px)",
+        zIndex: 24,
+        transform: isOpen ? "translateX(0)" : `translateX(${PANEL_W}px)`,
+        transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
+        display: "flex", flexDirection: "column",
+        fontFamily: theme.fontFamily, color: theme.text,
+        overflow: "hidden",
+      };
+
   return (
-    <div style={{
-      position: "absolute",
-      top: topOffset,
-      right: 0,
-      width: PANEL_W,
-      bottom: 0,
-      background: theme.bg,
-      borderLeft: `1px solid ${theme.border}`,
-      backdropFilter: "blur(20px)",
-      zIndex: 24,
-      transform: isOpen ? "translateX(0)" : `translateX(${PANEL_W}px)`,
-      transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
-      display: "flex",
-      flexDirection: "column",
-      fontFamily: theme.fontFamily,
-      color: theme.text,
-      overflow: "hidden",
-    }}>
+    <div className={isMobile ? "event-graph-mobile-sheet" : undefined} style={panelStyle}>
+      {/* Mobile drag handle + close */}
+      {isMobile && (
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: "8px 12px 4px", flexShrink: 0 }}>
+          <div style={{ width: 36, height: 4, borderRadius: 2, background: theme.border, flex: "0 0 auto" }} />
+          <button onClick={onClose} style={{
+            position: "absolute", right: 12, width: 44, height: 44,
+            background: theme.surface, border: `1px solid ${theme.border}`,
+            borderRadius: 8, color: theme.muted, fontSize: 18, cursor: "pointer",
+            fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center",
+          }}>✕</button>
+        </div>
+      )}
+
       {/* ── Tab bar ──────────────────────────────────────────── */}
       <div style={{
         display: "flex",
@@ -741,12 +770,13 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
               onClick={() => handleTabClick(tab.key)}
               style={{
                 flex: 1,
-                padding: "10px 4px",
+                padding: isMobile ? "12px 4px" : "10px 4px",
+                minHeight: isMobile ? 44 : undefined,
                 background: isActive ? theme.bgAlt : "transparent",
                 border: "none",
                 borderBottom: isActive ? `2px solid ${theme.accent}` : "2px solid transparent",
                 color: isActive ? theme.text : theme.muted,
-                fontSize: 12,
+                fontSize: isMobile ? 14 : 12,
                 fontWeight: isActive ? 700 : 500,
                 cursor: "pointer",
                 fontFamily: theme.fontFamily,

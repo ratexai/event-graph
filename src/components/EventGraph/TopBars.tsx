@@ -67,6 +67,7 @@ interface TopBarProps {
   onToggleCategory?: (category: NarrativeCategory) => void;
   hasMarket?: boolean;
   onToggleHasMarket?: () => void;
+  isMobile?: boolean;
 }
 
 export function TopBar(props: TopBarProps) {
@@ -81,6 +82,7 @@ export function TopBar(props: TopBarProps) {
     onToggleEventType, onToggleTier, onTogglePlatform,
     onToggleCategory,
     hasMarket, onToggleHasMarket,
+    isMobile = false,
   } = props;
 
   const [openFlyout, setOpenFlyout] = useState<"maps" | "projects" | null>(null);
@@ -166,20 +168,22 @@ export function TopBar(props: TopBarProps) {
   return (
     <div style={{
       position: "absolute", top: 0, left: 0, right: panelOffset, height: 36,
-      display: "flex", alignItems: "center", gap: 6, padding: "0 10px",
+      display: "flex", alignItems: "center", gap: isMobile ? 4 : 6,
+      padding: isMobile ? "0 6px" : "0 10px",
       borderBottom: `1px solid ${theme.border}`, background: `${theme.bg}f0`,
       backdropFilter: "blur(16px)", zIndex: 30,
-      fontFamily: theme.fontFamily, overflow: "visible",
+      fontFamily: theme.fontFamily,
+      overflow: isMobile ? "hidden" : "visible",
     }}>
       {/* RADIANT logo */}
       <span style={{
-        fontWeight: 800, fontSize: 11, letterSpacing: 2,
+        fontWeight: 800, fontSize: isMobile ? 10 : 11, letterSpacing: isMobile ? 1 : 2,
         color: theme.accent, fontFamily: theme.monoFontFamily,
         flexShrink: 0,
-      }}>◈ RADIANT</span>
+      }}>{isMobile ? "◈" : "◈ RADIANT"}</span>
 
-      {/* Prediction Map nav */}
-      {nav && (
+      {/* Prediction Map nav — hidden on mobile (no hover) */}
+      {nav && !isMobile && (
         <div style={{ position: "relative", flexShrink: 0 }}
           onMouseEnter={() => hoverOpen("maps")}
           onMouseLeave={hoverClose}>
@@ -220,8 +224,8 @@ export function TopBar(props: TopBarProps) {
         </div>
       )}
 
-      {/* HistoryFi nav */}
-      {nav && (
+      {/* HistoryFi nav — hidden on mobile */}
+      {nav && !isMobile && (
         <div style={{ position: "relative", flexShrink: 0 }}
           onMouseEnter={() => hoverOpen("projects")}
           onMouseLeave={hoverClose}>
@@ -251,9 +255,13 @@ export function TopBar(props: TopBarProps) {
       )}
 
       {/* Divider */}
-      <div style={{ width: 1, height: 16, background: theme.border, flexShrink: 0 }} />
+      {!isMobile && <div style={{ width: 1, height: 16, background: theme.border, flexShrink: 0 }} />}
 
-      {/* Filters */}
+      {/* Filters — horizontally scrollable on mobile */}
+      <div style={{
+        display: "flex", alignItems: "center", gap: isMobile ? 3 : undefined,
+        ...(isMobile ? { flex: 1, overflowX: "auto", overflowY: "hidden", WebkitOverflowScrolling: "touch" as const, scrollbarWidth: "none" as const, msOverflowStyle: "none" as const } : {}),
+      }}>
       {mode === "events" ? (<>
         <button onClick={onResetEventTypes} aria-pressed={activeEventTypes.size === allEventTypes.length}
           style={filterBtn(theme, activeEventTypes.size === allEventTypes.length)}>All</button>
@@ -306,11 +314,13 @@ export function TopBar(props: TopBarProps) {
         })}
       </>) : null}
 
-      {/* Spacer */}
-      <div style={{ flex: 1 }} />
+      </div>{/* end scrollable filters wrapper */}
 
-      {/* Always-visible search input */}
-      {nav && (
+      {/* Spacer */}
+      {!isMobile && <div style={{ flex: 1 }} />}
+
+      {/* Always-visible search input — hidden on mobile */}
+      {nav && !isMobile && (
         <div ref={searchDropRef} style={{ position: "relative", flexShrink: 0, width: 180 }}>
           <input
             ref={searchInputRef}

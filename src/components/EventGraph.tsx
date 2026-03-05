@@ -17,6 +17,7 @@ import {
   useEventFlowGraph,
   useGraphFilters,
   useGraphSelection,
+  useIsMobile,
   useKolFlowGraph,
   useNarrativeFlowGraph,
   usePanZoom,
@@ -70,8 +71,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
 }) => {
   const [mode, setMode] = useState<ViewMode>(defaultMode);
   const [anchorModalId, setAnchorModalId] = useState<string | null>(null);
+  const [mobilePanel, setMobilePanel] = useState<"cuibono" | "detail" | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const dims = useContainerSize(containerRef);
+  const isMobile = useIsMobile();
   const time = useAnimationTime();
   const panZoom = usePanZoom();
   const selection = useGraphSelection();
@@ -97,9 +100,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const topOffset = (showFilters ? TOP_BAR_HEIGHT : 0) + statsHeight;
   const hasCuiBono = mode === "narratives" && !!narrativeData?.narrative?.cuiBono;
   const hasNarrativeSidebar = mode === "narratives" && (hasCuiBono || narrativeNodes.length > 0);
-  const sidebarWidth = Math.max(260, Math.min(380, Math.round(dims.w * CUI_BONO_PCT)));
-  const cuiBonoWidth = hasNarrativeSidebar ? sidebarWidth : 0;
-  const panelWidth = selection.panelOpen && showDetailPanel ? sidebarWidth : cuiBonoWidth;
+  const sidebarWidth = isMobile ? dims.w : Math.max(260, Math.min(380, Math.round(dims.w * CUI_BONO_PCT)));
+  // On mobile, sidebars are bottom sheets — they don't affect canvas offset
+  const cuiBonoWidth = hasNarrativeSidebar && !isMobile ? sidebarWidth : 0;
+  const panelWidth = selection.panelOpen && showDetailPanel && !isMobile ? sidebarWidth : cuiBonoWidth;
   // Map canvas always takes full width — sidebars overlay on top.
   // This prevents element collisions when the viewport is small.
   const svgWidth = Math.max(0, dims.w);
@@ -152,6 +156,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
       }
     }
     selection.setSelected(id);
+    setMobilePanel("detail");
     onNodeSelectRef.current?.(id, modeRef.current);
   }, [selection.setSelected, narrativeById]);
 
@@ -186,15 +191,16 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         ...style,
       }}
     >
-      {/* Disable SVG animations when user prefers reduced motion */}
-      <style>{`@media (prefers-reduced-motion: reduce) { animate, animateMotion, animateTransform { display: none; } }`}</style>
+      {/* Disable SVG animations when user prefers reduced motion + mobile touch action */}
+      <style>{`@media (prefers-reduced-motion: reduce) { animate, animateMotion, animateTransform { display: none; } }
+.event-graph-mobile-sheet { touch-action: pan-y; }`}</style>
 
       {showFilters && (
         <TopBar
           mode={mode}
           theme={theme}
           nav={nav}
-          panelOffset={panelWidth}
+          panelOffset={isMobile ? 0 : panelWidth}
           onModeChange={handleModeChange}
           allEventTypes={allEventTypes}
           allTiers={allTiers}
@@ -212,6 +218,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           onToggleCategory={graphFilters.toggleCategory}
           hasMarket={graphFilters.filters.hasMarket}
           onToggleHasMarket={graphFilters.toggleHasMarket}
+          isMobile={isMobile}
         />
       )}
 
@@ -219,7 +226,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         <KolStatsBar
           top={showFilters ? TOP_BAR_HEIGHT : 0}
           height={statsHeight}
-          panelOffset={panelWidth}
+          panelOffset={isMobile ? 0 : panelWidth}
           theme={theme}
           stats={kolGraph.stats}
         />
@@ -229,7 +236,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
         <NarrativeStatsBar
           top={showFilters ? TOP_BAR_HEIGHT : 0}
           height={statsHeight}
-          panelOffset={panelWidth}
+          panelOffset={isMobile ? 0 : panelWidth}
           theme={theme}
           stats={narGraph.stats}
         />
@@ -271,14 +278,15 @@ export const EventGraph: React.FC<EventGraphProps> = ({
       {showZoomControls && (
         <ZoomControls
           theme={theme}
-          panelOffset={panelWidth}
+          panelOffset={isMobile ? 0 : panelWidth}
           onZoomIn={panZoom.zoomIn}
           onZoomOut={panZoom.zoomOut}
           onReset={panZoom.reset}
+          isMobile={isMobile}
         />
       )}
 
-      {mode === "narratives" && (
+      {mode === "narratives" && !isMobile && (
         <NarrativeLegendBar
           theme={theme}
           panelOffset={panelWidth}
@@ -293,21 +301,42 @@ export const EventGraph: React.FC<EventGraphProps> = ({
       {/* Cui Bono + Markets sidebar — visible in narrative mode */}
       {hasNarrativeSidebar && (
         <CuiBonoPanel
-          isOpen={hasNarrativeSidebar}
+          isOpen={isMobile ? mobilePanel === "cuibono" : hasNarrativeSidebar}
           narrativeCuiBono={narrativeData?.narrative?.cuiBono}
           selectedNodeCuiBono={selectedNarrative?.cuiBono}
           selectedNodeLabel={selectedNarrative?.label}
           theme={theme}
-          topOffset={TOP_BAR_HEIGHT}
+          topOffset={isMobile ? 0 : TOP_BAR_HEIGHT}
           narrativeNodes={narrativeNodes}
           onMarketSelect={handleMarketSelect}
-          panelWidth={cuiBonoWidth}
+          panelWidth={isMobile ? dims.w : cuiBonoWidth}
+          isMobile={isMobile}
+          onClose={() => setMobilePanel(null)}
         />
+      )}
+
+      {/* Mobile CuiBono toggle button */}
+      {isMobile && hasNarrativeSidebar && mobilePanel !== "cuibono" && mobilePanel !== "detail" && (
+        <button
+          onClick={() => setMobilePanel("cuibono")}
+          style={{
+            position: "absolute", bottom: 16, left: 16,
+            width: 44, height: 44, borderRadius: 12,
+            background: theme.surface, border: `1px solid ${theme.border}`,
+            color: theme.accent, fontSize: 18, cursor: "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            fontFamily: "inherit", zIndex: 25,
+            boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
+          }}
+          aria-label="Open Cui Bono panel"
+        >
+          📊
+        </button>
       )}
 
       {showDetailPanel && (
         <DetailPanel
-          isOpen={selection.panelOpen}
+          isOpen={isMobile ? mobilePanel === "detail" && selection.panelOpen : selection.panelOpen}
           selectedEvent={selectedEvent}
           selectedKol={selectedKol}
           selectedNarrative={selectedNarrative}
@@ -316,9 +345,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           allNarratives={narrativeNodes}
           timeSlotLabels={timeSlotLabels}
           theme={theme}
-          onClose={selection.closePanel}
+          onClose={() => { selection.closePanel(); setMobilePanel(null); }}
           onNavigate={handleNodeSelect}
-          panelWidth={sidebarWidth}
+          panelWidth={isMobile ? dims.w : sidebarWidth}
+          isMobile={isMobile}
         />
       )}
 
