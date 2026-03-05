@@ -714,7 +714,7 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
   const panelStyle: React.CSSProperties = isMobile
     ? {
         position: "absolute", left: 0, right: 0, bottom: 0,
-        height: "75vh", maxHeight: "75vh",
+        height: "92vh", maxHeight: "92vh",
         background: theme.bg,
         borderTop: `1px solid ${theme.border}`,
         borderRadius: "16px 16px 0 0",

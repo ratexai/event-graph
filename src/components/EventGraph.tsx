@@ -321,16 +321,23 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           onClick={() => setMobilePanel("cuibono")}
           style={{
             position: "absolute", bottom: 16, left: 16,
-            width: 44, height: 44, borderRadius: 12,
+            minWidth: 44, height: 44, borderRadius: 12,
+            padding: "0 12px",
             background: theme.surface, border: `1px solid ${theme.border}`,
-            color: theme.accent, fontSize: 18, cursor: "pointer",
+            color: theme.accent, fontSize: 12, cursor: "pointer",
             display: "flex", alignItems: "center", justifyContent: "center",
+            gap: 6,
             fontFamily: "inherit", zIndex: 25,
             boxShadow: "0 4px 16px rgba(0,0,0,0.3)",
           }}
-          aria-label="Open Cui Bono panel"
+          aria-label="Open Insights panel"
         >
-          📊
+          <svg width={16} height={16} viewBox="0 0 16 16" fill="none">
+            <rect x={1} y={9} width={3} height={6} rx={0.5} fill={theme.accent} />
+            <rect x={6} y={5} width={3} height={10} rx={0.5} fill={theme.accent} opacity={0.7} />
+            <rect x={11} y={2} width={3} height={13} rx={0.5} fill={theme.accent} opacity={0.5} />
+          </svg>
+          <span style={{ fontWeight: 600, letterSpacing: 0.5 }}>Insights</span>
         </button>
       )}
 

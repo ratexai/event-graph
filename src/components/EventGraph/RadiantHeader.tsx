@@ -27,6 +27,14 @@ const statusLabel: Record<MapStatus, string> = {
   monitoring: "MONITORING",
 };
 
+// ─── Placeholder logo icon (circle with initial) ────────────────
+const LogoPlaceholder = ({ size = 16, color, letter }: { size?: number; color: string; letter: string }) => (
+  <svg width={size} height={size} viewBox="0 0 16 16" style={{ flexShrink: 0 }}>
+    <rect x={0.5} y={0.5} width={15} height={15} rx={4} fill={`${color}20`} stroke={color} strokeWidth={0.8} />
+    <text x={8} y={11.5} textAnchor="middle" fontSize={9} fontWeight={700} fill={color} fontFamily="inherit">{letter}</text>
+  </svg>
+);
+
 // ─── RadiantHeader ───────────────────────────────────────────
 
 export interface RadiantHeaderProps {
@@ -75,7 +83,7 @@ export function RadiantHeader(props: RadiantHeaderProps) {
     background: active ? `${theme.accent}18` : "transparent",
     border: "none",
     color: active ? theme.text : theme.textSecondary,
-    fontSize: 12,
+    fontSize: 14,
     fontWeight: active ? 600 : 400,
     padding: "4px 10px",
     borderRadius: 6,
@@ -93,8 +101,8 @@ export function RadiantHeader(props: RadiantHeaderProps) {
     top: "100%",
     left: 0,
     marginTop: 4,
-    width: 340,
-    maxHeight: 420,
+    width: 380,
+    maxHeight: 460,
     overflowY: "auto",
     background: theme.bg,
     border: `1px solid ${theme.border}`,
@@ -158,7 +166,8 @@ export function RadiantHeader(props: RadiantHeaderProps) {
           onClick={() => setOpenFlyout(openFlyout === "maps" ? null : "maps")}
           style={navBtn(openFlyout === "maps" || (!activeProjectId && !!activeMapId))}
         >
-          {"🗺️"} Prediction Map <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
+          <LogoPlaceholder size={14} color={theme.accent} letter="P" /> Prediction Map <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
+          {maps.length === 0 && <span style={{ fontSize: 9, color: theme.muted, fontStyle: "italic", marginLeft: 2 }}>soon</span>}
         </button>
 
         {openFlyout === "maps" && (
@@ -184,14 +193,16 @@ export function RadiantHeader(props: RadiantHeaderProps) {
               />
             </div>
 
-            {(["active", "developing", "monitoring"] as MapStatus[]).map((status) => {
+            {maps.length === 0 ? (
+              <div style={{ padding: 20, textAlign: "center", color: theme.muted, fontSize: 13 }}>Coming soon</div>
+            ) : (["active", "developing", "monitoring"] as MapStatus[]).map((status) => {
               const group = mapsByStatus[status];
               if (!group || group.length === 0) return null;
               return (
                 <React.Fragment key={status}>
                   <div style={{
                     padding: "8px 16px 4px",
-                    fontSize: 9,
+                    fontSize: 10,
                     fontWeight: 700,
                     letterSpacing: 1.5,
                     textTransform: "uppercase",
@@ -220,28 +231,28 @@ export function RadiantHeader(props: RadiantHeaderProps) {
                         background: m.id === activeMapId ? `${theme.accent}12` : "transparent",
                         border: "none",
                         color: theme.text,
-                        fontSize: 12,
+                        fontSize: 13,
                         fontFamily: theme.fontFamily,
                         cursor: "pointer",
                         textAlign: "left",
                       }}
                     >
-                      <span style={{ fontSize: 14, flexShrink: 0 }}>{m.emoji || "🗺️"}</span>
+                      <LogoPlaceholder size={18} color={theme.accent} letter={m.title.charAt(0)} />
                       <span style={{ flex: 1, fontWeight: m.id === activeMapId ? 600 : 400 }}>{m.title}</span>
                       <span style={{
                         fontSize: 10, color: theme.muted,
                         padding: "1px 5px", borderRadius: 4,
                         background: theme.surface,
-                      }}>{m.nodeCount}▪️</span>
+                      }}>{m.nodeCount}</span>
                       {m.headlineProb != null && (
                         <span style={{
-                          fontSize: 11, fontWeight: 600,
+                          fontSize: 12, fontWeight: 600,
                           color: theme.accent,
                         }}>{m.headlineProb}%</span>
                       )}
                       {m.trend && m.trend !== "flat" && (
                         <span style={{
-                          fontSize: 10,
+                          fontSize: 11,
                           color: m.trend === "up" ? theme.positive : theme.negative,
                         }}>{m.trend === "up" ? "↑" : "↓"}</span>
                       )}
@@ -260,7 +271,8 @@ export function RadiantHeader(props: RadiantHeaderProps) {
           onClick={() => setOpenFlyout(openFlyout === "projects" ? null : "projects")}
           style={navBtn(openFlyout === "projects" || !!activeProjectId)}
         >
-          {"⚡"} HistoryFi <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
+          <LogoPlaceholder size={14} color={theme.accent} letter="H" /> HistoryFi <span style={{ fontSize: 10, color: theme.muted }}>▾</span>
+          {projects.length === 0 && <span style={{ fontSize: 9, color: theme.muted, fontStyle: "italic", marginLeft: 2 }}>soon</span>}
         </button>
 
         {openFlyout === "projects" && (
@@ -285,11 +297,13 @@ export function RadiantHeader(props: RadiantHeaderProps) {
               />
             </div>
 
-            {Object.entries(projectsByCategory).map(([cat, items]) => (
+            {projects.length === 0 ? (
+              <div style={{ padding: 20, textAlign: "center", color: theme.muted, fontSize: 13 }}>Coming soon</div>
+            ) : Object.entries(projectsByCategory).map(([cat, items]) => (
               <React.Fragment key={cat}>
                 <div style={{
                   padding: "8px 16px 4px",
-                  fontSize: 9,
+                  fontSize: 10,
                   fontWeight: 700,
                   letterSpacing: 1.5,
                   textTransform: "uppercase",
@@ -308,13 +322,13 @@ export function RadiantHeader(props: RadiantHeaderProps) {
                       background: p.id === activeProjectId ? `${theme.accent}12` : "transparent",
                       border: "none",
                       color: theme.text,
-                      fontSize: 12,
+                      fontSize: 13,
                       fontFamily: theme.fontFamily,
                       cursor: "pointer",
                       textAlign: "left",
                     }}
                   >
-                    <span style={{ fontSize: 12, flexShrink: 0 }}>⚡</span>
+                    <LogoPlaceholder size={18} color={theme.accent} letter={p.title.charAt(0)} />
                     <span style={{ flex: 1, fontWeight: p.id === activeProjectId ? 600 : 400 }}>{p.title}</span>
                     <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} events</span>
                     {p.rating && (
@@ -327,7 +341,7 @@ export function RadiantHeader(props: RadiantHeaderProps) {
                       }}>{p.rating}</span>
                     )}
                     {p.price && (
-                      <span style={{ fontSize: 11, color: theme.text, fontWeight: 500 }}>
+                      <span style={{ fontSize: 12, color: theme.text, fontWeight: 500 }}>
                         {p.price}
                         {p.priceChange && (
                           <span style={{
@@ -362,7 +376,7 @@ export function RadiantHeader(props: RadiantHeaderProps) {
         </button>
 
         {openFlyout === "search" && (
-          <div style={{ ...flyoutStyle, right: 0, left: "auto", width: 420 }}>
+          <div style={{ ...flyoutStyle, right: 0, left: "auto", width: 440 }}>
             <div style={{ padding: "4px 12px 8px" }}>
               <input
                 type="text"
@@ -393,9 +407,10 @@ export function RadiantHeader(props: RadiantHeaderProps) {
             {searchResults.maps.length > 0 && (
               <>
                 <div style={{
-                  padding: "6px 16px 2px", fontSize: 9, fontWeight: 700,
+                  padding: "6px 16px 2px", fontSize: 10, fontWeight: 700,
                   letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted,
-                }}>{"🗺️"} PREDICTION MAPS</div>
+                  display: "flex", alignItems: "center", gap: 5,
+                }}><LogoPlaceholder size={12} color={theme.accent} letter="P" /> PREDICTION MAPS</div>
                 {searchResults.maps.map((m) => (
                   <button
                     key={m.id}
@@ -403,11 +418,11 @@ export function RadiantHeader(props: RadiantHeaderProps) {
                     style={{
                       display: "flex", width: "100%", alignItems: "center", gap: 8,
                       padding: "6px 16px", background: "transparent", border: "none",
-                      color: theme.text, fontSize: 12, fontFamily: theme.fontFamily,
+                      color: theme.text, fontSize: 13, fontFamily: theme.fontFamily,
                       cursor: "pointer", textAlign: "left",
                     }}
                   >
-                    <span style={{ fontSize: 13 }}>{m.emoji || "🗺️"}</span>
+                    <LogoPlaceholder size={16} color={theme.accent} letter={m.title.charAt(0)} />
                     <span style={{ flex: 1 }}>{m.title}</span>
                     <span style={{ fontSize: 10, color: theme.muted }}>{m.nodeCount} nodes</span>
                     <span style={{
@@ -423,10 +438,10 @@ export function RadiantHeader(props: RadiantHeaderProps) {
             {searchResults.projects.length > 0 && (
               <>
                 <div style={{
-                  padding: "6px 16px 2px", fontSize: 9, fontWeight: 700,
+                  padding: "6px 16px 2px", fontSize: 10, fontWeight: 700,
                   letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted,
-                  marginTop: 4,
-                }}>{"⚡"} HISTORYFI</div>
+                  marginTop: 4, display: "flex", alignItems: "center", gap: 5,
+                }}><LogoPlaceholder size={12} color={theme.accent} letter="H" /> HISTORYFI</div>
                 {searchResults.projects.map((p) => (
                   <button
                     key={p.id}
@@ -434,11 +449,11 @@ export function RadiantHeader(props: RadiantHeaderProps) {
                     style={{
                       display: "flex", width: "100%", alignItems: "center", gap: 8,
                       padding: "6px 16px", background: "transparent", border: "none",
-                      color: theme.text, fontSize: 12, fontFamily: theme.fontFamily,
+                      color: theme.text, fontSize: 13, fontFamily: theme.fontFamily,
                       cursor: "pointer", textAlign: "left",
                     }}
                   >
-                    <span>⚡</span>
+                    <LogoPlaceholder size={16} color={theme.accent} letter={p.title.charAt(0)} />
                     <span style={{ flex: 1 }}>{p.title}</span>
                     <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} events</span>
                     {p.rating && <span style={{ fontSize: 10, color: theme.accent, fontWeight: 600 }}>{p.rating}</span>}
