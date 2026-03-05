@@ -739,29 +739,54 @@ export interface DetailPanelProps {
   onNavigate: (id: string) => void;
   panelWidth?: number;
   topOffset?: number;
+  isMobile?: boolean;
 }
 
 export const DetailPanel: React.FC<DetailPanelProps> = ({
   isOpen, selectedEvent, selectedKol, selectedNarrative,
   allEvents, allKols, allNarratives = [], timeSlotLabels,
   theme, onClose, onNavigate, panelWidth: pw, topOffset: tOff,
+  isMobile = false,
 }) => {
   const W = pw ?? 340;
   const T = tOff ?? 48;
+
+  const panelStyle: React.CSSProperties = isMobile
+    ? {
+        position: "absolute", left: 0, right: 0, bottom: 0,
+        height: "70vh", maxHeight: "70vh",
+        background: theme.bg,
+        borderTop: `1px solid ${theme.border}`,
+        borderRadius: "16px 16px 0 0",
+        zIndex: 35,
+        transform: isOpen ? "translateY(0)" : "translateY(100%)",
+        transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
+        overflowY: "auto", overflowX: "hidden",
+        boxShadow: "0 -8px 32px rgba(0,0,0,0.4)",
+      }
+    : {
+        position: "absolute", top: T, right: 0, width: W, bottom: 0,
+        background: theme.bg,
+        borderLeft: `1px solid ${theme.border}`,
+        zIndex: 25,
+        transform: isOpen ? "translateX(0)" : `translateX(${W}px)`,
+        transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
+        overflowY: "auto", overflowX: "hidden",
+      };
+
   return (
-  <div style={{
-    position: "absolute", top: T, right: 0, width: W, bottom: 0,
-    background: theme.bg,                      // §6: baseStrong (was hardcoded #1d2732)
-    borderLeft: `1px solid ${theme.border}`,   // §6: faintStrong border
-    zIndex: 25,
-    transform: isOpen ? "translateX(0)" : `translateX(${W}px)`,
-    transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
-    overflowY: "auto", overflowX: "hidden",
-  }}>
+  <div className={isMobile ? "event-graph-mobile-sheet" : undefined} style={panelStyle}>
+    {/* Drag handle on mobile */}
+    {isMobile && (
+      <div style={{ display: "flex", justifyContent: "center", padding: "8px 0 4px" }}>
+        <div style={{ width: 36, height: 4, borderRadius: 2, background: theme.border }} />
+      </div>
+    )}
     <button onClick={onClose} style={{
-      position: "sticky", top: 0, right: 0, zIndex: 5, width: 30, height: 30,
+      position: "sticky", top: 0, right: 0, zIndex: 5,
+      width: isMobile ? 44 : 30, height: isMobile ? 44 : 30,
       background: theme.surface, border: `1px solid ${theme.border}`,
-      borderRadius: 8, color: theme.muted, fontSize: 15, cursor: "pointer",
+      borderRadius: 8, color: theme.muted, fontSize: isMobile ? 18 : 15, cursor: "pointer",
       fontFamily: "inherit", display: "flex", alignItems: "center", justifyContent: "center",
       margin: "8px 8px 0 auto",
     }}>✕</button>

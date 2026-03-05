@@ -6,3 +6,4 @@ export * from "./useFilters";
 export * from "./useSelection";
 export * from "./useGraphData";
 export * from "./useApi";
+export * from "./useIsMobile";

@@ -8,11 +8,14 @@ interface ZoomControlsProps {
   onZoomIn: () => void;
   onZoomOut: () => void;
   onReset: () => void;
+  isMobile?: boolean;
 }
 
-export function ZoomControls({ theme, panelOffset, onZoomIn, onZoomOut, onReset }: ZoomControlsProps) {
+export function ZoomControls({ theme, panelOffset, onZoomIn, onZoomOut, onReset, isMobile = false }: ZoomControlsProps) {
+  const btnSize = isMobile ? 44 : 30;
+  const fontSize = isMobile ? 20 : 15;
   return (
-    <div role="group" aria-label="Zoom controls" style={{ position: "absolute", bottom: 20, right: panelOffset ? panelOffset + 16 : 16, display: "flex", flexDirection: "column", gap: 3, zIndex: 25 }}>
+    <div role="group" aria-label="Zoom controls" style={{ position: "absolute", bottom: isMobile ? 16 : 20, right: panelOffset ? panelOffset + 16 : 16, display: "flex", flexDirection: "column", gap: isMobile ? 6 : 3, zIndex: 25 }}>
       {[
         { label: "+", action: onZoomIn, ariaLabel: "Zoom in" },
         { label: "⊙", action: onReset, ariaLabel: "Reset zoom" },
@@ -23,13 +26,13 @@ export function ZoomControls({ theme, panelOffset, onZoomIn, onZoomOut, onReset 
           onClick={button.action}
           aria-label={button.ariaLabel}
           style={{
-            width: 30,
-            height: 30,
-            borderRadius: 8,
+            width: btnSize,
+            height: btnSize,
+            borderRadius: isMobile ? 12 : 8,
             border: `1px solid ${theme.border}`,
             background: theme.bgAlt,
             color: theme.muted,
-            fontSize: 15,
+            fontSize,
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
