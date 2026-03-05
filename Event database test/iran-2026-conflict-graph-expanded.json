@@ -1,0 +1,2252 @@
+{
+  "timeSlots": [
+    {
+      "index": 0,
+      "label": "Feb 20-21",
+      "startDate": "2026-02-20",
+      "endDate": "2026-02-21"
+    },
+    {
+      "index": 1,
+      "label": "Feb 25",
+      "startDate": "2026-02-25",
+      "endDate": "2026-02-25"
+    },
+    {
+      "index": 2,
+      "label": "Feb 26",
+      "startDate": "2026-02-26",
+      "endDate": "2026-02-26"
+    },
+    {
+      "index": 3,
+      "label": "Feb 27",
+      "startDate": "2026-02-27",
+      "endDate": "2026-02-27"
+    },
+    {
+      "index": 4,
+      "label": "Feb 28",
+      "startDate": "2026-02-28",
+      "endDate": "2026-02-28"
+    },
+    {
+      "index": 5,
+      "label": "Mar 1",
+      "startDate": "2026-03-01",
+      "endDate": "2026-03-01"
+    },
+    {
+      "index": 6,
+      "label": "Mar 2",
+      "startDate": "2026-03-02",
+      "endDate": "2026-03-02"
+    },
+    {
+      "index": 7,
+      "label": "Mar 3",
+      "startDate": "2026-03-03",
+      "endDate": "2026-03-03"
+    },
+    {
+      "index": 8,
+      "label": "Mar 4",
+      "startDate": "2026-03-04",
+      "endDate": "2026-03-04"
+    },
+    {
+      "index": 9,
+      "label": "Mar 5-6 (prog)",
+      "startDate": "2026-03-05",
+      "endDate": "2026-03-06"
+    },
+    {
+      "index": 10,
+      "label": "Mar 7-10 (prog)",
+      "startDate": "2026-03-07",
+      "endDate": "2026-03-10"
+    }
+  ],
+  "narrative": {
+    "id": "iran-2026-conflict-expanded",
+    "title": "2026 Iran Conflict: Expanded Timeline — 74 nodes, Day 5 (Mar 4)",
+    "category": "war",
+    "status": "active",
+    "sentimentTrend": "neg",
+    "currentProb": 8,
+    "startProb": 45,
+    "probHistory": [
+      45,
+      38,
+      35,
+      28,
+      15,
+      13,
+      12,
+      10,
+      18,
+      22,
+      15,
+      13,
+      18,
+      9,
+      8
+    ],
+    "branches": [
+      "main — escalation chain (strikes → retaliation → waves)",
+      "gulf — Gulf states damage + GCC response",
+      "econ — Hormuz → oil → markets → inflation",
+      "internal — Khamenei death → succession → Iran politics",
+      "proxy — Hezbollah + Iraq militias + Houthis + Cyprus",
+      "opinion — Trump / Musk / GCC / Iran media / bloggers"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "n0a_trump_deadline",
+      "col": 0,
+      "label": "Trump: 10-day deadline",
+      "category": "war",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "Trump issues 10-day ultimatum for Iran nuclear deal. CBS: US military prepared to strike as early as Feb 21. Warships, tankers, submarines deployed.",
+      "weight": 0.8,
+      "oddsDelta": -5,
+      "marketProb": 45,
+      "sourceAuthority": 97,
+      "momentum": -3,
+      "volume": 18500,
+      "from": [],
+      "extra": "10-day ultimatum",
+      "sourceName": "CBS / CNN",
+      "sourceUrl": "https://en.wikipedia.org/wiki/2026_Iran%E2%80%93United_States_crisis",
+      "timestamp": "2026-02-20T14:00:00Z",
+      "tags": [
+        "trump",
+        "ultimatum"
+      ]
+    },
+    {
+      "id": "n0b_protests",
+      "col": 0,
+      "label": "Phase II protests revival",
+      "category": "war",
+      "signal": "noise",
+      "sentiment": "neg",
+      "desc": "40-day mourning ceremonies turn into protests in 210+ cities. Ongoing massacres of civilians by IRGC.",
+      "weight": 0.65,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 85,
+      "momentum": -2,
+      "volume": 11200,
+      "from": [],
+      "extra": "internal branch",
+      "sourceName": "ISW / Wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iranian_protests",
+      "timestamp": "2026-02-21T00:00:00Z",
+      "tags": [
+        "protests",
+        "internal"
+      ]
+    },
+    {
+      "id": "n0c_military_buildup",
+      "col": 0,
+      "label": "US military buildup: largest since Iraq 2003",
+      "category": "war",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "Air + naval assets amassed at levels not seen since 2003. IRGC disperses aircraft, moves mobile launchers. Satellite imagery shows heightened activity at IRGC bases.",
+      "weight": 0.85,
+      "oddsDelta": -3,
+      "marketProb": null,
+      "sourceAuthority": 92,
+      "momentum": -4,
+      "volume": 15800,
+      "from": [
+        "n0a_trump_deadline"
+      ],
+      "extra": "buildup",
+      "sourceName": "Wikipedia / CBS",
+      "timestamp": "2026-02-21T00:00:00Z",
+      "tags": [
+        "military",
+        "buildup"
+      ]
+    },
+    {
+      "id": "n1_sanctions",
+      "col": 1,
+      "label": "US shadow fleet sanctions",
+      "category": "war",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "30+ entities + 12 vessels sanctioned. Oil exports targeted to zero.",
+      "weight": 0.75,
+      "oddsDelta": -7,
+      "marketProb": 38,
+      "sourceAuthority": 95,
+      "momentum": -2,
+      "volume": 12400,
+      "from": [
+        "n0a_trump_deadline"
+      ],
+      "extra": "-7pp",
+      "sourceName": "Reuters",
+      "timestamp": "2026-02-25T14:00:00Z",
+      "tags": [
+        "sanctions"
+      ]
+    },
+    {
+      "id": "n1b_araghchi_opportunity",
+      "col": 1,
+      "label": "Araghchi: 'Historic opportunity within reach'",
+      "category": "war",
+      "signal": "resolution",
+      "sentiment": "pos",
+      "desc": "Iran FM states nuclear agreement 'within reach' to avert military conflict. Diplomacy must be prioritized. Defends right to peaceful nuclear tech.",
+      "weight": 0.7,
+      "oddsDelta": 2,
+      "marketProb": 40,
+      "sourceAuthority": 88,
+      "momentum": 2,
+      "volume": 9800,
+      "from": [
+        "n1_sanctions"
+      ],
+      "extra": "diplomacy window",
+      "sourceName": "Reuters / Iran state media",
+      "sourceUrl": "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iran%E2%80%93United_States_negotiations",
+      "timestamp": "2026-02-25T20:00:00Z",
+      "tags": [
+        "diplomacy",
+        "araghchi"
+      ]
+    },
+    {
+      "id": "n2_talks",
+      "col": 2,
+      "label": "Geneva Round 3 (Oman mediation)",
+      "category": "war",
+      "signal": "resolution",
+      "sentiment": "neu",
+      "desc": "Indirect talks at Oman ambassador's residence in Geneva. US demands full dismantlement, Iran offers dilution. Morning + evening sessions, pause for Ukraine meeting. US leaves disappointed; Iran/Oman more optimistic.",
+      "weight": 0.85,
+      "oddsDelta": -3,
+      "marketProb": 35,
+      "sourceAuthority": 92,
+      "momentum": 1,
+      "volume": 19200,
+      "from": [
+        "n1_sanctions",
+        "n1b_araghchi_opportunity"
+      ],
+      "extra": "-3pp",
+      "sourceName": "WSJ / Bloomberg / Reuters",
+      "sourceUrl": "https://en.wikipedia.org/wiki/2025%E2%80%932026_Iran%E2%80%93United_States_negotiations",
+      "timestamp": "2026-02-26T18:00:00Z",
+      "tags": [
+        "diplomacy",
+        "geneva"
+      ]
+    },
+    {
+      "id": "n2b_vienna_planned",
+      "col": 2,
+      "label": "Vienna Round 4 scheduled (never happened)",
+      "category": "war",
+      "signal": "resolution",
+      "sentiment": "neu",
+      "desc": "Araghchi tells state TV: technical teams + IAEA experts to meet in Vienna starting Monday. 4th round planned but preempted by strikes.",
+      "weight": 0.5,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 85,
+      "momentum": 1,
+      "volume": 6200,
+      "from": [
+        "n2_talks"
+      ],
+      "extra": "cancelled",
+      "sourceName": "Iran state TV / Wikipedia",
+      "timestamp": "2026-02-26T22:00:00Z",
+      "tags": [
+        "diplomacy"
+      ]
+    },
+    {
+      "id": "n3_iaea",
+      "col": 3,
+      "label": "IAEA cannot verify suspension",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "~440 kg 60% HEU unaccounted for. Dec 2024 IAEA report: enrichment at weapons-grade levels. Snapback sanctions triggered by UK/FR/DE in Oct 2025.",
+      "weight": 0.92,
+      "oddsDelta": -7,
+      "marketProb": 28,
+      "sourceAuthority": 98,
+      "momentum": -4,
+      "volume": 23500,
+      "from": [
+        "n2_talks"
+      ],
+      "extra": "-7pp",
+      "sourceName": "IAEA / Reuters",
+      "timestamp": "2026-02-27T12:00:00Z",
+      "tags": [
+        "iaea",
+        "nuclear"
+      ]
+    },
+    {
+      "id": "n4_trump_video",
+      "col": 4,
+      "label": "Trump 8-min video statement",
+      "category": "war",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "2:30 AM EST. Purpose: 'eliminate intolerable threats from this sick and sinister regime'. Cites Iran rebuilding after 2025 strikes. Ballistic missiles 'shield nuclear weapon development'.",
+      "weight": 0.88,
+      "oddsDelta": -5,
+      "marketProb": 20,
+      "sourceAuthority": 100,
+      "momentum": -5,
+      "volume": 55000,
+      "from": [
+        "n3_iaea"
+      ],
+      "extra": "declaration",
+      "sourceName": "White House / WashPost",
+      "sourceUrl": "https://www.washingtonpost.com/world/2026/03/02/us-israel-iran-hezbollah-military-strikes-live-updates/",
+      "timestamp": "2026-02-28T07:30:00Z",
+      "tags": [
+        "trump",
+        "declaration"
+      ]
+    },
+    {
+      "id": "n4_strikes",
+      "col": 4,
+      "label": "Op. Epic Fury + Roaring Lion begins",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Joint US (Epic Fury) + Israel (Roaring Lion) strikes. Targets: Tehran, Isfahan, Qom, Karaj, Kermanshah. Opening strike hits Leadership House compound. Aimed at regime change.",
+      "weight": 1.0,
+      "oddsDelta": -25,
+      "marketProb": 15,
+      "sourceAuthority": 97,
+      "momentum": -6,
+      "volume": 62000,
+      "from": [
+        "n3_iaea",
+        "n4_trump_video"
+      ],
+      "extra": "-25pp",
+      "sourceName": "ISW / Wikipedia / CNBC",
+      "sourceUrl": "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran",
+      "timestamp": "2026-02-28T06:35:00Z",
+      "tags": [
+        "strikes",
+        "epic-fury",
+        "roaring-lion"
+      ]
+    },
+    {
+      "id": "n5_khamenei",
+      "col": 4,
+      "label": "Khamenei killed",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Supreme Leader compound destroyed. Body found in rubble (Israeli officials). Also killed: Ali Shamkhani (SNSC), Aziz Nasirzadeh (DefMin), Mohammad Pakpour (IRGC), Salah Asadi (intel), Mohammad Shirazi (military office).",
+      "weight": 0.98,
+      "oddsDelta": -10,
+      "marketProb": 15,
+      "sourceAuthority": 90,
+      "momentum": -5,
+      "volume": 48000,
+      "from": [
+        "n4_strikes"
+      ],
+      "extra": "-10pp",
+      "sourceName": "Wikipedia / Al Jazeera / CNBC",
+      "timestamp": "2026-02-28T07:00:00Z",
+      "tags": [
+        "leadership",
+        "khamenei"
+      ]
+    },
+    {
+      "id": "n5b_navy_sunk",
+      "col": 4,
+      "label": "IRIS Jamaran frigate sunk",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "US sinks Moudge-class light frigate. Israel+US claim to have destroyed Iranian Navy HQ and multiple warships.",
+      "weight": 0.75,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -3,
+      "volume": 18000,
+      "from": [
+        "n4_strikes"
+      ],
+      "extra": "navy",
+      "sourceName": "Wikipedia / CENTCOM",
+      "timestamp": "2026-02-28T10:00:00Z",
+      "tags": [
+        "navy",
+        "military"
+      ]
+    },
+    {
+      "id": "n6_retaliation1",
+      "col": 4,
+      "label": "Iran Wave 1: Op. True Promise IV",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "170+ missiles targeting Israel + US bases across 9 countries: Bahrain, Iraq, Jordan, Kuwait, Oman, Qatar, Saudi Arabia, UAE. 40 buildings damaged in Tel Aviv (Haaretz).",
+      "weight": 0.9,
+      "oddsDelta": -5,
+      "marketProb": 12,
+      "sourceAuthority": 92,
+      "momentum": -4,
+      "volume": 41000,
+      "from": [
+        "n4_strikes",
+        "n5_khamenei"
+      ],
+      "extra": "9 countries hit",
+      "sourceName": "Wikipedia / Al Jazeera",
+      "sourceUrl": "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker",
+      "timestamp": "2026-02-28T09:05:00Z",
+      "tags": [
+        "retaliation",
+        "true-promise-iv"
+      ]
+    },
+    {
+      "id": "n6b_israel_reservists",
+      "col": 4,
+      "label": "Israel: 20K additional reservists called",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "20,000 additional reservists on top of 50,000 already on duty. IDF Chief Zamir approves operational plans.",
+      "weight": 0.6,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -2,
+      "volume": 14000,
+      "from": [
+        "n4_strikes"
+      ],
+      "extra": "70K total",
+      "sourceName": "Wikipedia / JPost",
+      "timestamp": "2026-02-28T12:00:00Z",
+      "tags": [
+        "israel",
+        "military"
+      ]
+    },
+    {
+      "id": "n7a_khamenei_confirmed",
+      "col": 5,
+      "label": "Iran state media confirms Khamenei dead",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "40 days mourning + 7-day holiday declared. Chief of staff Mousavi also confirmed killed. Ahmadinejad reported killed then alive. CBS: 40 officials killed total.",
+      "weight": 0.92,
+      "oddsDelta": -3,
+      "marketProb": 13,
+      "sourceAuthority": 95,
+      "momentum": -5,
+      "volume": 58000,
+      "from": [
+        "n5_khamenei"
+      ],
+      "extra": "40+ officials dead",
+      "sourceName": "Iran state media / CBS / CNBC",
+      "sourceUrl": "https://www.cnbc.com/2026/03/01/us-iran-live-updates-khamenei-death-trump-gulf-strikes.html",
+      "timestamp": "2026-03-01T06:00:00Z",
+      "tags": [
+        "leadership",
+        "confirmation"
+      ]
+    },
+    {
+      "id": "n7b_trump_talk_offer",
+      "col": 5,
+      "label": "Trump: 'They want to talk, I agreed'",
+      "category": "war",
+      "signal": "resolution",
+      "sentiment": "neu",
+      "desc": "Tells The Atlantic: 'They should have done it sooner.' Declined to specify timing. Notes many previous negotiators killed.",
+      "weight": 0.75,
+      "oddsDelta": 3,
+      "marketProb": null,
+      "sourceAuthority": 100,
+      "momentum": 2,
+      "volume": 42000,
+      "from": [
+        "n5_khamenei"
+      ],
+      "extra": "talks offer",
+      "sourceName": "The Atlantic / CNBC",
+      "timestamp": "2026-03-01T14:00:00Z",
+      "tags": [
+        "trump",
+        "diplomacy"
+      ]
+    },
+    {
+      "id": "n7_gulf_hits",
+      "col": 5,
+      "label": "Dubai: Burj Al Arab fire, Fairmont hit, Jebel Ali",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Burj Al Arab on fire from debris. Fairmont Hotel Palm hit. Jebel Ali port fire at berth. Etihad Towers Abu Dhabi targeted. Dubai + Abu Dhabi airports targeted.",
+      "weight": 0.9,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -5,
+      "volume": 51000,
+      "from": [
+        "n6_retaliation1"
+      ],
+      "extra": "Dubai iconic hits",
+      "sourceName": "CNBC / Dubai Media Office",
+      "sourceUrl": "https://www.cnbc.com/2026/03/01/us-iran-live-updates-khamenei-death-trump-gulf-strikes.html",
+      "timestamp": "2026-03-01T08:00:00Z",
+      "tags": [
+        "gulf",
+        "dubai",
+        "branded"
+      ]
+    },
+    {
+      "id": "n7c_qatar_doha",
+      "col": 5,
+      "label": "Qatar: Doha blasts, LNG halted",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Explosions in Doha near Barwa district. Qatar preemptively pauses LNG production. Missiles target US bases in Qatar.",
+      "weight": 0.88,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 92,
+      "momentum": -5,
+      "volume": 28000,
+      "from": [
+        "n6_retaliation1"
+      ],
+      "extra": "LNG halted",
+      "sourceName": "Reuters / Doha News / Al Jazeera",
+      "sourceUrl": "https://www.aljazeera.com/economy/2026/3/3/shutdown-of-hormuz-strait-raises-fears-of-soaring-oil-prices",
+      "timestamp": "2026-03-01T10:00:00Z",
+      "tags": [
+        "qatar",
+        "lng",
+        "gulf"
+      ]
+    },
+    {
+      "id": "n7d_bahrain_5thfleet",
+      "col": 5,
+      "label": "Bahrain: US 5th Fleet HQ targeted",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Iranian missiles target US Navy 5th Fleet HQ in Juffair. Bahrain airport hit by drone (material damage). Residential buildings in Manama struck. 1 Asian worker killed.",
+      "weight": 0.85,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 93,
+      "momentum": -4,
+      "volume": 22000,
+      "from": [
+        "n6_retaliation1"
+      ],
+      "extra": "5th Fleet",
+      "sourceName": "Al Jazeera / Bahrain MoI",
+      "timestamp": "2026-03-01T09:00:00Z",
+      "tags": [
+        "bahrain",
+        "military",
+        "gulf"
+      ]
+    },
+    {
+      "id": "n8_hormuz",
+      "col": 5,
+      "label": "Hormuz de-facto closure: traffic -80%",
+      "category": "macro",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "IRGC Navy broadcasts on distress frequency: strait 'closed'. 5+ tankers damaged, 2 crew killed, ~150 ships stranded. Only Iran+China-flagged vessels transiting. 6+ major shipping companies halt routes.",
+      "weight": 0.95,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 96,
+      "momentum": -6,
+      "volume": 45500,
+      "from": [
+        "n6_retaliation1"
+      ],
+      "extra": "Hormuz -80%",
+      "sourceName": "Al Jazeera / Kpler / Windward",
+      "sourceUrl": "https://www.aljazeera.com/economy/2026/3/3/shutdown-of-hormuz-strait-raises-fears-of-soaring-oil-prices",
+      "timestamp": "2026-03-01T12:00:00Z",
+      "tags": [
+        "hormuz",
+        "shipping",
+        "oil"
+      ]
+    },
+    {
+      "id": "n9_larijani",
+      "col": 5,
+      "label": "Larijani: 'Will not negotiate with US'",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Top security official posts on X rejecting negotiations. Iran pulls out, suspends nuclear talks indefinitely.",
+      "weight": 0.78,
+      "oddsDelta": -3,
+      "marketProb": null,
+      "sourceAuthority": 90,
+      "momentum": -3,
+      "volume": 21000,
+      "from": [
+        "n5_khamenei"
+      ],
+      "extra": "no talks",
+      "sourceName": "NPR / Reuters",
+      "sourceUrl": "https://www.npr.org/2026/03/02/g-s1-112140/hezbollah-strikes-israel",
+      "timestamp": "2026-03-01T16:00:00Z",
+      "tags": [
+        "diplomacy",
+        "rejection"
+      ]
+    },
+    {
+      "id": "n9b_protests_worldwide",
+      "col": 5,
+      "label": "Pro-Iran protests: Pakistan consulate stormed",
+      "category": "war",
+      "signal": "noise",
+      "sentiment": "neg",
+      "desc": "Karachi: hundreds storm US Consulate, Marines open fire — 22 killed, 120+ injured. Protests across Pakistan, Lebanon, Iraq, Greece, Bangladesh. Gilgit: UN office burned, 8 killed in Skardu.",
+      "weight": 0.82,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 88,
+      "momentum": -4,
+      "volume": 38000,
+      "from": [
+        "n7a_khamenei_confirmed"
+      ],
+      "extra": "22 killed Karachi",
+      "sourceName": "Wikipedia / Reuters",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Pro-Iranian_protests_during_the_2026_Israeli%E2%80%93United_States_strikes_on_Iran",
+      "timestamp": "2026-03-01T14:00:00Z",
+      "tags": [
+        "protests",
+        "pakistan",
+        "global"
+      ]
+    },
+    {
+      "id": "n9c_grossi_nuke",
+      "col": 5,
+      "label": "Grossi: no nuclear sites hit (initial)",
+      "category": "war",
+      "signal": "resolution",
+      "sentiment": "pos",
+      "desc": "IAEA chief: 'no evidence nuclear facilities have been hit'. However Iran says one site was struck. Bushehr status unclear.",
+      "weight": 0.7,
+      "oddsDelta": 2,
+      "marketProb": null,
+      "sourceAuthority": 98,
+      "momentum": 1,
+      "volume": 16500,
+      "from": [
+        "n4_strikes"
+      ],
+      "extra": "IAEA initial",
+      "sourceName": "UK Parliament / IAEA",
+      "sourceUrl": "https://commonslibrary.parliament.uk/research-briefings/cbp-10521/",
+      "timestamp": "2026-03-01T18:00:00Z",
+      "tags": [
+        "iaea",
+        "nuclear"
+      ]
+    },
+    {
+      "id": "n10_wave2",
+      "col": 6,
+      "label": "IDF: 1200+ munitions, 24 of 31 provinces",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Israel Air Force drops 1,200+ munitions across 24 Iranian provinces. Natanz entrances hit. IRGC Malek-Ashtar building Tehran destroyed. Air superiority achieved over Tehran.",
+      "weight": 0.95,
+      "oddsDelta": -4,
+      "marketProb": 10,
+      "sourceAuthority": 97,
+      "momentum": -5,
+      "volume": 44000,
+      "from": [
+        "n4_strikes"
+      ],
+      "extra": "24 provinces",
+      "sourceName": "IDF / Al Jazeera / Wikipedia",
+      "timestamp": "2026-03-02T08:00:00Z",
+      "tags": [
+        "strikes",
+        "wave2"
+      ]
+    },
+    {
+      "id": "n10b_khamenei_wife",
+      "col": 6,
+      "label": "Khamenei's wife also confirmed dead",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Died of injuries sustained in Leadership House strike. 2nd confirmation after Supreme Leader.",
+      "weight": 0.6,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 90,
+      "momentum": -2,
+      "volume": 19000,
+      "from": [
+        "n5_khamenei"
+      ],
+      "extra": "family",
+      "sourceName": "Wikipedia",
+      "timestamp": "2026-03-02T10:00:00Z",
+      "tags": [
+        "leadership"
+      ]
+    },
+    {
+      "id": "n11_hezbollah_attack",
+      "col": 6,
+      "label": "Hezbollah attacks Israel: missiles + drones at Haifa",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "First attack since Nov 2024 ceasefire. Rockets + drones at Mishmar HaCarmel missile defense facility, south of Haifa. Secretary-General Qassem: 'our duty of confronting the aggression'.",
+      "weight": 0.92,
+      "oddsDelta": -5,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -5,
+      "volume": 49000,
+      "from": [
+        "n7a_khamenei_confirmed"
+      ],
+      "extra": "Hezbollah joins",
+      "sourceName": "Al Jazeera / Wikipedia / HRW",
+      "sourceUrl": "https://en.wikipedia.org/wiki/2026_Hezbollah%E2%80%93Israel_strikes",
+      "timestamp": "2026-03-02T03:00:00Z",
+      "tags": [
+        "hezbollah",
+        "proxy",
+        "lebanon"
+      ]
+    },
+    {
+      "id": "n11b_israel_beirut",
+      "col": 6,
+      "label": "Israel bombs Beirut: 52 killed, 154 injured",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "70+ strikes across Lebanon. Intel chief Hussein Makled killed. PIJ commander Adham al-Othman killed. Evacuation warnings for 53 villages. 30,000 displaced. Dahiyeh suburbs devastated.",
+      "weight": 0.9,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -5,
+      "volume": 42000,
+      "from": [
+        "n11_hezbollah_attack"
+      ],
+      "extra": "52 killed",
+      "sourceName": "Al Jazeera / Times of Israel / HRW",
+      "sourceUrl": "https://www.aljazeera.com/news/2026/3/2/israel-bombs-beirut-after-hezbollah-launches-rocket-attack",
+      "timestamp": "2026-03-02T06:00:00Z",
+      "tags": [
+        "beirut",
+        "lebanon",
+        "proxy"
+      ]
+    },
+    {
+      "id": "n11c_lebanon_bans_hezbollah",
+      "col": 6,
+      "label": "Lebanon bans Hezbollah military activities",
+      "category": "war",
+      "signal": "resolution",
+      "sentiment": "pos",
+      "desc": "PM Salam: all military activities 'illegal'. Orders arrest of those who fired rockets. Demands weapons handover. Hezbollah rejects ban.",
+      "weight": 0.78,
+      "oddsDelta": 2,
+      "marketProb": null,
+      "sourceAuthority": 90,
+      "momentum": 2,
+      "volume": 31000,
+      "from": [
+        "n11_hezbollah_attack"
+      ],
+      "extra": "ban order",
+      "sourceName": "Al Jazeera / Reuters",
+      "sourceUrl": "https://www.aljazeera.com/news/2026/3/2/lebanese-pm-nawaf-salam-announces-ban-on-hezbollah-military-activities",
+      "timestamp": "2026-03-02T12:00:00Z",
+      "tags": [
+        "lebanon",
+        "diplomacy"
+      ]
+    },
+    {
+      "id": "n11d_iraq_baghdad",
+      "col": 6,
+      "label": "Iraqi militia: drone attack on Baghdad airport",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Saraya Awliya al-Dam claims drone attack targeting US troops at Baghdad airport. Jurf al-Sakhar base hit: 2 PMF fighters killed, 5 wounded. Erbil explosions near US consulate.",
+      "weight": 0.72,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 85,
+      "momentum": -3,
+      "volume": 18000,
+      "from": [
+        "n6_retaliation1"
+      ],
+      "extra": "Iraq proxy",
+      "sourceName": "NPR / Al Jazeera",
+      "timestamp": "2026-03-02T14:00:00Z",
+      "tags": [
+        "iraq",
+        "proxy"
+      ]
+    },
+    {
+      "id": "n11e_cyprus_akrotiri",
+      "col": 6,
+      "label": "Drone hits RAF Akrotiri, Cyprus",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Iran-made Shahed drone hits RAF runway. 2 more intercepted later. Likely launched by Hezbollah. Limited damage, no casualties.",
+      "weight": 0.65,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 88,
+      "momentum": -2,
+      "volume": 22000,
+      "from": [
+        "n11_hezbollah_attack"
+      ],
+      "extra": "Cyprus",
+      "sourceName": "Times of Israel / Cypriot officials",
+      "sourceUrl": "https://www.timesofisrael.com/idf-strike-kills-hezbollah-intel-chief-lebanon-to-ban-terror-groups-military-activity/",
+      "timestamp": "2026-03-02T04:00:00Z",
+      "tags": [
+        "cyprus",
+        "proxy",
+        "uk"
+      ]
+    },
+    {
+      "id": "n11f_kuwait_embassy",
+      "col": 6,
+      "label": "US Embassy Kuwait hit by drones",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Apparent strike on US Embassy compound area. 3 US troops killed in Kuwait (initial reports).",
+      "weight": 0.82,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 90,
+      "momentum": -4,
+      "volume": 28000,
+      "from": [
+        "n6_retaliation1"
+      ],
+      "extra": "US Embassy",
+      "sourceName": "CNBC / NPR",
+      "sourceUrl": "https://www.cnbc.com/2026/03/02/us-iran-live-updates-trump-oil-gold.html",
+      "timestamp": "2026-03-02T16:00:00Z",
+      "tags": [
+        "kuwait",
+        "us-casualties"
+      ]
+    },
+    {
+      "id": "n11g_qatar_jets",
+      "col": 6,
+      "label": "Qatar shoots down 2 Iranian Su-24 bombers",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Qatari air force downs two Russian-made Sukhoi Su-24s. First direct state-on-state aerial engagement by GCC member.",
+      "weight": 0.88,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 93,
+      "momentum": -4,
+      "volume": 35000,
+      "from": [
+        "n7c_qatar_doha"
+      ],
+      "extra": "2 jets downed",
+      "sourceName": "Times of Israel / Reuters",
+      "sourceUrl": "https://www.timesofisrael.com/liveblog-march-02-2026/",
+      "timestamp": "2026-03-02T15:00:00Z",
+      "tags": [
+        "qatar",
+        "aerial",
+        "gulf"
+      ]
+    },
+    {
+      "id": "n11h_ras_tanura",
+      "col": 6,
+      "label": "Saudi Ras Tanura refinery: drone attack",
+      "category": "macro",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Drones target world's largest oil export terminal. Defenses down incoming. Fire reported but contained.",
+      "weight": 0.88,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 93,
+      "momentum": -5,
+      "volume": 36000,
+      "from": [
+        "n8_hormuz"
+      ],
+      "extra": "Ras Tanura",
+      "sourceName": "NPR / Saudi Press Agency",
+      "timestamp": "2026-03-02T09:00:00Z",
+      "tags": [
+        "saudi",
+        "oil",
+        "branded"
+      ]
+    },
+    {
+      "id": "n28_branded_amazon",
+      "col": 6,
+      "label": "Amazon AWS data centers hit (UAE+Bahrain)",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Fire and outage at AWS mec1-az2 and two more facilities.",
+      "weight": 0.95,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 98,
+      "momentum": -6,
+      "volume": 62000,
+      "from": [
+        "n7_gulf_hits"
+      ],
+      "extra": "AWS outage",
+      "sourceName": "Reuters / CNBC",
+      "sourceUrl": "https://www.reuters.com/world/middle-east/amazons-cloud-unit-reports-fire-after-objects-hit-uae-data-center-2026-03-01/",
+      "timestamp": "2026-03-02T04:30:00Z",
+      "tags": [
+        "amazon",
+        "branded",
+        "tech"
+      ]
+    },
+    {
+      "id": "n12_opec_increase",
+      "col": 6,
+      "label": "OPEC+: emergency +206K bpd production",
+      "category": "macro",
+      "signal": "resolution",
+      "sentiment": "pos",
+      "desc": "8 nations agree to raise output by 206,000 bpd starting April. Analysts: 'moot point' if Hormuz stays closed — OPEC barrels become 'stranded assets'.",
+      "weight": 0.72,
+      "oddsDelta": 1,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": 1,
+      "volume": 22000,
+      "from": [
+        "n8_hormuz"
+      ],
+      "extra": "OPEC+ boost",
+      "sourceName": "CNN / NPR / RBC",
+      "sourceUrl": "https://www.cnn.com/2026/03/01/business/oil-prices-us-attack-iran-vis",
+      "timestamp": "2026-03-02T02:00:00Z",
+      "tags": [
+        "opec",
+        "oil"
+      ]
+    },
+    {
+      "id": "n12b_markets_monday",
+      "col": 6,
+      "label": "Markets Mon: Brent $82 spike, gold $5,400, Dow -600",
+      "category": "macro",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "Brent briefly $82, settled ~$77 (+6.2%). WTI +7.5%. Gold hit $5,400 (+2%). S&P flat after -1% open. Defense stocks surged (Northrop +6%), airlines crashed (Air France -9.4%). 10yr yields biggest jump since Oct.",
+      "weight": 0.92,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 98,
+      "momentum": -5,
+      "volume": 55000,
+      "from": [
+        "n8_hormuz",
+        "n11h_ras_tanura"
+      ],
+      "extra": "Brent $82",
+      "sourceName": "CNN / Bloomberg / CNBC",
+      "sourceUrl": "https://www.cnn.com/2026/03/02/investing/oil-us-stock-market-iran",
+      "timestamp": "2026-03-02T20:00:00Z",
+      "tags": [
+        "markets",
+        "oil",
+        "gold"
+      ]
+    },
+    {
+      "id": "n12c_rubio_imminent",
+      "col": 6,
+      "label": "Rubio: 'There absolutely was an imminent threat'",
+      "category": "war",
+      "signal": "noise",
+      "sentiment": "neg",
+      "desc": "Israel was planning strike; US preempted to avoid higher casualties. Schumer: briefing 'completely and totally insufficient'.",
+      "weight": 0.72,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -1,
+      "volume": 24000,
+      "from": [
+        "n4_strikes"
+      ],
+      "extra": "Rubio/Schumer",
+      "sourceName": "CNBC / Capitol Hill",
+      "sourceUrl": "https://www.cnbc.com/2026/03/02/us-iran-live-updates-trump-oil-gold.html",
+      "timestamp": "2026-03-02T22:00:00Z",
+      "tags": [
+        "us-politics"
+      ]
+    },
+    {
+      "id": "n12d_state_depart_now",
+      "col": 6,
+      "label": "State Dept: Americans 'depart now' from 14+ countries",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Urgent advisory for 14+ Middle East countries. Travel ban effective immediately.",
+      "weight": 0.68,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 100,
+      "momentum": -3,
+      "volume": 19500,
+      "from": [
+        "n6_retaliation1"
+      ],
+      "extra": "depart now",
+      "sourceName": "State Department / CNBC",
+      "timestamp": "2026-03-02T18:00:00Z",
+      "tags": [
+        "us-gov",
+        "travel"
+      ]
+    },
+    {
+      "id": "n30_opinion_trump_weeks",
+      "col": 6,
+      "label": "Trump: strikes could take weeks",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Does not rule out ground troops 'if necessary'. 'Sadly, there will likely be more [US casualties]'. Vows to 'avenge' 3 troops killed.",
+      "weight": 0.9,
+      "oddsDelta": -3,
+      "marketProb": null,
+      "sourceAuthority": 100,
+      "momentum": -4,
+      "volume": 65000,
+      "from": [
+        "n4_trump_video"
+      ],
+      "extra": "weeks of war",
+      "sourceName": "WashPost / NBC",
+      "sourceUrl": "https://www.washingtonpost.com/world/2026/03/02/us-israel-iran-hezbollah-military-strikes-live-updates/",
+      "timestamp": "2026-03-02T22:00:00Z",
+      "tags": [
+        "trump",
+        "duration"
+      ]
+    },
+    {
+      "id": "n32_opinion_iran_no_negotiate",
+      "col": 6,
+      "label": "Iran: 'Will not negotiate with US'",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Larijani on X. PressTV: 'prepared for long war', deny major losses. Iran suspends nuclear talks indefinitely.",
+      "weight": 0.8,
+      "oddsDelta": -2,
+      "marketProb": null,
+      "sourceAuthority": 88,
+      "momentum": -3,
+      "volume": 39500,
+      "from": [
+        "n9_larijani"
+      ],
+      "extra": "no talks",
+      "sourceName": "PressTV / NPR",
+      "timestamp": "2026-03-02T00:00:00Z",
+      "tags": [
+        "iran-media",
+        "rejection"
+      ]
+    },
+    {
+      "id": "n13_israel_ground_lebanon",
+      "col": 7,
+      "label": "Israel ground incursion into Lebanon",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "IDF troops 'operating in southern Lebanon'. Lebanese army evacuates border positions. Katz: 'advance and seize additional controlling areas'. Hezbollah: 'era of patience has ended, open war'.",
+      "weight": 0.92,
+      "oddsDelta": -3,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -5,
+      "volume": 46000,
+      "from": [
+        "n11b_israel_beirut"
+      ],
+      "extra": "ground ops",
+      "sourceName": "Al Jazeera / IDF",
+      "sourceUrl": "https://www.aljazeera.com/news/2026/3/3/israel-strikes-lebanons-beirut-again-hezbollah-launches-drones-at-israel",
+      "timestamp": "2026-03-03T08:00:00Z",
+      "tags": [
+        "lebanon",
+        "ground-invasion"
+      ]
+    },
+    {
+      "id": "n13b_irib_destroyed",
+      "col": 7,
+      "label": "IRIB state broadcaster HQ hit (Tehran)",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Early hours Mar 3: Islamic Republic of Iran Broadcasting complex hit in separate Israeli air operation.",
+      "weight": 0.78,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 92,
+      "momentum": -3,
+      "volume": 25000,
+      "from": [
+        "n10_wave2"
+      ],
+      "extra": "state TV HQ",
+      "sourceName": "Wikipedia",
+      "timestamp": "2026-03-03T03:00:00Z",
+      "tags": [
+        "strikes",
+        "media"
+      ]
+    },
+    {
+      "id": "n18_iaea_natanz",
+      "col": 7,
+      "label": "IAEA confirms Natanz significant damage",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Vantor satellite imagery + IAEA confirm: Natanz enrichment facility entrances severely damaged. Contradicts earlier Grossi 'no hits' statement.",
+      "weight": 0.92,
+      "oddsDelta": -2,
+      "marketProb": 10,
+      "sourceAuthority": 98,
+      "momentum": -3,
+      "volume": 28000,
+      "from": [
+        "n10_wave2",
+        "n9c_grossi_nuke"
+      ],
+      "extra": "Natanz confirmed",
+      "sourceName": "IAEA / Vantor / Wikipedia",
+      "timestamp": "2026-03-03T12:00:00Z",
+      "tags": [
+        "nuclear",
+        "natanz"
+      ]
+    },
+    {
+      "id": "n18b_uae_defense_stats",
+      "col": 7,
+      "label": "UAE: intercepted 165 missiles + 541 drones",
+      "category": "war",
+      "signal": "noise",
+      "sentiment": "neg",
+      "desc": "UAE MoD: air force + air defence intercepted 165 ballistic missiles, 2 cruise missiles, 541 Iranian drones since start of attacks.",
+      "weight": 0.82,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -3,
+      "volume": 32000,
+      "from": [
+        "n7_gulf_hits"
+      ],
+      "extra": "708 intercepts",
+      "sourceName": "CNBC / UAE MoD",
+      "timestamp": "2026-03-03T09:00:00Z",
+      "tags": [
+        "uae",
+        "defense"
+      ]
+    },
+    {
+      "id": "n20_losses_iran",
+      "col": 7,
+      "label": "Iran losses: ≥787 killed",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Iranian Red Crescent: 787 dead, 130+ cities struck. Minab school: ~180 children killed (Health Ministry). IRGC 'thousands' killed/wounded (Iran International). 48+ leaders eliminated.",
+      "weight": 0.98,
+      "oddsDelta": -3,
+      "marketProb": 10,
+      "sourceAuthority": 95,
+      "momentum": -5,
+      "volume": 58000,
+      "from": [
+        "n10_wave2"
+      ],
+      "extra": "787+ killed",
+      "sourceName": "Al Jazeera / HRANA / Iran Red Crescent",
+      "sourceUrl": "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker",
+      "timestamp": "2026-03-03T14:00:00Z",
+      "tags": [
+        "casualties",
+        "iran"
+      ]
+    },
+    {
+      "id": "n21_losses_us",
+      "col": 7,
+      "label": "US losses: 6 soldiers killed",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "CENTCOM confirms 6 dead (2 bodies recovered from regional facility). 18 injured. 3 initially killed in Kuwait. Trump vows to 'avenge'.",
+      "weight": 0.9,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 98,
+      "momentum": -2,
+      "volume": 42000,
+      "from": [
+        "n6_retaliation1",
+        "n11f_kuwait_embassy"
+      ],
+      "extra": "6 KIA",
+      "sourceName": "CENTCOM / WashPost / Al Jazeera",
+      "timestamp": "2026-03-03T14:00:00Z",
+      "tags": [
+        "casualties",
+        "us"
+      ]
+    },
+    {
+      "id": "n22_losses_israel",
+      "col": 7,
+      "label": "Israel losses: 11+ killed",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Beit Shemesh hit by Iranian ballistic missile. At least 11 killed in Israel. 40 buildings damaged in Tel Aviv (Haaretz). 777+ injured.",
+      "weight": 0.85,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 92,
+      "momentum": -3,
+      "volume": 29500,
+      "from": [
+        "n6_retaliation1"
+      ],
+      "extra": "11+ killed",
+      "sourceName": "Al Jazeera / Haaretz",
+      "timestamp": "2026-03-03T00:00:00Z",
+      "tags": [
+        "casualties",
+        "israel"
+      ]
+    },
+    {
+      "id": "n23_losses_gulf",
+      "col": 7,
+      "label": "Gulf state losses: 8+ killed across region",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "UAE: 3+ killed, Bahrain: 1 worker killed + airport damaged, Qatar: injuries from missile debris. Saudi: Ras Tanura fire contained. Jordan: 49 drones/missiles intercepted.",
+      "weight": 0.88,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 92,
+      "momentum": -4,
+      "volume": 38000,
+      "from": [
+        "n7_gulf_hits",
+        "n7d_bahrain_5thfleet"
+      ],
+      "extra": "8+ killed",
+      "sourceName": "Al Jazeera / Reuters",
+      "timestamp": "2026-03-03T10:00:00Z",
+      "tags": [
+        "casualties",
+        "gulf"
+      ]
+    },
+    {
+      "id": "n24_markets_tuesday",
+      "col": 7,
+      "label": "Dow -1,000+ pts, gas +11¢ overnight",
+      "category": "macro",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "Biggest Dow drop since 'Liberation Day' Apr 2025. AAA: gas avg $3.10 (+11¢ overnight). Oil stays elevated ~$79. Iran vows to set ablaze any Hormuz ship. Stagflation fears rise. Fed rate cut odds drop.",
+      "weight": 0.95,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 98,
+      "momentum": -6,
+      "volume": 52000,
+      "from": [
+        "n12b_markets_monday",
+        "n8_hormuz"
+      ],
+      "extra": "Dow -1000",
+      "sourceName": "Deseret News / Bloomberg / CNBC",
+      "sourceUrl": "https://www.deseret.com/politics/2026/03/03/gas-prices-impacted-stock-market-oil-iran-war/",
+      "timestamp": "2026-03-03T20:00:00Z",
+      "tags": [
+        "markets",
+        "dow",
+        "gas"
+      ]
+    },
+    {
+      "id": "n25_rubio_hardest_hits",
+      "col": 7,
+      "label": "Rubio: 'Hardest hits are yet to come'",
+      "category": "war",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "'Next phase will be even more punishing on Iran'. War could last 'weeks or even longer'.",
+      "weight": 0.82,
+      "oddsDelta": -2,
+      "marketProb": null,
+      "sourceAuthority": 98,
+      "momentum": -3,
+      "volume": 31000,
+      "from": [
+        "n30_opinion_trump_weeks"
+      ],
+      "extra": "more to come",
+      "sourceName": "Deseret News / Capitol Hill",
+      "timestamp": "2026-03-03T16:00:00Z",
+      "tags": [
+        "us-politics",
+        "duration"
+      ]
+    },
+    {
+      "id": "n19_polymarket",
+      "col": 7,
+      "label": "Polymarket: deal by Mar 31 = 12%",
+      "category": "war",
+      "signal": "noise",
+      "sentiment": "neg",
+      "desc": "US-Iran nuclear deal prob at 12%. Down from ~45% pre-strikes. Market pricing in extended conflict.",
+      "weight": 0.7,
+      "oddsDelta": -2,
+      "marketProb": 12,
+      "sourceAuthority": 100,
+      "momentum": -1,
+      "volume": 13500,
+      "from": [
+        "n18_iaea_natanz",
+        "n9_larijani"
+      ],
+      "extra": "12%",
+      "sourceName": "Polymarket",
+      "timestamp": "2026-03-03T12:00:00Z",
+      "tags": [
+        "polymarket",
+        "prediction"
+      ]
+    },
+    {
+      "id": "n31_opinion_musk",
+      "col": 7,
+      "label": "Musk: 'Highest ever X usage in history'",
+      "category": "war",
+      "signal": "noise",
+      "sentiment": "neu",
+      "desc": "Strike footage drives record platform engagement. X becomes primary OSINT channel.",
+      "weight": 0.78,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": 4,
+      "volume": 52000,
+      "from": [
+        "n28_branded_amazon",
+        "n7_gulf_hits"
+      ],
+      "extra": "X record",
+      "sourceName": "Fox Business / X",
+      "timestamp": "2026-03-02T07:54:00Z",
+      "tags": [
+        "musk",
+        "tech"
+      ]
+    },
+    {
+      "id": "n33_opinion_gcc",
+      "col": 7,
+      "label": "GCC condemns attacks on civilian infrastructure",
+      "category": "war",
+      "signal": "noise",
+      "sentiment": "neg",
+      "desc": "Saudi/UAE condemn Iran strikes on hotels, data centers, ports. But also condemn US/Israel strikes on Iran civilians. Dual condemnation.",
+      "weight": 0.82,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 92,
+      "momentum": -2,
+      "volume": 31000,
+      "from": [
+        "n7_gulf_hits",
+        "n23_losses_gulf"
+      ],
+      "extra": "GCC statement",
+      "sourceName": "Al Arabiya / Reuters",
+      "timestamp": "2026-03-03T00:00:00Z",
+      "tags": [
+        "gcc",
+        "diplomacy"
+      ]
+    },
+    {
+      "id": "n35_pred_ceasefire_pressure",
+      "col": 10,
+      "label": "Global ceasefire pressure peaks (prog)",
+      "category": "war",
+      "signal": "resolution",
+      "sentiment": "pos",
+      "desc": "PROGNOSIS: AWS outage + Dubai hotels + Dow crash + oil spike + Minab school = unprecedented global corporate+humanitarian pressure. Oman/Qatar mediation likely resumes. If oil stays <$90 and Iran capacity degrades, ceasefire window opens Mar 8-12. Key: Trump's 'pain threshold' vs regime change ambition.",
+      "weight": 0.82,
+      "oddsDelta": 8,
+      "marketProb": 18,
+      "sourceAuthority": 85,
+      "momentum": 5,
+      "volume": 22000,
+      "from": [
+        "n28_branded_amazon",
+        "n20_losses_iran",
+        "n24_markets_tuesday",
+        "n34c_pred_hormuz_test"
+      ],
+      "extra": "+8pp (prog)",
+      "sourceName": "Polymarket / Bloomberg / Kpler / analysis",
+      "timestamp": "2026-03-08T00:00:00Z",
+      "tags": [
+        "prediction",
+        "ceasefire"
+      ]
+    },
+    {
+      "id": "n35b_pred_iran_succession",
+      "col": 10,
+      "label": "Iran succession crisis crystallizes (prog)",
+      "category": "war",
+      "signal": "noise",
+      "sentiment": "neu",
+      "desc": "PROGNOSIS: Assembly of Experts must select new Supreme Leader. Larijani refused talks. IRGC fractured with thousands killed. Possible candidates: Mojtaba Khamenei (son), Raisi successor faction. CFR: 'planning for Iran's leadership transition'.",
+      "weight": 0.75,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 80,
+      "momentum": 0,
+      "volume": 14000,
+      "from": [
+        "n7a_khamenei_confirmed",
+        "n9_larijani"
+      ],
+      "extra": "succession (prog)",
+      "sourceName": "CFR / Atlantic Council / analysis",
+      "timestamp": "2026-03-10T00:00:00Z",
+      "tags": [
+        "prediction",
+        "succession",
+        "internal"
+      ]
+    },
+    {
+      "id": "n35c_pred_oil_scenario",
+      "col": 10,
+      "label": "Oil scenario: $80 short / $100+ if prolonged (prog)",
+      "category": "macro",
+      "signal": "noise",
+      "sentiment": "neu",
+      "desc": "PROGNOSIS: Base case (Evercore/Citi): ~$80 Brent, short conflict = limited macro impact. Tail risk: sustained Hormuz closure → Brent $100+, OPEC barrels stranded, $10/bbl = +0.2pp inflation. China/India strategic reserves buffer 2-3 weeks. Fed holds rates longer.",
+      "weight": 0.85,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 90,
+      "momentum": -1,
+      "volume": 20000,
+      "from": [
+        "n24_markets_tuesday",
+        "n12_opec_increase",
+        "n34c_pred_hormuz_test"
+      ],
+      "extra": "$80-100 range (prog)",
+      "sourceName": "Bloomberg / JPMorgan / Goldman Sachs / Citi",
+      "sourceUrl": "https://www.bloomberg.com/news/features/2026-03-03/why-oil-price-surge-is-limited-after-trump-s-iran-strikes",
+      "timestamp": "2026-03-10T00:00:00Z",
+      "tags": [
+        "prediction",
+        "oil",
+        "markets"
+      ]
+    },
+    {
+      "id": "n40_assembly_experts_qom",
+      "col": 8,
+      "label": "🇮🇱 Assembly of Experts building hit in Qom",
+      "category": "military",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "Israeli strike on Assembly of Experts building in Qom during a meeting reportedly dedicated to choosing Khamenei's successor. 6 killed, 30 injured. Israel's Kan News says ~80 senior clerics present; Iran denies meeting was in session. Building severely damaged. Constitutional body responsible for selecting new Supreme Leader — strike targets 'top of leadership pyramid.'",
+      "weight": 1.0,
+      "oddsDelta": -5,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -1,
+      "volume": 95000,
+      "from": [
+        "n09_khamenei_killed",
+        "n13_israel_ground_lebanon"
+      ],
+      "extra": "6 killed, 30 injured",
+      "sourceName": "Bloomberg / Israel Hayom / CGTN / Euronews",
+      "sourceUrl": "https://www.bloomberg.com/news/articles/2026-03-03/israel-struck-iran-assembly-of-experts-while-they-met-kan-says",
+      "timestamp": "2026-03-04T06:00:00Z",
+      "tags": [
+        "military",
+        "succession",
+        "israel",
+        "iran"
+      ]
+    },
+    {
+      "id": "n41_quds_commander_killed",
+      "col": 8,
+      "label": "🇮🇱 IDF kills Quds Force top commander Alizadeh",
+      "category": "military",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "IDF killed Davoud Alizadeh, highest-ranking Quds Force commander responsible for Iranian activity in Lebanon. IDF spokesperson: 'He instructed Hezbollah to attack Israel in defense of Iran.' IDF gives Iranian operatives 24h to leave Lebanon, warns: 'No safe haven for representatives of Iranian regime.'",
+      "weight": 0.9,
+      "oddsDelta": -3,
+      "marketProb": null,
+      "sourceAuthority": 92,
+      "momentum": -1,
+      "volume": 55000,
+      "from": [
+        "n13_israel_ground_lebanon"
+      ],
+      "extra": "Top Quds commander eliminated",
+      "sourceName": "IDF / NBC News",
+      "sourceUrl": "https://www.nbcnews.com/world/iran/live-blog/live-updates-iran-supreme-leader-gulf-attacks-israel-tehran-trump-rcna261634",
+      "timestamp": "2026-03-04T07:00:00Z",
+      "tags": [
+        "military",
+        "assassination",
+        "quds_force"
+      ]
+    },
+    {
+      "id": "n42_isfahan_ghadr_facility",
+      "col": 8,
+      "label": "🇮🇱 Ghadr missile facility struck in Isfahan",
+      "category": "military",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "IDF strikes Ghadr missile storage and production facility in Isfahan. Part of IAF's 9th wave of strikes on Tehran region — 'dozens of Iranian regime infrastructure sites struck.' Israeli military orders Iranian civilians to evacuate areas near Tehran industrial area and Payam Airport.",
+      "weight": 0.85,
+      "oddsDelta": -2,
+      "marketProb": null,
+      "sourceAuthority": 90,
+      "momentum": -1,
+      "volume": 40000,
+      "from": [
+        "n10_operation_roaring_lion"
+      ],
+      "extra": "9th wave of strikes",
+      "sourceName": "IDF / Euronews",
+      "sourceUrl": "https://www.euronews.com/2026/03/04/us-israeli-strikes-hit-beirut-and-tehran-as-trump-set-to-defend-iran-war-in-congress",
+      "timestamp": "2026-03-04T05:00:00Z",
+      "tags": [
+        "military",
+        "missiles",
+        "infrastructure"
+      ]
+    },
+    {
+      "id": "n43_mehrabad_airport_hit",
+      "col": 8,
+      "label": "🇮🇱 Mehrabad Airport (Tehran) struck",
+      "category": "military",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Reports indicate major strike on Mehrabad Airport in Tehran capital. Combined with Payam Airport evacuation order. Iranian state media report explosions across east Tehran and Karaj. Smoke visible across capital.",
+      "weight": 0.75,
+      "oddsDelta": -1,
+      "marketProb": null,
+      "sourceAuthority": 82,
+      "momentum": -1,
+      "volume": 30000,
+      "from": [
+        "n10_operation_roaring_lion",
+        "n13b_irib_destroyed"
+      ],
+      "extra": "Tehran airport targeted",
+      "sourceName": "Israel Hayom / Iranian state media",
+      "sourceUrl": "https://www.israelhayom.com/2026/03/03/israel-strikes-iran-assembly-of-experts-qom-khamenei-successor/",
+      "timestamp": "2026-03-04T04:30:00Z",
+      "tags": [
+        "military",
+        "infrastructure",
+        "tehran"
+      ]
+    },
+    {
+      "id": "n44_dubai_consulate_strike",
+      "col": 8,
+      "label": "🇮🇷 Iran drone hits near US consulate in Dubai",
+      "category": "retaliation",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Iranian drone strike causes fire near US consulate in Dubai. Fire extinguished, no injuries per Dubai Media Office. Separate strike on Fujairah port in UAE. Iran's retaliatory attacks on 4th consecutive night — targeting US assets, Gulf ports, civilian infrastructure across UAE, Bahrain, Kuwait.",
+      "weight": 0.85,
+      "oddsDelta": -2,
+      "marketProb": null,
+      "sourceAuthority": 90,
+      "momentum": -1,
+      "volume": 65000,
+      "from": [
+        "n11_true_promise_iv",
+        "n16_burj_dubai"
+      ],
+      "extra": "No injuries, fire contained",
+      "sourceName": "Dubai Media Office / Al Jazeera / Reuters",
+      "sourceUrl": "https://www.aljazeera.com/news/liveblog/2026/3/4/iran-live-news-us-embassy-in-dubai-hit-israel-pounds-tehran-beirut",
+      "timestamp": "2026-03-04T02:00:00Z",
+      "tags": [
+        "retaliation",
+        "dubai",
+        "uae",
+        "us_assets"
+      ]
+    },
+    {
+      "id": "n45_beirut_hotel_strike",
+      "col": 8,
+      "label": "🇮🇱 Israel strikes hotel in Beirut suburb + Baalbek",
+      "category": "military",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Israeli strikes hit hotel in Hazmieh (southeast Beirut suburb) — OUTSIDE Dahiyeh traditional Hezbollah stronghold. 4 killed, 6 wounded. Separate strike on 4-storey building in Baalbek. Baalbek mayor says only civilians lived there. Total Lebanon casualties since Saturday: 40+ killed, 246 wounded. IDF struck 70+ targets in Dahieh and southern Lebanon.",
+      "weight": 0.8,
+      "oddsDelta": -2,
+      "marketProb": null,
+      "sourceAuthority": 88,
+      "momentum": -1,
+      "volume": 45000,
+      "from": [
+        "n13_israel_ground_lebanon"
+      ],
+      "extra": "4 killed, 6 wounded",
+      "sourceName": "Euronews / NBC News / Lebanese health ministry",
+      "sourceUrl": "https://www.euronews.com/2026/03/04/us-israeli-strikes-hit-beirut-and-tehran-as-trump-set-to-defend-iran-war-in-congress",
+      "timestamp": "2026-03-04T08:00:00Z",
+      "tags": [
+        "military",
+        "lebanon",
+        "beirut",
+        "hezbollah"
+      ]
+    },
+    {
+      "id": "n46_cyprus_drones_intercepted",
+      "col": 8,
+      "label": "🇨🇾 Greek F-16s intercept 2 drones over Cyprus",
+      "category": "retaliation",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "Air security alert triggered ~9:30am in Cyprus after 'suspicious object' detected. Two Greek F-16s from Paphos base intercept 2 drones believed from Lebanon. Alert lifted after ~1hr. UK sends HMS Dragon + counter-drone helicopters to Cyprus. US State Dept authorizes non-emergency staff departure from Cyprus.",
+      "weight": 0.7,
+      "oddsDelta": -1,
+      "marketProb": null,
+      "sourceAuthority": 85,
+      "momentum": -1,
+      "volume": 25000,
+      "from": [
+        "n15_akrotiri_cyprus"
+      ],
+      "extra": "Drones shot down",
+      "sourceName": "Euronews / Greek media / Times of Israel",
+      "sourceUrl": "https://www.euronews.com/2026/03/04/us-israeli-strikes-hit-beirut-and-tehran-as-trump-set-to-defend-iran-war-in-congress",
+      "timestamp": "2026-03-04T09:30:00Z",
+      "tags": [
+        "retaliation",
+        "cyprus",
+        "europe",
+        "drones"
+      ]
+    },
+    {
+      "id": "n47_trump_4weeks_rationale",
+      "col": 8,
+      "label": "🇺🇸 Trump: war 4-5 weeks, 'Iran was going to attack first'",
+      "category": "political",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "Trump says war could last 4-5 weeks, maybe longer. US has munitions to fight 'forever.' NEW rationale: Iran 'was going to attack first' — contradicts Rubio's earlier claim that strike was preemptive because Israel was about to act. Rubio tries to clarify. Democrats slam 'war of choice' — Sen. Warner: no clear objective or strategy. Hegseth vows 'not endless.'",
+      "weight": 0.9,
+      "oddsDelta": -3,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -1,
+      "volume": 80000,
+      "from": [
+        "n25_rubio_hardest_hits",
+        "n09_khamenei_killed"
+      ],
+      "extra": "Contradicts Rubio rationale",
+      "sourceName": "NBC News / NPR / Al Jazeera",
+      "sourceUrl": "https://www.npr.org/2026/03/03/nx-s1-5732968/iran-us-trump-war",
+      "timestamp": "2026-03-04T15:00:00Z",
+      "tags": [
+        "political",
+        "trump",
+        "congress",
+        "rationale"
+      ]
+    },
+    {
+      "id": "n48_asian_markets_crash",
+      "col": 8,
+      "label": "📉 Asian markets crash: KOSPI -11%, circuit breaker",
+      "category": "macro",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "Day 5 — Asian stocks tanked as investors dump semiconductor positions. KOSPI -11% (circuit breaker triggered), 2-day loss -17% = heaviest since 2009. Korean won at 17-year low. Nikkei -4.3%, Taiwan -3.6%. Fear: oil shock → inflation → delayed rate cuts. Chipmaker/semicon selloff across region.",
+      "weight": 0.95,
+      "oddsDelta": -4,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -1,
+      "volume": 120000,
+      "from": [
+        "n24_markets_tuesday"
+      ],
+      "extra": "KOSPI circuit breaker, worst since 2009",
+      "sourceName": "NBC News / CNBC / Bloomberg",
+      "sourceUrl": "https://www.nbcnews.com/world/iran/live-blog/live-updates-iran-supreme-leader-gulf-attacks-israel-tehran-trump-rcna261634",
+      "timestamp": "2026-03-04T03:00:00Z",
+      "tags": [
+        "markets",
+        "crash",
+        "asia",
+        "semiconductors"
+      ]
+    },
+    {
+      "id": "n49_brent_81_hormuz_escorts",
+      "col": 8,
+      "label": "🛢️ Brent $81.40 (+4.7%), Trump promises Navy escorts",
+      "category": "macro",
+      "signal": "catalyst",
+      "sentiment": "neg",
+      "desc": "Brent settles $81.40 (+4.71%), WTI $74.56 (+4.68%). Earlier surged 9%+ on Hormuz fears before easing. Trump: US Navy will escort tankers through Hormuz, will provide insurance. Goldman: $78 Brent = market prices ~4-week disruption. 3,000+ ships stuck behind strait. Fair value without disruption = $65.",
+      "weight": 0.9,
+      "oddsDelta": -3,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -1,
+      "volume": 90000,
+      "from": [
+        "n24_markets_tuesday",
+        "n12_opec_increase"
+      ],
+      "extra": "Navy escorts, tanker insurance",
+      "sourceName": "CNBC / Goldman Sachs / Fortune",
+      "sourceUrl": "https://www.cnbc.com/2026/03/03/crude-oil-prices-today-iran-war.html",
+      "timestamp": "2026-03-04T18:00:00Z",
+      "tags": [
+        "oil",
+        "markets",
+        "hormuz",
+        "navy"
+      ]
+    },
+    {
+      "id": "n50_iran_succession_close",
+      "col": 8,
+      "label": "🇮🇷 Iran: 'Close to naming' Khamenei successor",
+      "category": "political",
+      "signal": "resolution",
+      "sentiment": "neu",
+      "desc": "Iranian state TV: Ayatollah Khatami says 'Supreme Leader will be identified at closest opportunity, we are close to a conclusion.' Three-member transitional council (Pezeshkian, Mohseni-Ejei, Ayatollah Arafi) governs temporarily. Iranian FM Araghchi: nuclear talks were 'treated like a real estate transaction' with 'unrealistic expectations.'",
+      "weight": 0.8,
+      "oddsDelta": 2,
+      "marketProb": null,
+      "sourceAuthority": 80,
+      "momentum": 0,
+      "volume": 50000,
+      "from": [
+        "n09_khamenei_killed",
+        "n40_assembly_experts_qom"
+      ],
+      "extra": "Succession imminent",
+      "sourceName": "Euronews / Iranian state TV",
+      "sourceUrl": "https://www.euronews.com/2026/03/04/us-israeli-strikes-hit-beirut-and-tehran-as-trump-set-to-defend-iran-war-in-congress",
+      "timestamp": "2026-03-04T12:00:00Z",
+      "tags": [
+        "political",
+        "iran",
+        "succession",
+        "leadership"
+      ]
+    },
+    {
+      "id": "n51_us_kia_identified",
+      "col": 8,
+      "label": "🇺🇸 4 of 6 US KIA identified — Kuwait drone strike",
+      "category": "casualties",
+      "signal": "escalation",
+      "sentiment": "neg",
+      "desc": "US Army Reserve Command identifies 4 of 6 US service members killed in Iran war — died when Iranian drone struck a port in Kuwait on Sunday. 18 total service members injured. Confirmed by Pentagon.",
+      "weight": 0.7,
+      "oddsDelta": -1,
+      "marketProb": null,
+      "sourceAuthority": 95,
+      "momentum": -1,
+      "volume": 35000,
+      "from": [
+        "n21_losses_us"
+      ],
+      "extra": "Army Reserve, Kuwait port",
+      "sourceName": "NBC Washington / Pentagon",
+      "sourceUrl": "https://www.nbcwashington.com/news/national-international/iran-us-middle-east-israel-conflict-march-03-2026-live-updates/4069404/",
+      "timestamp": "2026-03-04T14:00:00Z",
+      "tags": [
+        "casualties",
+        "us_military",
+        "kuwait"
+      ]
+    },
+    {
+      "id": "n52_evacuations_9000",
+      "col": 8,
+      "label": "🇺🇸 9,000+ Americans evacuated from Middle East",
+      "category": "humanitarian",
+      "signal": "noise",
+      "sentiment": "neg",
+      "desc": "State Dept: 9,000+ Americans returned from Middle East since Saturday. Charter flights from UAE, Saudi Arabia, Jordan. State Dept orders 'DEPART NOW' from 12+ countries. Democrats slam delayed evacuation notice (3 days after strikes began). Thousands still stranded — airports closed/damaged across Gulf. Dublin Airport cancels all 12 Middle East flights.",
+      "weight": 0.65,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 88,
+      "momentum": -1,
+      "volume": 20000,
+      "from": [
+        "n44_dubai_consulate_strike"
+      ],
+      "extra": "12+ countries, charter flights",
+      "sourceName": "NPR / State Dept / Irish Times",
+      "sourceUrl": "https://www.npr.org/2026/03/03/nx-s1-5732968/iran-us-trump-war",
+      "timestamp": "2026-03-04T16:00:00Z",
+      "tags": [
+        "humanitarian",
+        "evacuation",
+        "diplomacy"
+      ]
+    },
+    {
+      "id": "n53_trump_threatens_spain",
+      "col": 8,
+      "label": "🇺🇸 Trump threatens Spain over base refusal; EU pushes back",
+      "category": "political",
+      "signal": "noise",
+      "sentiment": "neg",
+      "desc": "Trump threatens to sever trade with Spain for refusing to allow US use of its bases to attack Iran. EU Commission says it is 'ready to defend EU interests.' UK grants base access for 'specific limited defensive purpose' — Diego Garcia + RAF Fairford. Signals NATO/EU fracture on Iran policy.",
+      "weight": 0.6,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 85,
+      "momentum": -1,
+      "volume": 15000,
+      "from": [
+        "n47_trump_4weeks_rationale"
+      ],
+      "extra": "EU-US tension",
+      "sourceName": "Euronews / EU Commission",
+      "sourceUrl": "https://www.euronews.com/2026/03/04/us-israeli-strikes-hit-beirut-and-tehran-as-trump-set-to-defend-iran-war-in-congress",
+      "timestamp": "2026-03-04T13:00:00Z",
+      "tags": [
+        "political",
+        "eu",
+        "spain",
+        "nato",
+        "bases"
+      ]
+    },
+    {
+      "id": "n60_pred_hormuz_escort_test",
+      "col": 9,
+      "label": "Hormuz: Navy escort convoys begin (prog)",
+      "category": "macro",
+      "signal": "resolution",
+      "sentiment": "neu",
+      "desc": "PROGNOSIS: Trump promised Navy escorts 'as soon as possible.' If successful, tanker traffic resumes partially → Brent eases to $75-78. If escorts attacked → escalation to $90+. Insurance companies key gating factor. 3,000+ ships waiting.",
+      "weight": 0.85,
+      "oddsDelta": 3,
+      "marketProb": null,
+      "sourceAuthority": 85,
+      "momentum": 0,
+      "volume": 30000,
+      "from": [
+        "n49_brent_81_hormuz_escorts"
+      ],
+      "extra": "Test convoys expected",
+      "sourceName": "CNBC / Goldman Sachs",
+      "sourceUrl": "https://www.cnbc.com/2026/03/03/crude-oil-prices-today-iran-war.html",
+      "timestamp": "2026-03-05T00:00:00Z",
+      "tags": [
+        "prediction",
+        "hormuz",
+        "oil",
+        "navy"
+      ]
+    },
+    {
+      "id": "n61_pred_succession_vote",
+      "col": 9,
+      "label": "Iran succession vote attempt (prog)",
+      "category": "political",
+      "signal": "noise",
+      "sentiment": "neu",
+      "desc": "PROGNOSIS: Ayatollah Khatami says 'close to conclusion.' But Assembly of Experts building hit — unclear how many of 88 members survived/available. Khamenei's son Mojtaba potential candidate. If successor named → regime stabilizes narrative. If blocked → power vacuum deepens.",
+      "weight": 0.8,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 75,
+      "momentum": 0,
+      "volume": 25000,
+      "from": [
+        "n50_iran_succession_close",
+        "n40_assembly_experts_qom"
+      ],
+      "extra": "Assembly decimated?",
+      "sourceName": "Euronews / Bloomberg",
+      "sourceUrl": "https://www.euronews.com/2026/03/03/what-is-irans-assembly-of-experts-and-who-will-succeed-khamenei",
+      "timestamp": "2026-03-05T00:00:00Z",
+      "tags": [
+        "prediction",
+        "iran",
+        "succession"
+      ]
+    },
+    {
+      "id": "n62_pred_congress_warpower",
+      "col": 9,
+      "label": "Congress war powers showdown (prog)",
+      "category": "political",
+      "signal": "noise",
+      "sentiment": "neu",
+      "desc": "PROGNOSIS: Democrats push war powers resolution. Warner: 'war of choice, no strategy.' Trump claims self-defense rationale keeps shifting. 60-day AUMF clock started Feb 28 → Congress must vote by late April. Bipartisan fractures emerging.",
+      "weight": 0.7,
+      "oddsDelta": 0,
+      "marketProb": null,
+      "sourceAuthority": 80,
+      "momentum": 0,
+      "volume": 20000,
+      "from": [
+        "n47_trump_4weeks_rationale"
+      ],
+      "extra": "AUMF clock ticking",
+      "sourceName": "OPB / NPR / NBC",
+      "sourceUrl": "https://www.opb.org/article/2026/03/01/iran-strike-was-launched-without-approval-from-congress/",
+      "timestamp": "2026-03-05T00:00:00Z",
+      "tags": [
+        "prediction",
+        "congress",
+        "war_powers",
+        "domestic"
+      ]
+    },
+    {
+      "id": "n63_pred_iran_capacity_degrade",
+      "col": 9,
+      "label": "Iran retaliatory capacity degrades (prog)",
+      "category": "military",
+      "signal": "resolution",
+      "sentiment": "neu",
+      "desc": "PROGNOSIS: Trump claims Iran 'running out of ammo' but predicts they'll 'keep lobbing missiles for a while.' Rubio: 'next phase even more punishing.' After 5 days of sustained strikes on missile facilities, drone launchers, air defenses — Iran's ability to project power diminishing. But asymmetric threats (Houthi, militia, Hezbollah) persist.",
+      "weight": 0.75,
+      "oddsDelta": 2,
+      "marketProb": null,
+      "sourceAuthority": 80,
+      "momentum": 0,
+      "volume": 18000,
+      "from": [
+        "n42_isfahan_ghadr_facility",
+        "n43_mehrabad_airport_hit"
+      ],
+      "extra": "Capacity declining",
+      "sourceName": "Times of Israel / Pentagon",
+      "sourceUrl": "https://www.timesofisrael.com/liveblog-march-3-2026/",
+      "timestamp": "2026-03-05T00:00:00Z",
+      "tags": [
+        "prediction",
+        "military",
+        "iran",
+        "capacity"
+      ]
+    }
+  ],
+  "rightPanel": {
+    "polymarketAnchors": [
+      {
+        "question": "US strikes Iran by...?",
+        "url": "https://polymarket.com/event/us-strikes-iran-by",
+        "volume": "$529M",
+        "status": "resolved",
+        "currentOdds": {
+          "Feb 28": "100%"
+        },
+        "note": "Resolved YES — strikes began Feb 20. Largest Iran market on Polymarket."
+      },
+      {
+        "question": "Next Supreme Leader of Iran?",
+        "url": "https://polymarket.com/event/who-will-be-next-supreme-leader-of-iran-515",
+        "volume": "$17.7M",
+        "status": "active",
+        "currentOdds": {
+          "Mojtaba Khamenei": "67%",
+          "Alireza Arafi": "11%"
+        },
+        "expiry": "2026-06-30",
+        "ratexProb": {
+          "Mojtaba": 60
+        },
+        "alpha": -7,
+        "confidence": 0.55,
+        "note": "40+ outcomes, 1,022 comments. Assembly of Experts building struck Mar 4."
+      },
+      {
+        "question": "Iran x Israel/US conflict ends by...?",
+        "url": "https://polymarket.com/event/iran-x-israelus-conflict-ends-by",
+        "volume": "$14M",
+        "status": "active",
+        "currentOdds": {
+          "Mar 31": "81%",
+          "Jun 30": "83%"
+        },
+        "ratexProb": {
+          "Mar 31": 65
+        },
+        "alpha": -16,
+        "confidence": 0.6,
+        "note": "RateXAI: escalation continues, conflict ends later than market expects."
+      },
+      {
+        "question": "US x Iran ceasefire by...?",
+        "url": "https://polymarket.com/event/us-x-iran-ceasefire-by",
+        "volume": "$12.5M",
+        "status": "active",
+        "currentOdds": {
+          "Mar 6": "23%",
+          "Mar 15": "41%",
+          "Mar 31": "62%",
+          "Jun 30": "69%"
+        },
+        "expiry": "rolling",
+        "ratexProb": {
+          "Mar 31": 45
+        },
+        "alpha": -17,
+        "confidence": 0.6,
+        "note": "RateXAI: no ceasefire signals yet. Trump says 4-5 weeks. Market overoptimistic."
+      },
+      {
+        "question": "Will the Iranian regime fall before 2027?",
+        "url": "https://polymarket.com/event/will-the-iranian-regime-fall-by-the-end-of-2026",
+        "volume": "$7.8M",
+        "status": "active",
+        "currentOdds": {
+          "Yes": "15%"
+        },
+        "expiry": "2026-12-31",
+        "ratexProb": 8,
+        "alpha": -7,
+        "confidence": 0.5,
+        "note": "Regime = Islamic Republic structures dissolved. Regime change ≠ leader change."
+      },
+      {
+        "question": "US forces enter Iran by...?",
+        "url": "https://polymarket.com/event/us-forces-enter-iran-by",
+        "volume": "$6M",
+        "status": "active",
+        "currentOdds": {},
+        "ratexProb": null,
+        "note": "Ground invasion question. Trump said air campaign only so far."
+      },
+      {
+        "question": "Israel x Iran ceasefire broken by...?",
+        "url": "https://polymarket.com/event/israel-x-iran-ceasefire-broken-by",
+        "volume": "$5.1M",
+        "status": "resolved",
+        "currentOdds": {
+          "Mar 31": "100%",
+          "Jun 30": "100%"
+        },
+        "note": "Resolved — previous ceasefire already broken by Operation Epic Fury."
+      },
+      {
+        "question": "Khamenei out as Supreme Leader 2026",
+        "url": "https://polymarket.com/event/khamenei-out-as-supreme-leader-of-iran-by-december-31-2026",
+        "volume": "$4.6M",
+        "status": "resolved",
+        "currentOdds": {
+          "Yes": "100%"
+        },
+        "note": "Resolved YES — killed in Feb 20 strikes."
+      },
+      {
+        "question": "New Supreme Leader by...?",
+        "url": "https://polymarket.com/event/will-iran-name-a-successor-to-khamenei-by",
+        "volume": "$4.3M",
+        "status": "active",
+        "currentOdds": {
+          "Mar 15": "68%",
+          "Mar 31": "84%"
+        },
+        "ratexProb": {
+          "Mar 31": 70
+        },
+        "alpha": -14,
+        "confidence": 0.55,
+        "note": "598 comments. Ayatollah Khatami said 'close to naming' on Mar 4."
+      },
+      {
+        "question": "Crude Oil (CL) hit __ by March",
+        "url": "https://polymarket.com/event/will-crude-oil-cl-hit-by-end-of-march",
+        "volume": "$3.4M",
+        "status": "active",
+        "currentOdds": {
+          "$90": "45%",
+          "$100": "36%",
+          "$120": "21%",
+          "$80": "57%",
+          "$75": "84%"
+        },
+        "expiry": "2026-03-31",
+        "ratexProb": {
+          "$90": 55,
+          "$100": 42
+        },
+        "alpha": {
+          "$90": 10,
+          "$100": 6
+        },
+        "confidence": 0.6,
+        "note": "WTI ~$74.56, Brent ~$81.40. War + Hormuz risk = upside. Trump promises Navy escorts."
+      },
+      {
+        "question": "US-Iran nuclear deal by March 31",
+        "url": "https://polymarket.com/event/us-iran-nuclear-deal-by-march-31",
+        "volume": "$748K",
+        "status": "active",
+        "currentOdds": {
+          "Yes": "11%"
+        },
+        "expiry": "2026-03-31",
+        "ratexProb": 3,
+        "alpha": -8,
+        "confidence": 0.7,
+        "note": "Active war makes nuclear deal near-impossible by Mar 31."
+      },
+      {
+        "question": "US-Iran nuclear deal before 2027",
+        "url": "https://polymarket.com/event/us-iran-nuclear-deal-before-2027",
+        "volume": "$325K",
+        "status": "active",
+        "currentOdds": {},
+        "expiry": "2026-12-31",
+        "note": "Long-horizon. Requires ceasefire + regime stability first."
+      },
+      {
+        "question": "Iran leader end of 2026?",
+        "url": "https://polymarket.com/event/iran-leader-end-of-2026",
+        "volume": "$206K",
+        "status": "active",
+        "currentOdds": {
+          "Mojtaba Khamenei": "27%",
+          "Reza Pahlavi": "17%"
+        },
+        "expiry": "2026-12-31",
+        "note": "31 outcomes. Who leads Iran at year-end — successor or new regime?"
+      }
+    ]
+  }
+}

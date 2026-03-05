@@ -1,0 +1,2912 @@
+{
+  "id": "ai-revolution",
+  "title": "🤖 AI Changes the World · Prediction Map · 81 nodes",
+  "currentProb": 22,
+  "probLabel": "AI Bubble Bursts by End 2026",
+  "probHistory": [
+    5,
+    6,
+    8,
+    8,
+    10,
+    12,
+    14,
+    15,
+    16,
+    18,
+    20,
+    22
+  ],
+  "timeSlots": [
+    {
+      "col": 0,
+      "label": "Jan 2025"
+    },
+    {
+      "col": 1,
+      "label": "Feb-Mar 2025"
+    },
+    {
+      "col": 2,
+      "label": "Apr-Jun 2025"
+    },
+    {
+      "col": 3,
+      "label": "Jul-Sep 2025"
+    },
+    {
+      "col": 4,
+      "label": "Oct-Dec 2025"
+    },
+    {
+      "col": 5,
+      "label": "Jan 2026"
+    },
+    {
+      "col": 6,
+      "label": "Feb 2026"
+    },
+    {
+      "col": 7,
+      "label": "Mar 1-5 2026"
+    },
+    {
+      "col": 8,
+      "label": "Mar 6-15 (prog)"
+    },
+    {
+      "col": 9,
+      "label": "Mar-Jun (prog)"
+    }
+  ],
+  "branches": [
+    {
+      "id": "infra",
+      "label": "Infrastructure & Energy",
+      "color": "#ff9900"
+    },
+    {
+      "id": "models",
+      "label": "Models & Capabilities",
+      "color": "#1868ff"
+    },
+    {
+      "id": "investment",
+      "label": "Investment & Markets",
+      "color": "#19bd5b"
+    },
+    {
+      "id": "regulation",
+      "label": "Regulation & Geopolitics",
+      "color": "#e201e7"
+    },
+    {
+      "id": "adoption",
+      "label": "Adoption & Impact",
+      "color": "#22b08e"
+    },
+    {
+      "id": "china",
+      "label": "China & Competition",
+      "color": "#ff495f"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "n03_trump_ai_eo",
+      "col": 0,
+      "label": "🇺🇸📜 Trump Revokes Biden AI EO",
+      "category": "regulation",
+      "signal": "catalyst",
+      "sentiment": 0.2,
+      "desc": "Trump signs executive order revoking Biden-era AI safety requirements. Signals pro-business, deregulation approach. AI companies get green light for faster development with fewer guardrails.",
+      "weight": 0.82,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.95,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [],
+      "sourceName": "White House / TechCrunch",
+      "sourceUrl": "https://techcrunch.com/2026/01/02/in-2026-ai-will-move-from-hype-to-pragmatism/",
+      "timestamp": "2025-01-20T17:00:00Z",
+      "tags": [
+        "regulation",
+        "us-gov",
+        "executive-order",
+        "deregulation"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n01_stargate_announce",
+      "col": 0,
+      "label": "🏗️🇺🇸 Stargate $500B Announced",
+      "category": "infrastructure",
+      "signal": "catalyst",
+      "sentiment": 0.9,
+      "desc": "Trump announces Stargate — $500B AI infrastructure JV between OpenAI, SoftBank, Oracle. $100B initial deployment, data centers in Abilene TX. Largest AI infra project in history.",
+      "weight": 0.98,
+      "oddsDelta": -3,
+      "sourceAuthority": 0.98,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [],
+      "sourceName": "White House / CNN / OpenAI",
+      "sourceUrl": "https://openai.com/index/the-stargate-project/",
+      "timestamp": "2025-01-21T18:00:00Z",
+      "tags": [
+        "infrastructure",
+        "us-gov",
+        "openai",
+        "softbank",
+        "oracle",
+        "investment"
+      ],
+      "extra": {
+        "amount": "$500B",
+        "initial": "$100B",
+        "jobs": "100,000"
+      }
+    },
+    {
+      "id": "n02_deepseek_r1",
+      "col": 0,
+      "label": "🇨🇳🧠 DeepSeek R1 Shocks World",
+      "category": "models",
+      "signal": "catalyst",
+      "sentiment": -0.3,
+      "desc": "Chinese startup DeepSeek releases R1, open-source reasoning model matching frontier performance at fraction of cost. 'DeepSeek moment' — proves top-tier AI doesn't need Big Tech budgets. NVDA drops 17% on the news.",
+      "weight": 0.96,
+      "oddsDelta": 5,
+      "sourceAuthority": 0.95,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [],
+      "sourceName": "MIT Technology Review / Bloomberg",
+      "sourceUrl": "https://www.technologyreview.com/2026/01/05/1130662/whats-next-for-ai-in-2026/",
+      "timestamp": "2025-01-27T08:00:00Z",
+      "tags": [
+        "china",
+        "deepseek",
+        "open-source",
+        "reasoning",
+        "nvidia",
+        "markets"
+      ],
+      "extra": {
+        "nvda_drop": "-17%",
+        "model": "DeepSeek R1"
+      }
+    },
+    {
+      "id": "n04_claude_35_sonnet",
+      "col": 1,
+      "label": "🧠 Claude 3.5 → Frontier Race",
+      "category": "models",
+      "signal": "escalation",
+      "sentiment": 0.5,
+      "desc": "Anthropic, OpenAI, Google in intense model release cycle. Claude 3.5 Sonnet, GPT-4o, Gemini 1.5 Pro push multimodal capabilities. Reasoning models become standard. Benchmark wars intensify.",
+      "weight": 0.78,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n02_deepseek_r1"
+      ],
+      "sourceName": "Various / KDnuggets",
+      "sourceUrl": "https://www.kdnuggets.com/the-10-ai-developments-that-defined-2025",
+      "timestamp": "2025-02-15T12:00:00Z",
+      "tags": [
+        "models",
+        "anthropic",
+        "openai",
+        "google",
+        "reasoning"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n05_msft_80b_capex",
+      "col": 1,
+      "label": "💰🏢 Big Tech $300B+ CapEx Plans",
+      "category": "investment",
+      "signal": "escalation",
+      "sentiment": 0.6,
+      "desc": "Microsoft, Meta, Amazon, Google commit $300B+ combined in AI infrastructure CapEx for 2025. Meta alone $60B+. Investors grill executives on ROI during earnings calls. McKinsey projects $7T in global DC infra by 2030.",
+      "weight": 0.88,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n01_stargate_announce"
+      ],
+      "sourceName": "CNN Business / Yahoo Finance",
+      "sourceUrl": "https://www.cnn.com/2025/12/30/tech/how-ai-changed-world-predictions-2026-vis",
+      "timestamp": "2025-02-28T12:00:00Z",
+      "tags": [
+        "investment",
+        "microsoft",
+        "meta",
+        "amazon",
+        "google",
+        "capex",
+        "data-centers"
+      ],
+      "extra": {
+        "total_capex": "$300B+",
+        "meta_capex": "$60B+"
+      }
+    },
+    {
+      "id": "n06_energy_crisis_ai",
+      "col": 1,
+      "label": "⚡🔌 AI Energy Demand Crisis Grows",
+      "category": "infrastructure",
+      "signal": "escalation",
+      "sentiment": -0.4,
+      "desc": "AI data center power demand strains grids. Electricity bills climb. AI workloads consume unprecedented energy. Earthjustice warns of rate increases for households. Nuclear & fusion investments surge as solution.",
+      "weight": 0.8,
+      "oddsDelta": 2,
+      "sourceAuthority": 0.85,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n01_stargate_announce",
+        "n05_msft_80b_capex"
+      ],
+      "sourceName": "Scientific American / KDnuggets",
+      "sourceUrl": "https://www.scientificamerican.com/article/heres-whats-in-stargate-the-usd500-billion-trump-endorsed-plan-to-power-u-s/",
+      "timestamp": "2025-03-10T12:00:00Z",
+      "tags": [
+        "energy",
+        "infrastructure",
+        "data-centers",
+        "nuclear",
+        "environment"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n07_openai_ipo_talk",
+      "col": 2,
+      "label": "📊 OpenAI IPO Speculation Heats Up",
+      "category": "investment",
+      "signal": "catalyst",
+      "sentiment": 0.4,
+      "desc": "OpenAI restructuring to for-profit. Valuation reaches $300B+. IPO speculation intensifies. Sam Altman's compensation debated. Conversion from nonprofit raises governance questions.",
+      "weight": 0.82,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n01_stargate_announce"
+      ],
+      "sourceName": "The Information / Bloomberg",
+      "sourceUrl": "https://finance.yahoo.com/news/ai-took-investors-on-a-date-in-2025-in-2026-analysts-say-its-time-to-foot-the-bill-140012067.html",
+      "timestamp": "2025-04-15T12:00:00Z",
+      "tags": [
+        "openai",
+        "ipo",
+        "investment",
+        "valuation",
+        "governance"
+      ],
+      "extra": {
+        "valuation": "$300B+"
+      }
+    },
+    {
+      "id": "n09_ai_agents_emerge",
+      "col": 2,
+      "label": "🤖🔧 Agentic AI Goes Mainstream",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.6,
+      "desc": "62% of organizations experiment with agentic workflows. Coding agents widely adopted. MCP (Model Context Protocol) by Anthropic becomes standard for AI-tool integration. OpenAI, Microsoft embrace MCP.",
+      "weight": 0.85,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n04_claude_35_sonnet"
+      ],
+      "sourceName": "TechCrunch / AAF",
+      "sourceUrl": "https://www.americanactionforum.org/insight/the-next-phase-of-ai-technology-infrastructure-and-policy-in-2025-2026/",
+      "timestamp": "2025-05-10T12:00:00Z",
+      "tags": [
+        "agentic-ai",
+        "adoption",
+        "mcp",
+        "anthropic",
+        "enterprise"
+      ],
+      "extra": {
+        "adoption_rate": "62%"
+      }
+    },
+    {
+      "id": "n75_openai_io_acquisition",
+      "col": 2,
+      "label": "📱 OpenAI Acquires io (Jony Ive) $6.4B",
+      "category": "investment",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "OpenAI acquires Jony Ive's hardware startup io for $6.4B (all-equity). 55 employees including former Apple designers. Ive takes 'deep creative and design responsibilities.' First prototypes described as 'jaw-dropping.'",
+      "weight": 0.82,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n07_openai_ipo_talk"
+      ],
+      "sourceName": "TechCrunch / Built In / Benzinga",
+      "sourceUrl": "https://builtin.com/articles/openai-device",
+      "timestamp": "2025-05-15T12:00:00Z",
+      "tags": [
+        "openai",
+        "jony-ive",
+        "hardware",
+        "acquisition",
+        "io"
+      ],
+      "extra": {
+        "price": "$6.4B",
+        "employees": 55
+      }
+    },
+    {
+      "id": "n08_stargate_uae",
+      "col": 2,
+      "label": "🏗️🇦🇪 Stargate UAE Launched",
+      "category": "infrastructure",
+      "signal": "escalation",
+      "sentiment": 0.5,
+      "desc": "OpenAI announces Stargate UAE with G42, Oracle, Nvidia, Cisco, SoftBank. First international Stargate. Expected to open 2026. US AI infra goes global. China concerns over UAE access.",
+      "weight": 0.75,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n01_stargate_announce"
+      ],
+      "sourceName": "OpenAI / Financial Times",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Stargate_LLC",
+      "timestamp": "2025-05-22T12:00:00Z",
+      "tags": [
+        "infrastructure",
+        "uae",
+        "openai",
+        "global",
+        "geopolitics"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n10_ai_funding_record",
+      "col": 2,
+      "label": "💰📈 AI Captures 50% of Startup Funding",
+      "category": "investment",
+      "signal": "escalation",
+      "sentiment": 0.3,
+      "desc": "AI captures nearly 50% of all global startup funding in 2025, up from 34% in 2024. ~$150B in equity and debt financing. Mega-rounds cluster around foundation model labs. Circular financing concerns grow.",
+      "weight": 0.85,
+      "oddsDelta": 3,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n05_msft_80b_capex",
+        "n07_openai_ipo_talk"
+      ],
+      "sourceName": "24/7 Wall St / Ropes & Gray",
+      "sourceUrl": "https://247wallst.com/investing/2026/03/04/why-big-techs-equity-investments-may-be-fueling-their-own-ai-bubble/",
+      "timestamp": "2025-06-15T12:00:00Z",
+      "tags": [
+        "investment",
+        "funding",
+        "bubble",
+        "circular-financing",
+        "startups"
+      ],
+      "extra": {
+        "ai_share": "50%",
+        "total": "$150B+"
+      }
+    },
+    {
+      "id": "n11_nvidia_5t",
+      "col": 2,
+      "label": "📈 Nvidia Hits $5T Valuation",
+      "category": "investment",
+      "signal": "catalyst",
+      "sentiment": 0.7,
+      "desc": "Nvidia briefly touches $5 trillion market cap (first company ever), driven by AI chip monopoly. GB200 racks ship to Stargate. Invested $1B+ across 50+ startups. But circular financing scrutiny intensifies. By Mar 2026 pulled back to ~$4.4T.",
+      "weight": 0.9,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.95,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n05_msft_80b_capex",
+        "n10_ai_funding_record"
+      ],
+      "sourceName": "Atlantic Council / Bloomberg",
+      "sourceUrl": "https://www.atlanticcouncil.org/dispatches/eight-ways-ai-will-shape-geopolitics-in-2026/",
+      "timestamp": "2025-06-20T16:00:00Z",
+      "tags": [
+        "nvidia",
+        "markets",
+        "valuation",
+        "chips",
+        "gb200"
+      ],
+      "extra": {
+        "peak_cap": "$5T (brief)",
+        "current_cap": "~$4.4T (Mar 2026)",
+        "stock_range": "$86-$212 52wk"
+      }
+    },
+    {
+      "id": "n12_stargate_norway",
+      "col": 3,
+      "label": "🏗️🇳🇴 Stargate Norway (Europe 1st)",
+      "category": "infrastructure",
+      "signal": "resolution",
+      "sentiment": 0.5,
+      "desc": "OpenAI launches Stargate Norway — first in Europe under 'OpenAI for Countries' initiative. Runs entirely on renewable energy. Excess heat for local enterprises. Nscale + Aker Solutions partners.",
+      "weight": 0.65,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.85,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n08_stargate_uae"
+      ],
+      "sourceName": "OpenAI",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Stargate_LLC",
+      "timestamp": "2025-07-31T12:00:00Z",
+      "tags": [
+        "infrastructure",
+        "europe",
+        "norway",
+        "renewable",
+        "openai"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n13_qwen_llama_war",
+      "col": 3,
+      "label": "🇨🇳🆚🇺🇸 Chinese Open Models Lead",
+      "category": "models",
+      "signal": "escalation",
+      "sentiment": -0.3,
+      "desc": "Qwen3, Kimi K2, DeepSeek models surpass American open-weight alternatives. Llama 4 good but not frontier. Rumors Meta switching to closed models. American open-source leadership under threat.",
+      "weight": 0.8,
+      "oddsDelta": 2,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n02_deepseek_r1",
+        "n04_claude_35_sonnet"
+      ],
+      "sourceName": "Understanding AI",
+      "sourceUrl": "https://www.understandingai.org/p/17-predictions-for-ai-in-2026",
+      "timestamp": "2025-08-15T12:00:00Z",
+      "tags": [
+        "china",
+        "open-source",
+        "qwen",
+        "llama",
+        "meta",
+        "deepseek",
+        "competition"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n15_photonic_chip",
+      "col": 3,
+      "label": "💡🔬 Photonic AI Chip Breakthrough",
+      "category": "models",
+      "signal": "resolution",
+      "sentiment": 0.6,
+      "desc": "University of Florida researchers announce photonic-computing chip performing AI computations using light. Promises drastically lower energy consumption with near-perfect accuracy. Wave of specialized AI hardware emerging.",
+      "weight": 0.7,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.82,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n06_energy_crisis_ai"
+      ],
+      "sourceName": "KDnuggets",
+      "sourceUrl": "https://www.kdnuggets.com/the-10-ai-developments-that-defined-2025",
+      "timestamp": "2025-09-15T12:00:00Z",
+      "tags": [
+        "hardware",
+        "research",
+        "energy",
+        "photonic",
+        "efficiency"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n14_stargate_5sites",
+      "col": 3,
+      "label": "🏗️ Stargate: 5 New US Sites, 7GW",
+      "category": "infrastructure",
+      "signal": "catalyst",
+      "sentiment": 0.7,
+      "desc": "OpenAI announces 5 new Stargate data center sites: Texas, New Mexico, Ohio, Wisconsin. Total ~7GW planned capacity, $400B+ investment over 3 years. On path to full $500B commitment ahead of schedule.",
+      "weight": 0.88,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.95,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n01_stargate_announce",
+        "n08_stargate_uae"
+      ],
+      "sourceName": "OpenAI",
+      "sourceUrl": "https://openai.com/index/five-new-stargate-sites/",
+      "timestamp": "2025-09-23T12:00:00Z",
+      "tags": [
+        "infrastructure",
+        "stargate",
+        "data-centers",
+        "us-gov",
+        "openai"
+      ],
+      "extra": {
+        "capacity": "7GW",
+        "investment": "$400B+",
+        "sites": 5
+      }
+    },
+    {
+      "id": "n55_stargate_argentina",
+      "col": 3,
+      "label": "🏗️🇦🇷 Stargate Argentina $25B",
+      "category": "infrastructure",
+      "signal": "noise",
+      "sentiment": 0.3,
+      "desc": "OpenAI and Sur Energy announce Stargate Argentina in Patagonia — up to $25B, 500MW capacity. First Stargate in Latin America. Largest data center in the region.",
+      "weight": 0.62,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.85,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n08_stargate_uae"
+      ],
+      "sourceName": "OpenAI / Wikipedia",
+      "sourceUrl": "https://en.wikipedia.org/wiki/Stargate_LLC",
+      "timestamp": "2025-10-10T12:00:00Z",
+      "tags": [
+        "stargate",
+        "argentina",
+        "infrastructure",
+        "latam"
+      ],
+      "extra": {
+        "investment": "$25B",
+        "capacity": "500MW"
+      }
+    },
+    {
+      "id": "n16_bubble_fears_grow",
+      "col": 4,
+      "label": "📉⚠️ AI Bubble Fears Intensify",
+      "category": "investment",
+      "signal": "escalation",
+      "sentiment": -0.6,
+      "desc": "AI investment exceeds Apollo Project + Interstate Highway as % of GDP. Only 5% of companies see meaningful AI ROI. 70-80% of agentic initiatives fail to scale. Market correction 'likely at some point.' Circular financing concerns dominate.",
+      "weight": 0.88,
+      "oddsDelta": 5,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n10_ai_funding_record",
+        "n11_nvidia_5t"
+      ],
+      "sourceName": "CNN / AAF / Understanding AI",
+      "sourceUrl": "https://www.americanactionforum.org/insight/the-next-phase-of-ai-technology-infrastructure-and-policy-in-2025-2026/",
+      "timestamp": "2025-10-15T12:00:00Z",
+      "tags": [
+        "bubble",
+        "investment",
+        "roi",
+        "circular-financing",
+        "markets"
+      ],
+      "extra": {
+        "enterprise_roi": "5%",
+        "agentic_fail": "70-80%"
+      }
+    },
+    {
+      "id": "n76_humane_ai_pin_fails",
+      "col": 4,
+      "label": "📱❌ Humane AI Pin Sold to HP (Flop)",
+      "category": "adoption",
+      "signal": "noise",
+      "sentiment": -0.4,
+      "desc": "Humane AI Pin, the first major AI-native hardware device, sold to HP after commercial failure. Validates skepticism about AI hardware. But OpenAI and Meta (Ray-Ban glasses, 75-80% market share) show form factor matters.",
+      "weight": 0.6,
+      "oddsDelta": 1,
+      "sourceAuthority": 0.82,
+      "momentum": "↓",
+      "volume": "medium",
+      "from": [
+        "n09_ai_agents_emerge"
+      ],
+      "sourceName": "TechCrunch / Axios",
+      "sourceUrl": "https://www.axios.com/2026/01/19/openai-device-2026-lehane-jony-ive",
+      "timestamp": "2025-10-20T12:00:00Z",
+      "tags": [
+        "humane",
+        "ai-pin",
+        "hardware",
+        "failure",
+        "meta-glasses"
+      ],
+      "extra": {
+        "sold_to": "HP",
+        "meta_glasses_share": "75-80%"
+      }
+    },
+    {
+      "id": "n56_ai_military_debate",
+      "col": 4,
+      "label": "🎖️⚠️ Military AI Debate Escalates",
+      "category": "regulation",
+      "signal": "escalation",
+      "sentiment": -0.4,
+      "desc": "Year of escalating concern about military AI: autonomous targeting debates, alliances investing in battlefield automation, decision-support agents. Israel-Iran escalation (June 2025) sees AI used as propaganda tool.",
+      "weight": 0.72,
+      "oddsDelta": 1,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n03_trump_ai_eo"
+      ],
+      "sourceName": "Atlantic Council / KDnuggets",
+      "sourceUrl": "https://www.atlanticcouncil.org/dispatches/eight-ways-ai-will-shape-geopolitics-in-2026/",
+      "timestamp": "2025-11-01T12:00:00Z",
+      "tags": [
+        "military",
+        "autonomous-weapons",
+        "regulation",
+        "geopolitics"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n17_stargate_stalls",
+      "col": 4,
+      "label": "🏗️❌ Stargate Project Stalls",
+      "category": "infrastructure",
+      "signal": "escalation",
+      "sentiment": -0.5,
+      "desc": "Bloomberg reports Stargate hasn't hired staff, isn't developing data centers. OpenAI/Oracle/SoftBank argue over structure. OpenAI tried building own DCs, couldn't get financing. Falls short of 10GW goal. Cuts deals with AWS, Google Cloud, AMD, Cerebras instead.",
+      "weight": 0.85,
+      "oddsDelta": 4,
+      "sourceAuthority": 0.92,
+      "momentum": "↓",
+      "volume": "high",
+      "from": [
+        "n14_stargate_5sites",
+        "n16_bubble_fears_grow"
+      ],
+      "sourceName": "The Information / Bloomberg / The Decoder",
+      "sourceUrl": "https://the-decoder.com/stargates-500-billion-ai-infrastructure-project-reportedly-stalls-over-unresolved-disputes-between-openai-oracle-and-softbank/",
+      "timestamp": "2025-11-10T12:00:00Z",
+      "tags": [
+        "stargate",
+        "infrastructure",
+        "openai",
+        "softbank",
+        "oracle",
+        "delays"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n72_musk_altman_lawsuit",
+      "col": 4,
+      "label": "⚖️ Musk vs Altman Lawsuit Escalates",
+      "category": "regulation",
+      "signal": "noise",
+      "sentiment": -0.2,
+      "desc": "Elon Musk's lawsuit against OpenAI/Altman: alleges violation of original nonprofit mission, for-profit pivot. Polymarket: 55% Musk wins. xAI-SpaceX merger strengthens Musk's competitive position. OpenAI Pentagon deal adds fuel.",
+      "weight": 0.68,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.85,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n03_trump_ai_eo"
+      ],
+      "sourceName": "Polymarket / Various",
+      "sourceUrl": "https://polymarket.com/event/will-elon-musk-win-his-case-against-sam-altman",
+      "timestamp": "2025-11-15T12:00:00Z",
+      "tags": [
+        "musk",
+        "altman",
+        "openai",
+        "xai",
+        "lawsuit",
+        "polymarket"
+      ],
+      "extra": {
+        "polymarket_musk_wins": "55%"
+      }
+    },
+    {
+      "id": "n19_waymo_tesla_robo",
+      "col": 4,
+      "label": "🚗🤖 Self-Driving Breakthrough Year",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.7,
+      "desc": "Waymo triples weekly rides, driverless operations in new cities, freeway service. Tesla launches robotaxi in Austin & SF. Physical AI adoption projected to reach 80% in manufacturing within 2 years.",
+      "weight": 0.78,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n09_ai_agents_emerge"
+      ],
+      "sourceName": "Understanding AI / TechCrunch",
+      "sourceUrl": "https://www.understandingai.org/p/17-predictions-for-ai-in-2026",
+      "timestamp": "2025-11-20T12:00:00Z",
+      "tags": [
+        "autonomous",
+        "waymo",
+        "tesla",
+        "robotaxi",
+        "physical-ai"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n18_ai_202b_investment",
+      "col": 4,
+      "label": "💰 AI Funding Hits $202B in 2025",
+      "category": "investment",
+      "signal": "catalyst",
+      "sentiment": 0.3,
+      "desc": "Global AI funding reaches $202B in 2025. US dominates with $159B (79%). OpenAI, xAI, Anthropic, Scale AI capture 60%+ of total. But 40% decline in private capital fundraising YoY signals shifting dynamics.",
+      "weight": 0.82,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.92,
+      "momentum": "→",
+      "volume": "high",
+      "from": [
+        "n10_ai_funding_record"
+      ],
+      "sourceName": "AAF / Ropes & Gray",
+      "sourceUrl": "https://www.ropesgray.com/en/insights/alerts/2025/08/artificial-intelligence-h1-2025-global-report",
+      "timestamp": "2025-12-01T12:00:00Z",
+      "tags": [
+        "investment",
+        "funding",
+        "openai",
+        "anthropic",
+        "xai"
+      ],
+      "extra": {
+        "total": "$202B",
+        "us_share": "79%"
+      }
+    },
+    {
+      "id": "n21_biotech_ai_trials",
+      "col": 4,
+      "label": "🧬💊 AI Drug Discovery Hits Clinical Trials",
+      "category": "adoption",
+      "signal": "resolution",
+      "sentiment": 0.7,
+      "desc": "Several AI-discovered drug candidates reach mid-to-late stage clinical trials. Focus: oncology & rare diseases. 'Stress test' for AI in drug discovery. If successful — proves AI creates real medical value beyond tech sector.",
+      "weight": 0.75,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.85,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n09_ai_agents_emerge"
+      ],
+      "sourceName": "Crescendo AI",
+      "sourceUrl": "https://www.crescendo.ai/news/latest-ai-news-and-updates",
+      "timestamp": "2025-12-15T12:00:00Z",
+      "tags": [
+        "biotech",
+        "healthcare",
+        "drug-discovery",
+        "clinical-trials",
+        "adoption"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n57_noaa_ai_weather",
+      "col": 4,
+      "label": "🌦️🤖 NOAA AI Weather Models Deploy",
+      "category": "adoption",
+      "signal": "resolution",
+      "sentiment": 0.6,
+      "desc": "NOAA deploys AI-powered global weather models. ML + physics-based modeling for better extreme weather prediction. Major milestone proving AI value in critical public safety infrastructure.",
+      "weight": 0.6,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.85,
+      "momentum": "→",
+      "volume": "low",
+      "from": [
+        "n09_ai_agents_emerge"
+      ],
+      "sourceName": "Crescendo AI",
+      "sourceUrl": "https://www.crescendo.ai/news/latest-ai-news-and-updates",
+      "timestamp": "2025-12-16T12:00:00Z",
+      "tags": [
+        "weather",
+        "noaa",
+        "government",
+        "adoption",
+        "public-safety"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n20_market_correction",
+      "col": 4,
+      "label": "📉 AI Market Sell-Off Dec 2025",
+      "category": "investment",
+      "signal": "escalation",
+      "sentiment": -0.7,
+      "desc": "Dow Jones, S&P 500 significant declines as AI bubble anxiety intensifies. AI investments yet to yield expected returns. Market questions whether spending is justified. Micron +241% YTD but Oracle under scrutiny.",
+      "weight": 0.8,
+      "oddsDelta": 4,
+      "sourceAuthority": 0.88,
+      "momentum": "↓",
+      "volume": "high",
+      "from": [
+        "n16_bubble_fears_grow"
+      ],
+      "sourceName": "Crescendo AI / Yahoo Finance",
+      "sourceUrl": "https://www.crescendo.ai/news/latest-ai-news-and-updates",
+      "timestamp": "2025-12-17T16:00:00Z",
+      "tags": [
+        "markets",
+        "sell-off",
+        "bubble",
+        "correction"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n23_agentic_shift",
+      "col": 5,
+      "label": "🤖📋 Agentic AI: Hype → Deployment",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "2026 marks shift from capability races to deployment reality. Agentic AI projected at 10-15% of IT spend in 2026. MCP donated to Linux Foundation. Google stands up managed MCP servers. Agent-first solutions take 'system-of-record' roles.",
+      "weight": 0.82,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n09_ai_agents_emerge"
+      ],
+      "sourceName": "TechCrunch / AAF",
+      "sourceUrl": "https://techcrunch.com/2026/01/02/in-2026-ai-will-move-from-hype-to-pragmatism/",
+      "timestamp": "2026-01-02T12:00:00Z",
+      "tags": [
+        "agentic-ai",
+        "mcp",
+        "deployment",
+        "enterprise",
+        "adoption"
+      ],
+      "extra": {
+        "it_spend_share": "10-15%"
+      }
+    },
+    {
+      "id": "n25_world_models_rise",
+      "col": 5,
+      "label": "🌐🧠 World Models: Next AI Frontier",
+      "category": "models",
+      "signal": "catalyst",
+      "sentiment": 0.6,
+      "desc": "LeCun leaves Meta to start world model lab ($5B valuation sought). World Labs launches Marble. General Intuition $134M seed. Google DeepMind's Genie evolves. AI systems learning physics and 3D, not just text.",
+      "weight": 0.78,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n04_claude_35_sonnet",
+        "n19_waymo_tesla_robo"
+      ],
+      "sourceName": "TechCrunch",
+      "sourceUrl": "https://techcrunch.com/2026/01/02/in-2026-ai-will-move-from-hype-to-pragmatism/",
+      "timestamp": "2026-01-05T12:00:00Z",
+      "tags": [
+        "world-models",
+        "lecun",
+        "meta",
+        "deepmind",
+        "3d",
+        "research"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n58_ai_slop_crisis",
+      "col": 5,
+      "label": "🗑️ AI Slop Crisis: 50%+ Content AI",
+      "category": "adoption",
+      "signal": "escalation",
+      "sentiment": -0.5,
+      "desc": "Studies suggest 50%+ of articles and 20%+ of videos are now AI-generated. 'Reality vs slop' becomes defining debate. Apple deploys detection tools for AI-generated music. Trust in online content plummets.",
+      "weight": 0.72,
+      "oddsDelta": 2,
+      "sourceAuthority": 0.82,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n21_biotech_ai_trials"
+      ],
+      "sourceName": "KDnuggets / Apple",
+      "sourceUrl": "https://www.kdnuggets.com/the-10-ai-developments-that-defined-2025",
+      "timestamp": "2026-01-06T12:00:00Z",
+      "tags": [
+        "ai-slop",
+        "content",
+        "trust",
+        "detection",
+        "apple"
+      ],
+      "extra": {
+        "articles_ai": "50%+",
+        "videos_ai": "20%+"
+      }
+    },
+    {
+      "id": "n26_ces2026_ai",
+      "col": 5,
+      "label": "🎮📱 CES 2026: AI Everywhere",
+      "category": "adoption",
+      "signal": "noise",
+      "sentiment": 0.4,
+      "desc": "AMD Ryzen AI 400 series with NPU. Samsung targets 800M Gemini-equipped devices by EOY. Hyundai AI+Robotics roadmap. On-device AI becomes mass market. AI moves from cloud to edge.",
+      "weight": 0.65,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.8,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n23_agentic_shift"
+      ],
+      "sourceName": "Crescendo AI",
+      "sourceUrl": "https://www.crescendo.ai/news/latest-ai-news-and-updates",
+      "timestamp": "2026-01-08T12:00:00Z",
+      "tags": [
+        "ces",
+        "hardware",
+        "amd",
+        "samsung",
+        "edge-ai",
+        "consumer"
+      ],
+      "extra": {
+        "samsung_target": "800M devices"
+      }
+    },
+    {
+      "id": "n24_big_tech_500b_capex",
+      "col": 5,
+      "label": "💰 Big Tech CapEx to Exceed $500B",
+      "category": "investment",
+      "signal": "escalation",
+      "sentiment": 0.2,
+      "desc": "Analysts predict Big Tech AI capital spending will exceed $500B in 2026, up from already record 2025. Zuckerberg and Nadella say they're racing to keep up with customer orders, not speculating. But skeptics see unsustainable levels.",
+      "weight": 0.85,
+      "oddsDelta": 2,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n05_msft_80b_capex",
+        "n18_ai_202b_investment"
+      ],
+      "sourceName": "Understanding AI",
+      "sourceUrl": "https://www.understandingai.org/p/17-predictions-for-ai-in-2026",
+      "timestamp": "2026-01-10T12:00:00Z",
+      "tags": [
+        "investment",
+        "capex",
+        "big-tech",
+        "data-centers"
+      ],
+      "extra": {
+        "projected": "$500B+"
+      }
+    },
+    {
+      "id": "n22_sovereign_ai_wave",
+      "col": 5,
+      "label": "🌍🏛️ Sovereign AI Wave 2026",
+      "category": "regulation",
+      "signal": "escalation",
+      "sentiment": 0.3,
+      "desc": "India launches sovereign LLM at AI Impact Summit. Nations rush to control AI stack. EU pushes AI gigafactories. Middle powers (India, UAE, Saudi) see massive US tech investment pledges. AI becomes geopolitical tool.",
+      "weight": 0.78,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n08_stargate_uae",
+        "n12_stargate_norway"
+      ],
+      "sourceName": "Atlantic Council",
+      "sourceUrl": "https://www.atlanticcouncil.org/dispatches/eight-ways-ai-will-shape-geopolitics-in-2026/",
+      "timestamp": "2026-01-15T12:00:00Z",
+      "tags": [
+        "sovereign-ai",
+        "geopolitics",
+        "india",
+        "eu",
+        "regulation"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n61_open_source_2025_review",
+      "col": 5,
+      "label": "📖 Open-Source AI Becomes Default",
+      "category": "models",
+      "signal": "resolution",
+      "sentiment": 0.5,
+      "desc": "Hugging Face analysis: open collaboration became default strategy in 2025. Self-sustaining infrastructure rivals proprietary models. But US open-weight lags China (Qwen, DeepSeek). Western labs (Mistral, Olmo) catching up late 2025.",
+      "weight": 0.7,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.82,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n13_qwen_llama_war"
+      ],
+      "sourceName": "Hugging Face / Dentro.de",
+      "sourceUrl": "https://dentro.de/ai/news/",
+      "timestamp": "2026-01-20T12:00:00Z",
+      "tags": [
+        "open-source",
+        "hugging-face",
+        "models",
+        "community"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n77_ai_glasses_100m",
+      "col": 5,
+      "label": "👓 AI Glasses: 10M→100M Units 2026",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "Qualcomm CEO Amon at Davos: ~10M AI glasses shipping/year now, expected 100M by 2026-2027. AI devices taking many forms: earbuds with cameras, jewelry. Qualcomm chips powering majority. AI moves to wearables.",
+      "weight": 0.72,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n76_humane_ai_pin_fails",
+        "n26_ces2026_ai"
+      ],
+      "sourceName": "Axios / Qualcomm",
+      "sourceUrl": "https://www.axios.com/2026/01/19/openai-device-2026-lehane-jony-ive",
+      "timestamp": "2026-01-20T12:00:00Z",
+      "tags": [
+        "wearables",
+        "glasses",
+        "qualcomm",
+        "hardware",
+        "consumer"
+      ],
+      "extra": {
+        "current_shipments": "10M/yr",
+        "projected": "100M by 2026-2027"
+      }
+    },
+    {
+      "id": "n68_openai_jony_ive_device",
+      "col": 5,
+      "label": "📱🎨 OpenAI 'Gumdrop': Jony Ive Device H2",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "OpenAI confirms first hardware device for H2 2026 (Davos). Jony Ive's $6.4B io acquisition leads design. Codenames: 'Gumdrop' (pen) + 'Sweetpea' (earbuds). Screenless, voice-first. Foxconn manufacturing (dropped China's Luxshare). Target: 40-50M units year 1.",
+      "weight": 0.82,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n26_ces2026_ai"
+      ],
+      "sourceName": "TechCrunch / Axios / Benzinga",
+      "sourceUrl": "https://techcrunch.com/2026/01/21/openai-aims-to-ship-its-first-device-in-2026-and-it-could-be-earbuds/",
+      "timestamp": "2026-01-21T12:00:00Z",
+      "tags": [
+        "openai",
+        "hardware",
+        "jony-ive",
+        "consumer",
+        "foxconn",
+        "device"
+      ],
+      "extra": {
+        "acquisition_cost": "$6.4B",
+        "codenames": "Gumdrop, Sweetpea",
+        "year1_target": "40-50M units"
+      }
+    },
+    {
+      "id": "n66_tesla_robotaxi_austin_unsupervised",
+      "col": 5,
+      "label": "🚗🤖 Tesla Unsupervised Robotaxi Austin",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.7,
+      "desc": "Tesla launches public robotaxi rides in Austin WITHOUT safety monitor (Jan 22). First truly driverless Tesla rides. Black trailing cars still follow. 31 vehicles operating. Musk: 'likely to lead to AGI.' Waymo at 450K weekly rides across 5 cities.",
+      "weight": 0.88,
+      "oddsDelta": -3,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n19_waymo_tesla_robo"
+      ],
+      "sourceName": "Teslarati / Electrek / Musk on X",
+      "sourceUrl": "https://www.teslarati.com/tesla-launches-robotaxi-rides-in-austin-with-no-safety-monitor/",
+      "timestamp": "2026-01-22T14:00:00Z",
+      "tags": [
+        "tesla",
+        "robotaxi",
+        "autonomous",
+        "austin",
+        "fsd",
+        "waymo"
+      ],
+      "extra": {
+        "tesla_vehicles": 31,
+        "waymo_weekly": "450K",
+        "fsd_miles": "8.2B cumulative"
+      }
+    },
+    {
+      "id": "n73_waymo_450k_rides",
+      "col": 5,
+      "label": "🚗 Waymo: 450K Weekly Rides, 11 Cities",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.6,
+      "desc": "Waymo now at 450K weekly driverless rides across Austin, Phoenix, SF, LA, Atlanta. 80% increase in 6 months. Plans 11 more US cities by end 2026. Continued operating during SF power outage when competitors failed.",
+      "weight": 0.78,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n19_waymo_tesla_robo"
+      ],
+      "sourceName": "InsideEVs / Electrek",
+      "sourceUrl": "https://insideevs.com/news/781782/tesla-removes-robotaxi-model-y-safety-driver-testing/",
+      "timestamp": "2026-01-25T12:00:00Z",
+      "tags": [
+        "waymo",
+        "autonomous",
+        "robotaxi",
+        "alphabet",
+        "rides"
+      ],
+      "extra": {
+        "weekly_rides": "450K",
+        "cities": 5,
+        "expansion_plan": "11 more by EOY"
+      }
+    },
+    {
+      "id": "n78_deepmind_acquisitions",
+      "col": 6,
+      "label": "🧠 DeepMind: CSM + Hume AI + Sakana",
+      "category": "models",
+      "signal": "noise",
+      "sentiment": 0.4,
+      "desc": "Google DeepMind acquires Common Sense Machines (2D→3D), licenses Hume AI (emotion/voice tech for Gemini), partners Sakana AI (Japan research). Rapid spree late Jan. Strengthening multimodal, voice, regional research.",
+      "weight": 0.65,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n30_gemini31_pro"
+      ],
+      "sourceName": "Fladgate / Google",
+      "sourceUrl": "https://www.fladgate.com/insights/ai-round-up-february-2026",
+      "timestamp": "2026-02-01T12:00:00Z",
+      "tags": [
+        "google",
+        "deepmind",
+        "acquisition",
+        "multimodal",
+        "3d"
+      ],
+      "extra": {
+        "targets": "CSM, Hume AI, Sakana AI"
+      }
+    },
+    {
+      "id": "n27_openai_cerebras_10b",
+      "col": 6,
+      "label": "🔧 OpenAI × Cerebras $10B+ Deal",
+      "category": "infrastructure",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "OpenAI contracts 750MW of compute from Cerebras Systems over 3 years, valued $10B+. Deploys wafer-scale AI chips to accelerate ChatGPT inference. Reduces Nvidia dependence, diversifies beyond Microsoft Azure.",
+      "weight": 0.82,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n17_stargate_stalls"
+      ],
+      "sourceName": "Fladgate / AI Business",
+      "sourceUrl": "https://www.fladgate.com/insights/ai-round-up-february-2026",
+      "timestamp": "2026-02-05T12:00:00Z",
+      "tags": [
+        "openai",
+        "cerebras",
+        "infrastructure",
+        "chips",
+        "nvidia-alternative"
+      ],
+      "extra": {
+        "power": "750MW",
+        "value": "$10B+",
+        "duration": "3 years"
+      }
+    },
+    {
+      "id": "n59_tsmc_record_profit",
+      "col": 6,
+      "label": "🇹🇼📈 TSMC Record Profit, $165B US",
+      "category": "infrastructure",
+      "signal": "catalyst",
+      "sentiment": 0.6,
+      "desc": "TSMC posts record profitability on AI chip demand. Doubles down on US expansion — total $165B investment in Arizona. Raises capex to $52-56B (up 27-37% YoY). 60-80% allocated to advanced processes.",
+      "weight": 0.8,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n11_nvidia_5t",
+        "n33_micron_100b_fab"
+      ],
+      "sourceName": "Fladgate / TSMC",
+      "sourceUrl": "https://www.fladgate.com/insights/ai-round-up-february-2026",
+      "timestamp": "2026-02-06T12:00:00Z",
+      "tags": [
+        "tsmc",
+        "semiconductor",
+        "manufacturing",
+        "arizona",
+        "capex"
+      ],
+      "extra": {
+        "us_investment": "$165B",
+        "capex_2026": "$52-56B",
+        "advanced_pct": "60-80%"
+      }
+    },
+    {
+      "id": "n35_openai_snowflake_200m",
+      "col": 6,
+      "label": "🤝 OpenAI × Snowflake $200M",
+      "category": "adoption",
+      "signal": "noise",
+      "sentiment": 0.4,
+      "desc": "OpenAI and Snowflake announce $200M partnership to integrate models natively into Snowflake Cortex AI. Enterprise data clouds get native AI. Signals shift from API-only to embedded AI platforms.",
+      "weight": 0.65,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.85,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n23_agentic_shift"
+      ],
+      "sourceName": "AI Business / Dentro.de",
+      "sourceUrl": "https://dentro.de/ai/news/",
+      "timestamp": "2026-02-08T12:00:00Z",
+      "tags": [
+        "openai",
+        "snowflake",
+        "enterprise",
+        "data",
+        "partnership"
+      ],
+      "extra": {
+        "amount": "$200M"
+      }
+    },
+    {
+      "id": "n28_meta_amd_100b",
+      "col": 6,
+      "label": "💰🔴 Meta × AMD $100B Chip Deal",
+      "category": "infrastructure",
+      "signal": "catalyst",
+      "sentiment": 0.4,
+      "desc": "Meta announces multiyear $100B agreement with AMD — MI540 GPUs and CPUs. Diversifies AI infrastructure beyond Nvidia. Supports development of 'personal superintelligence.' Largest AMD enterprise deal ever.",
+      "weight": 0.88,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n05_msft_80b_capex",
+        "n11_nvidia_5t"
+      ],
+      "sourceName": "Dentro.de / AI Business",
+      "sourceUrl": "https://dentro.de/ai/news/",
+      "timestamp": "2026-02-10T12:00:00Z",
+      "tags": [
+        "meta",
+        "amd",
+        "chips",
+        "infrastructure",
+        "nvidia-alternative"
+      ],
+      "extra": {
+        "amount": "$100B"
+      }
+    },
+    {
+      "id": "n32_eu_ai_act_code",
+      "col": 6,
+      "label": "🇪🇺📜 EU AI Act Transparency Code",
+      "category": "regulation",
+      "signal": "noise",
+      "sentiment": -0.2,
+      "desc": "EU Commission releases first draft Code of Practice for AI-generated content under AI Act. Requires marking AI content in machine-readable formats. Second draft by March, finalized by June. Rules apply Aug 2026.",
+      "weight": 0.68,
+      "oddsDelta": 1,
+      "sourceAuthority": 0.85,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n03_trump_ai_eo",
+        "n22_sovereign_ai_wave"
+      ],
+      "sourceName": "Fladgate",
+      "sourceUrl": "https://www.fladgate.com/insights/ai-round-up-february-2026",
+      "timestamp": "2026-02-12T12:00:00Z",
+      "tags": [
+        "eu",
+        "regulation",
+        "ai-act",
+        "transparency",
+        "deepfakes"
+      ],
+      "extra": {
+        "effective": "Aug 2026"
+      }
+    },
+    {
+      "id": "n36_anthropic_111m_office",
+      "col": 6,
+      "label": "🏢 Anthropic $111M SF Office Lease",
+      "category": "investment",
+      "signal": "noise",
+      "sentiment": 0.3,
+      "desc": "Anthropic secures $111M office lease in downtown San Francisco. Major physical expansion signals confidence in growth trajectory. Contrasts with broader SF tech exodus narrative.",
+      "weight": 0.55,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.82,
+      "momentum": "→",
+      "volume": "low",
+      "from": [
+        "n18_ai_202b_investment"
+      ],
+      "sourceName": "Yahoo Finance / Dentro.de",
+      "sourceUrl": "https://dentro.de/ai/news/",
+      "timestamp": "2026-02-14T12:00:00Z",
+      "tags": [
+        "anthropic",
+        "office",
+        "san-francisco",
+        "expansion"
+      ],
+      "extra": {
+        "amount": "$111M"
+      }
+    },
+    {
+      "id": "n29_xai_spacex_merge",
+      "col": 6,
+      "label": "🚀🤖 xAI Merges with SpaceX",
+      "category": "investment",
+      "signal": "catalyst",
+      "sentiment": 0.3,
+      "desc": "SpaceX acquires xAI to create vertically integrated 'innovation engine.' Vision: 1M solar-powered orbital data centers. Overcomes terrestrial power constraints. Musk consolidates AI + space + energy stack.",
+      "weight": 0.82,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n06_energy_crisis_ai"
+      ],
+      "sourceName": "Dentro.de / SpaceX",
+      "sourceUrl": "https://dentro.de/ai/news/",
+      "timestamp": "2026-02-15T12:00:00Z",
+      "tags": [
+        "xai",
+        "spacex",
+        "musk",
+        "orbital-dc",
+        "energy",
+        "merger"
+      ],
+      "extra": {
+        "vision": "1M orbital data centers"
+      }
+    },
+    {
+      "id": "n39_uk_fusion_magnets",
+      "col": 6,
+      "label": "🇬🇧⚡ UK Fusion Magnet Breakthrough",
+      "category": "infrastructure",
+      "signal": "resolution",
+      "sentiment": 0.6,
+      "desc": "UK STEP fusion programme tests pioneering 'remountable' superconducting magnets. Key barrier to commercial fusion reactors overcome. Prototype fusion plant targeted for early 2040s. Clean energy for AI long-term.",
+      "weight": 0.6,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.82,
+      "momentum": "→",
+      "volume": "low",
+      "from": [
+        "n06_energy_crisis_ai",
+        "n15_photonic_chip"
+      ],
+      "sourceName": "Fladgate",
+      "sourceUrl": "https://www.fladgate.com/insights/ai-round-up-february-2026",
+      "timestamp": "2026-02-17T12:00:00Z",
+      "tags": [
+        "energy",
+        "fusion",
+        "uk",
+        "infrastructure",
+        "clean-energy"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n67_tesla_cybercab_production",
+      "col": 6,
+      "label": "🚗🏭 Tesla Cybercab Production Starts",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "Tesla begins Cybercab production (purpose-built robotaxi, no steering wheel/pedals). Target: mass production April 2026. Morgan Stanley predicts 1M robotaxis by 2035. AI5 chip enters volume production end-2026.",
+      "weight": 0.78,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n66_tesla_robotaxi_austin_unsupervised"
+      ],
+      "sourceName": "InsideEVs / Morgan Stanley / BeyondSPX",
+      "sourceUrl": "https://insideevs.com/news/781782/tesla-removes-robotaxi-model-y-safety-driver-testing/",
+      "timestamp": "2026-02-17T12:00:00Z",
+      "tags": [
+        "tesla",
+        "cybercab",
+        "manufacturing",
+        "robotaxi",
+        "ai-chip"
+      ],
+      "extra": {
+        "target_cost": "<$0.30/mile",
+        "ai5_chip": "end-2026"
+      }
+    },
+    {
+      "id": "n33_micron_100b_fab",
+      "col": 6,
+      "label": "🏭 Micron $100B Megafab NY",
+      "category": "infrastructure",
+      "signal": "catalyst",
+      "sentiment": 0.6,
+      "desc": "Micron breaks ground on $100B semiconductor megafab in New York — largest US manufacturing facility of its kind. Produces DRAM + HBM for AI workloads. 50,000 jobs over 20+ years. TSMC raises capex to $52-56B.",
+      "weight": 0.8,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n06_energy_crisis_ai",
+        "n14_stargate_5sites"
+      ],
+      "sourceName": "Fladgate",
+      "sourceUrl": "https://www.fladgate.com/insights/ai-round-up-february-2026",
+      "timestamp": "2026-02-18T12:00:00Z",
+      "tags": [
+        "micron",
+        "semiconductor",
+        "hbm",
+        "manufacturing",
+        "us-gov"
+      ],
+      "extra": {
+        "investment": "$100B",
+        "jobs": "50,000",
+        "tsmc_capex": "$52-56B"
+      }
+    },
+    {
+      "id": "n30_gemini31_pro",
+      "col": 6,
+      "label": "🧠 Gemini 3.1 Pro: 77% ARC-AGI-2",
+      "category": "models",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "Google DeepMind releases Gemini 3.1 Pro — 1M token context, 77.1% on ARC-AGI-2 benchmark, multimodal (text/image/audio/video/code). DeepMind also acquires Common Sense Machines, licenses Hume AI for emotion tech.",
+      "weight": 0.8,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n04_claude_35_sonnet",
+        "n25_world_models_rise"
+      ],
+      "sourceName": "LLM Stats / Fladgate",
+      "sourceUrl": "https://llm-stats.com/ai-news",
+      "timestamp": "2026-02-20T12:00:00Z",
+      "tags": [
+        "google",
+        "gemini",
+        "deepmind",
+        "benchmark",
+        "multimodal",
+        "arc-agi"
+      ],
+      "extra": {
+        "arc_agi_2": "77.1%",
+        "context": "1M tokens"
+      }
+    },
+    {
+      "id": "n38_meta_news_deals",
+      "col": 6,
+      "label": "📰 Meta Signs News AI Deals",
+      "category": "adoption",
+      "signal": "noise",
+      "sentiment": 0.3,
+      "desc": "Meta strikes multi-year deals with USA Today, CNN, Fox News, Le Monde for Meta AI chatbot content. Real-time news via Facebook/Instagram/WhatsApp. Reverses prior news retreat. AI platforms become news gateways.",
+      "weight": 0.6,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.85,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n23_agentic_shift"
+      ],
+      "sourceName": "Fladgate",
+      "sourceUrl": "https://www.fladgate.com/insights/ai-round-up-february-2026",
+      "timestamp": "2026-02-20T12:00:00Z",
+      "tags": [
+        "meta",
+        "news",
+        "publishers",
+        "content",
+        "chatbot"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n31_glm5_china",
+      "col": 6,
+      "label": "🇨🇳 GLM-5: 744B on Huawei Chips",
+      "category": "models",
+      "signal": "escalation",
+      "sentiment": -0.2,
+      "desc": "Zhipu AI releases GLM-5 — 744B param MoE, 77.8% SWE-bench, trained on Huawei Ascend chips (not Nvidia). MIT license. China proves it can build frontier models on domestic silicon despite US chip export bans.",
+      "weight": 0.82,
+      "oddsDelta": 2,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n13_qwen_llama_war"
+      ],
+      "sourceName": "LLM Stats",
+      "sourceUrl": "https://llm-stats.com/ai-news",
+      "timestamp": "2026-02-22T12:00:00Z",
+      "tags": [
+        "china",
+        "zhipu",
+        "glm-5",
+        "huawei",
+        "chip-ban",
+        "open-source"
+      ],
+      "extra": {
+        "params": "744B",
+        "swe_bench": "77.8%",
+        "chips": "Huawei Ascend"
+      }
+    },
+    {
+      "id": "n34_anthropic_safety_gov",
+      "col": 6,
+      "label": "🛡️ Anthropic Refuses Gov Safety Removal",
+      "category": "regulation",
+      "signal": "catalyst",
+      "sentiment": 0.0,
+      "desc": "Dario Amodei, CEO of Anthropic, refuses to remove AI safeguards for US government. Major standoff between AI safety and government demands. Highlights tension between deregulation push and responsible AI deployment.",
+      "weight": 0.78,
+      "oddsDelta": 1,
+      "sourceAuthority": 0.88,
+      "momentum": "→",
+      "volume": "high",
+      "from": [
+        "n03_trump_ai_eo"
+      ],
+      "sourceName": "Enterprise Times",
+      "sourceUrl": "https://www.enterprisetimes.co.uk/2026/03/02/security-and-ai-news-from-the-week-beginning-23-february-2026/",
+      "timestamp": "2026-02-24T12:00:00Z",
+      "tags": [
+        "anthropic",
+        "safety",
+        "us-gov",
+        "regulation",
+        "amodei"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n37_espionage_conviction",
+      "col": 6,
+      "label": "🇨🇳🔒 First AI Espionage Conviction",
+      "category": "regulation",
+      "signal": "escalation",
+      "sentiment": -0.4,
+      "desc": "Former Google engineer Linwei Ding convicted on 7 counts of economic espionage + 7 counts theft of trade secrets for stealing AI tech for China. First-ever AI espionage conviction. Escalates US-China AI tension.",
+      "weight": 0.75,
+      "oddsDelta": 1,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n13_qwen_llama_war"
+      ],
+      "sourceName": "Dentro.de / DOJ",
+      "sourceUrl": "https://dentro.de/ai/news/",
+      "timestamp": "2026-02-25T12:00:00Z",
+      "tags": [
+        "china",
+        "espionage",
+        "google",
+        "trade-secrets",
+        "us-gov",
+        "security"
+      ],
+      "extra": {
+        "charges": "14 counts"
+      }
+    },
+    {
+      "id": "n60_adobe_kills_animate",
+      "col": 6,
+      "label": "🎨❌ Adobe Kills Animate for AI",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": -0.3,
+      "desc": "Adobe discontinues Animate (2D animation software) on March 1, 2026, shifting focus to AI products. Signals creative industry disruption. Legacy tools sacrificed for AI-native workflows.",
+      "weight": 0.62,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.85,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n23_agentic_shift"
+      ],
+      "sourceName": "AI Business / Dentro.de",
+      "sourceUrl": "https://dentro.de/ai/news/",
+      "timestamp": "2026-02-28T12:00:00Z",
+      "tags": [
+        "adobe",
+        "creative",
+        "disruption",
+        "software"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n74_openai_pentagon_safeguards",
+      "col": 6,
+      "label": "🎖️📝 OpenAI Adds Pentagon Safeguards",
+      "category": "regulation",
+      "signal": "resolution",
+      "sentiment": 0.1,
+      "desc": "After leaks and criticism, OpenAI adds safeguard clauses to Pentagon ('Dept of War') contract. QuitGPT protests outside SF HQ. Contrasts with Anthropic's outright refusal. AI military ethics debate split.",
+      "weight": 0.72,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.88,
+      "momentum": "→",
+      "volume": "high",
+      "from": [
+        "n34_anthropic_safety_gov"
+      ],
+      "sourceName": "The Decoder / OpenAI",
+      "sourceUrl": "https://the-decoder.com/stargates-500-billion-ai-infrastructure-project-reportedly-stalls-over-unresolved-disputes-between-openai-oracle-and-softbank/",
+      "timestamp": "2026-02-28T12:00:00Z",
+      "tags": [
+        "openai",
+        "pentagon",
+        "military",
+        "safety",
+        "ethics"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n45_apple_siri_gemini",
+      "col": 7,
+      "label": "🍎🤖 Apple: AI Siri via Gemini, March",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.4,
+      "desc": "Apple announces AI-powered Siri debut in March 2026 (iOS 26.4). Partners with Google's 1.2T param Gemini model on Apple Private Cloud Compute. Context-aware, cross-app integration. Apple finally goes all-in on AI.",
+      "weight": 0.78,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n26_ces2026_ai",
+        "n30_gemini31_pro"
+      ],
+      "sourceName": "Crescendo AI",
+      "sourceUrl": "https://www.crescendo.ai/news/latest-ai-news-and-updates",
+      "timestamp": "2026-03-01T09:00:00Z",
+      "tags": [
+        "apple",
+        "siri",
+        "google",
+        "gemini",
+        "consumer",
+        "mobile"
+      ],
+      "extra": {
+        "model": "Gemini 1.2T",
+        "release": "iOS 26.4"
+      }
+    },
+    {
+      "id": "n41_claude_opus_46",
+      "col": 7,
+      "label": "🧠 Claude Opus 4.6 — New Frontier",
+      "category": "models",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "Anthropic releases Claude Opus 4.6 from Claude 4.5 model family. Most advanced model. Claude Code, browsing agent, Cowork desktop agent. Enterprise agencies adopt Claude for SEO, marketing, vibe coding.",
+      "weight": 0.78,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.92,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n30_gemini31_pro",
+        "n34_anthropic_safety_gov"
+      ],
+      "sourceName": "HumAI Blog / LLM Stats",
+      "sourceUrl": "https://www.humai.blog/ai-news-trends-march-2026-complete-monthly-digest/",
+      "timestamp": "2026-03-01T12:00:00Z",
+      "tags": [
+        "anthropic",
+        "claude",
+        "opus",
+        "agentic-ai",
+        "enterprise"
+      ],
+      "extra": {
+        "model": "Claude Opus 4.6"
+      }
+    },
+    {
+      "id": "n42_openai_pentagon",
+      "col": 7,
+      "label": "🎖️ OpenAI Pentagon Contract Controversy",
+      "category": "regulation",
+      "signal": "escalation",
+      "sentiment": -0.3,
+      "desc": "OpenAI's contract with Department of War draws criticism. After leaks, safeguard clauses added. Contrasts with Anthropic's refusal to remove safeguards. AI military use debate intensifies. QuitGPT protests outside OpenAI HQ.",
+      "weight": 0.75,
+      "oddsDelta": 1,
+      "sourceAuthority": 0.88,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n34_anthropic_safety_gov",
+        "n03_trump_ai_eo"
+      ],
+      "sourceName": "The Decoder / Radical Data Science",
+      "sourceUrl": "https://radicaldatascience.wordpress.com/2026/03/04/ai-news-briefs-bulletin-board-for-march-2026/",
+      "timestamp": "2026-03-02T12:00:00Z",
+      "tags": [
+        "openai",
+        "military",
+        "pentagon",
+        "safety",
+        "ethics",
+        "protests"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n62_collectiviq_ensemble",
+      "col": 7,
+      "label": "🤝 CollectivIQ: Multi-Model Ensemble",
+      "category": "adoption",
+      "signal": "noise",
+      "sentiment": 0.3,
+      "desc": "CollectivIQ launches platform cross-referencing multiple AI models for enterprise decisions. Shift from single-model to ensemble approaches. ChatGPT, Claude, Gemini 'vote' on answers for reliability.",
+      "weight": 0.55,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.75,
+      "momentum": "→",
+      "volume": "low",
+      "from": [
+        "n41_claude_opus_46",
+        "n40_gpt53_instant"
+      ],
+      "sourceName": "HumAI Blog",
+      "sourceUrl": "https://www.humai.blog/ai-news-trends-march-2026-complete-monthly-digest/",
+      "timestamp": "2026-03-02T12:00:00Z",
+      "tags": [
+        "ensemble",
+        "enterprise",
+        "multi-model",
+        "reliability"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n64_amazon_ai_cybersec",
+      "col": 7,
+      "label": "🔒🤖 Russia Uses GenAI to Hack 600 Devices",
+      "category": "regulation",
+      "signal": "escalation",
+      "sentiment": -0.5,
+      "desc": "Amazon reports Russian-speaking threat actor used commercial GenAI to compromise 600+ FortiGate devices across 55 countries (Jan-Feb 2026). No vulnerability exploited — targeted weak credentials. AI as cyberweapon reality.",
+      "weight": 0.7,
+      "oddsDelta": 1,
+      "sourceAuthority": 0.9,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n56_ai_military_debate"
+      ],
+      "sourceName": "Enterprise Times / Amazon",
+      "sourceUrl": "https://www.enterprisetimes.co.uk/2026/03/02/security-and-ai-news-from-the-week-beginning-23-february-2026/",
+      "timestamp": "2026-03-02T12:00:00Z",
+      "tags": [
+        "cybersecurity",
+        "russia",
+        "genai",
+        "threat",
+        "amazon"
+      ],
+      "extra": {
+        "devices_compromised": "600+",
+        "countries": 55
+      }
+    },
+    {
+      "id": "n44_agencies_claude_code",
+      "col": 7,
+      "label": "🏢 Ad Agencies Adopt Claude Code",
+      "category": "adoption",
+      "signal": "resolution",
+      "sentiment": 0.5,
+      "desc": "Havas, Broadhead, major agencies use Claude Code for 'vibe coding.' VP builds GEO monitoring platform in one evening. Non-programmers create sophisticated marketing tools. Democratization of software development.",
+      "weight": 0.65,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.82,
+      "momentum": "↑",
+      "volume": "medium",
+      "from": [
+        "n23_agentic_shift",
+        "n41_claude_opus_46"
+      ],
+      "sourceName": "HumAI Blog",
+      "sourceUrl": "https://www.humai.blog/ai-news-trends-march-2026-complete-monthly-digest/",
+      "timestamp": "2026-03-03T12:00:00Z",
+      "tags": [
+        "claude-code",
+        "vibe-coding",
+        "enterprise",
+        "adoption",
+        "marketing"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n63_ai_lawyer_citation_fraud",
+      "col": 7,
+      "label": "⚖️🤖 AI Fabricated Citations Case CT",
+      "category": "regulation",
+      "signal": "noise",
+      "sentiment": -0.3,
+      "desc": "Connecticut Supreme Court asked to dismiss case after lawyers admitted using AI that fabricated citations. Quotes don't exist in cited cases. Ongoing pattern of AI hallucination in legal profession.",
+      "weight": 0.55,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.82,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n58_ai_slop_crisis"
+      ],
+      "sourceName": "HumAI Blog",
+      "sourceUrl": "https://www.humai.blog/ai-news-trends-march-2026-complete-monthly-digest/",
+      "timestamp": "2026-03-03T12:00:00Z",
+      "tags": [
+        "legal",
+        "hallucination",
+        "citations",
+        "trust"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n47_iran_war_ai_impact",
+      "col": 7,
+      "label": "🇮🇷📉 Iran War Hits AI Markets",
+      "category": "investment",
+      "signal": "escalation",
+      "sentiment": -0.6,
+      "desc": "Iran-US conflict (Day 5) causes Asian market crashes: KOSPI -11%, Nikkei -4.3%. NVDA affected by broader risk-off. AI capex plans at risk if prolonged war causes recession. Energy prices spike = higher DC costs.",
+      "weight": 0.8,
+      "oddsDelta": 3,
+      "sourceAuthority": 0.9,
+      "momentum": "↓",
+      "volume": "high",
+      "from": [
+        "n20_market_correction",
+        "n06_energy_crisis_ai"
+      ],
+      "sourceName": "Bloomberg / NBC",
+      "sourceUrl": "https://www.cnbc.com/2026/03/04/cnbc-china-connection-newsletter-ai-startups-global-expansion-nvidia-warning-tripo-isales.html",
+      "timestamp": "2026-03-04T06:00:00Z",
+      "tags": [
+        "iran",
+        "markets",
+        "nvidia",
+        "energy",
+        "recession-risk",
+        "geopolitics"
+      ],
+      "extra": {
+        "kospi": "-11%",
+        "nikkei": "-4.3%",
+        "brent": "+4.7%"
+      }
+    },
+    {
+      "id": "n46_china_ai_gdc_gtc",
+      "col": 7,
+      "label": "🇨🇳 Chinese AI at GDC & GTC",
+      "category": "models",
+      "signal": "noise",
+      "sentiment": 0.0,
+      "desc": "Chinese AI companies (Tripo, Moonshot, ByteDance Seed) set to present at GDC (Mar 9-13) and Nvidia GTC. 3D generation, LLMs, enterprise tools. Expanding globally one year after DeepSeek shock.",
+      "weight": 0.6,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.82,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n31_glm5_china"
+      ],
+      "sourceName": "CNBC",
+      "sourceUrl": "https://www.cnbc.com/2026/03/04/cnbc-china-connection-newsletter-ai-startups-global-expansion-nvidia-warning-tripo-isales.html",
+      "timestamp": "2026-03-04T08:00:00Z",
+      "tags": [
+        "china",
+        "gdc",
+        "gtc",
+        "nvidia",
+        "global-expansion"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n40_gpt53_instant",
+      "col": 7,
+      "label": "🧠 GPT-5.3 Instant Released",
+      "category": "models",
+      "signal": "noise",
+      "sentiment": 0.3,
+      "desc": "OpenAI releases GPT-5.3 Instant — improved conversational flow, answer relevance, web search in ChatGPT. Incremental update, not frontier leap. Focus shifting from capability to usability.",
+      "weight": 0.6,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.9,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n30_gemini31_pro"
+      ],
+      "sourceName": "Radical Data Science",
+      "sourceUrl": "https://radicaldatascience.wordpress.com/2026/03/04/ai-news-briefs-bulletin-board-for-march-2026/",
+      "timestamp": "2026-03-04T12:00:00Z",
+      "tags": [
+        "openai",
+        "gpt-5",
+        "chatgpt",
+        "models"
+      ],
+      "extra": {
+        "model": "GPT-5.3 Instant"
+      }
+    },
+    {
+      "id": "n71_anthropic_no_ipo",
+      "col": 7,
+      "label": "🏢 Anthropic: No IPO Rush (83% NO)",
+      "category": "investment",
+      "signal": "noise",
+      "sentiment": 0.1,
+      "desc": "Polymarket: 83% says NO Anthropic IPO by June 2026. $111M SF office lease signals growth not exit. Focus on enterprise (Claude Code, Cowork). Safety stance (refused gov safeguard removal) differentiates. Valuation reportedly $60B+.",
+      "weight": 0.65,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.82,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n36_anthropic_111m_office",
+        "n34_anthropic_safety_gov"
+      ],
+      "sourceName": "Polymarket / Yahoo Finance",
+      "sourceUrl": "https://polymarket.com/event/anthropic-ipo-closing-market-cap",
+      "timestamp": "2026-03-04T12:00:00Z",
+      "tags": [
+        "anthropic",
+        "ipo",
+        "investment",
+        "polymarket"
+      ],
+      "extra": {
+        "polymarket_no_ipo": "83%",
+        "polymarket_vol": "$397K"
+      }
+    },
+    {
+      "id": "n43_circular_financing_report",
+      "col": 7,
+      "label": "🔄💰 Circular Financing Scrutiny Peaks",
+      "category": "investment",
+      "signal": "escalation",
+      "sentiment": -0.5,
+      "desc": "24/7 Wall St: 'Big Tech equity investments may be fueling their own AI bubble.' Nvidia funds startups → startups buy Nvidia chips. OpenAI raised concerns about circular financing. Valuations rest on 'fragile, self-reinforcing foundations.'",
+      "weight": 0.82,
+      "oddsDelta": 3,
+      "sourceAuthority": 0.85,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n16_bubble_fears_grow",
+        "n20_market_correction"
+      ],
+      "sourceName": "24/7 Wall St",
+      "sourceUrl": "https://247wallst.com/investing/2026/03/04/why-big-techs-equity-investments-may-be-fueling-their-own-ai-bubble/",
+      "timestamp": "2026-03-04T14:00:00Z",
+      "tags": [
+        "bubble",
+        "circular-financing",
+        "nvidia",
+        "investment",
+        "markets"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n69_google_model_dominance",
+      "col": 7,
+      "label": "🏆 Google Leads AI Model Race (79%)",
+      "category": "models",
+      "signal": "catalyst",
+      "sentiment": 0.4,
+      "desc": "Polymarket: Google 79% to have best AI model end of March. Gemini 3.1 Pro dominates benchmarks. DeepMind acquisitions (CSM, Hume AI). Apple Siri partnership validates. But Anthropic Claude Opus 4.6 gaining enterprise share.",
+      "weight": 0.75,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.85,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n30_gemini31_pro",
+        "n41_claude_opus_46"
+      ],
+      "sourceName": "Polymarket / LLM Stats",
+      "sourceUrl": "https://polymarket.com/predictions/ai",
+      "timestamp": "2026-03-05T10:00:00Z",
+      "tags": [
+        "google",
+        "gemini",
+        "benchmarks",
+        "anthropic",
+        "model-race",
+        "polymarket"
+      ],
+      "extra": {
+        "polymarket_google": "79%",
+        "polymarket_vol": "$426K"
+      }
+    },
+    {
+      "id": "n49_pred_apple_siri_launch",
+      "col": 8,
+      "label": "🔮🍎 AI Siri Launch (iOS 26.4)",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.4,
+      "desc": "PROGNOSIS: Apple AI Siri targeted for March release. If successful — AI reaches 2B+ Apple devices. Tests Google Gemini at massive scale. Potential catalyst for consumer AI adoption wave.",
+      "weight": 0.75,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.7,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n45_apple_siri_gemini"
+      ],
+      "sourceName": "Apple / Crescendo AI",
+      "sourceUrl": "",
+      "timestamp": "2026-03-10T12:00:00Z",
+      "tags": [
+        "apple",
+        "siri",
+        "consumer",
+        "prediction",
+        "gemini"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n51_pred_war_capex_risk",
+      "col": 8,
+      "label": "🔮📉 War Threatens AI CapEx Wave",
+      "category": "investment",
+      "signal": "escalation",
+      "sentiment": -0.4,
+      "desc": "PROGNOSIS: If Iran war escalates + oil above $90 → energy costs spike → data center economics worsen → Big Tech may delay/reduce AI capex plans. Could be trigger for bubble correction.",
+      "weight": 0.75,
+      "oddsDelta": 4,
+      "sourceAuthority": 0.65,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n47_iran_war_ai_impact",
+        "n24_big_tech_500b_capex"
+      ],
+      "sourceName": "RateXAI analysis",
+      "sourceUrl": "",
+      "timestamp": "2026-03-10T12:00:00Z",
+      "tags": [
+        "war",
+        "energy",
+        "capex",
+        "bubble",
+        "prediction",
+        "recession"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n50_pred_eu_ai_draft2",
+      "col": 8,
+      "label": "🔮🇪🇺 EU AI Act Draft 2 (March)",
+      "category": "regulation",
+      "signal": "noise",
+      "sentiment": -0.1,
+      "desc": "PROGNOSIS: Second draft of EU AI Act Code of Practice expected March. Will shape transparency requirements for AI-generated content globally. US-EU regulatory divergence widens.",
+      "weight": 0.6,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.7,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n32_eu_ai_act_code"
+      ],
+      "sourceName": "EU Commission",
+      "sourceUrl": "",
+      "timestamp": "2026-03-15T12:00:00Z",
+      "tags": [
+        "eu",
+        "regulation",
+        "ai-act",
+        "prediction"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n48_pred_nvidia_gtc",
+      "col": 8,
+      "label": "🔮 Nvidia GTC: Next-Gen Reveal",
+      "category": "models",
+      "signal": "catalyst",
+      "sentiment": 0.5,
+      "desc": "PROGNOSIS: Nvidia GTC (Mar 17-20) expected to reveal next-gen architecture, Blackwell Ultra or Rubin details. Jensen Huang keynote. Key moment for AI infrastructure narrative. Will set tone for H1 2026 spending.",
+      "weight": 0.85,
+      "oddsDelta": -2,
+      "sourceAuthority": 0.7,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n11_nvidia_5t",
+        "n46_china_ai_gdc_gtc"
+      ],
+      "sourceName": "Analyst consensus",
+      "sourceUrl": "",
+      "timestamp": "2026-03-17T09:00:00Z",
+      "tags": [
+        "nvidia",
+        "gtc",
+        "hardware",
+        "prediction",
+        "blackwell"
+      ],
+      "extra": {
+        "event": "GTC Mar 17-20"
+      }
+    },
+    {
+      "id": "n70_grok_420_expected",
+      "col": 8,
+      "label": "🔮 Grok 4.20 Expected April 20 (97%)",
+      "category": "models",
+      "signal": "noise",
+      "sentiment": 0.2,
+      "desc": "PROGNOSIS: Polymarket 97% confident Grok 4.20 releases by April 20 (Musk's favorite date). xAI-SpaceX merger gives massive compute. Question: will it move benchmarks or just be a marketing play?",
+      "weight": 0.6,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.7,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n29_xai_spacex_merge"
+      ],
+      "sourceName": "Polymarket",
+      "sourceUrl": "https://polymarket.com/event/grok-4pt20-released-by",
+      "timestamp": "2026-04-20T12:00:00Z",
+      "tags": [
+        "xai",
+        "grok",
+        "musk",
+        "prediction",
+        "polymarket"
+      ],
+      "extra": {
+        "polymarket_prob": "97%",
+        "polymarket_vol": "$436K"
+      }
+    },
+    {
+      "id": "n52_pred_openai_ipo",
+      "col": 9,
+      "label": "🔮 OpenAI IPO Decision H1 2026",
+      "category": "investment",
+      "signal": "catalyst",
+      "sentiment": 0.0,
+      "desc": "PROGNOSIS: OpenAI expected to finalize IPO plans in H1 2026. Would be largest AI IPO ever. Tests market appetite for AI stocks. If war/recession delays it — signals bubble deflation.",
+      "weight": 0.8,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.65,
+      "momentum": "→",
+      "volume": "high",
+      "from": [
+        "n07_openai_ipo_talk",
+        "n43_circular_financing_report"
+      ],
+      "sourceName": "Market consensus",
+      "sourceUrl": "",
+      "timestamp": "2026-06-01T12:00:00Z",
+      "tags": [
+        "openai",
+        "ipo",
+        "prediction",
+        "markets"
+      ],
+      "extra": {}
+    },
+    {
+      "id": "n53_pred_agi_announce",
+      "col": 9,
+      "label": "🔮 AGI Announcement Before 2027?",
+      "category": "models",
+      "signal": "catalyst",
+      "sentiment": 0.0,
+      "desc": "PROGNOSIS: Polymarket: 'OpenAI announces AGI before 2027' — currently ~10% YES. ARC-AGI-2 scores climbing (Gemini 77%). If models cross 90% on AGI benchmarks → announcement likely. But definition of AGI itself contested.",
+      "weight": 0.7,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.6,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n30_gemini31_pro",
+        "n40_gpt53_instant"
+      ],
+      "sourceName": "Polymarket",
+      "sourceUrl": "https://polymarket.com/event/openai-announces-it-has-achieved-agi-before-2027",
+      "timestamp": "2026-06-01T12:00:00Z",
+      "tags": [
+        "agi",
+        "prediction",
+        "polymarket",
+        "openai",
+        "benchmark"
+      ],
+      "extra": {
+        "polymarket_yes": "~10%"
+      }
+    },
+    {
+      "id": "n54_pred_bubble_verdict",
+      "col": 9,
+      "label": "🔮📊 AI Bubble: Burst or Sustain?",
+      "category": "investment",
+      "signal": "catalyst",
+      "sentiment": 0.0,
+      "desc": "PROGNOSIS: Polymarket 'AI bubble burst by end 2026' = 18% YES. Key test: do revenues from paying customers catch up with $500B+ capex? If enterprise AI ROI proves out → sustainable. If not → correction.",
+      "weight": 0.9,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.6,
+      "momentum": "→",
+      "volume": "high",
+      "from": [
+        "n43_circular_financing_report",
+        "n51_pred_war_capex_risk",
+        "n52_pred_openai_ipo"
+      ],
+      "sourceName": "Polymarket",
+      "sourceUrl": "https://polymarket.com/event/ai-bubble-burst-by",
+      "timestamp": "2026-06-01T12:00:00Z",
+      "tags": [
+        "bubble",
+        "prediction",
+        "polymarket",
+        "markets",
+        "verdict"
+      ],
+      "extra": {
+        "polymarket_burst_2026": "18%",
+        "polymarket_burst_q1": "2%"
+      }
+    },
+    {
+      "id": "n81_pred_model_race_june",
+      "col": 9,
+      "label": "🔮🏆 AI Model Race H1: Google vs All",
+      "category": "models",
+      "signal": "catalyst",
+      "sentiment": 0.0,
+      "desc": "PROGNOSIS: Polymarket gives Google 72% to have best model end of June. But: Claude 4.5 family expanding, GPT-5.x iterating, Grok 4.20 coming, GLM-5 from China. June benchmark snapshot will define H2 narrative.",
+      "weight": 0.7,
+      "oddsDelta": 0,
+      "sourceAuthority": 0.6,
+      "momentum": "→",
+      "volume": "high",
+      "from": [
+        "n69_google_model_dominance",
+        "n41_claude_opus_46",
+        "n31_glm5_china"
+      ],
+      "sourceName": "Polymarket",
+      "sourceUrl": "https://polymarket.com/event/which-company-has-best-ai-model-end-of-june",
+      "timestamp": "2026-06-30T12:00:00Z",
+      "tags": [
+        "models",
+        "benchmark",
+        "google",
+        "anthropic",
+        "openai",
+        "prediction",
+        "polymarket"
+      ],
+      "extra": {
+        "polymarket_google": "72%",
+        "polymarket_vol": "$692K"
+      }
+    },
+    {
+      "id": "n65_pred_eu_ai_act_aug",
+      "col": 9,
+      "label": "🔮🇪🇺 EU AI Act Transparency (Aug 2026)",
+      "category": "regulation",
+      "signal": "escalation",
+      "sentiment": -0.2,
+      "desc": "PROGNOSIS: EU AI Act transparency rules for AI-generated content apply August 2, 2026. Global companies must comply. Potential US-EU regulatory split deepens. Could restrict AI deployment in Europe.",
+      "weight": 0.72,
+      "oddsDelta": 1,
+      "sourceAuthority": 0.7,
+      "momentum": "→",
+      "volume": "medium",
+      "from": [
+        "n32_eu_ai_act_code",
+        "n50_pred_eu_ai_draft2"
+      ],
+      "sourceName": "EU Commission / Fladgate",
+      "sourceUrl": "https://www.fladgate.com/insights/ai-round-up-february-2026",
+      "timestamp": "2026-08-02T12:00:00Z",
+      "tags": [
+        "eu",
+        "regulation",
+        "ai-act",
+        "prediction",
+        "compliance"
+      ],
+      "extra": {
+        "effective_date": "2026-08-02"
+      }
+    },
+    {
+      "id": "n79_pred_openai_device_h2",
+      "col": 9,
+      "label": "🔮📱 OpenAI Device Unveil H2 2026",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.3,
+      "desc": "PROGNOSIS: Polymarket 59% YES OpenAI launches consumer hardware by Dec 31. H2 2026 target confirmed at Davos. Foxconn manufacturing in Vietnam/US. If successful: first mass-market AI-native device. If fails: repeats Humane AI Pin story.",
+      "weight": 0.78,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.65,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n68_openai_jony_ive_device",
+        "n77_ai_glasses_100m"
+      ],
+      "sourceName": "Polymarket / TechCrunch",
+      "sourceUrl": "https://polymarket.com/event/will-openai-launch-a-consumer-hardware-product-by",
+      "timestamp": "2026-09-01T12:00:00Z",
+      "tags": [
+        "openai",
+        "hardware",
+        "prediction",
+        "polymarket",
+        "consumer"
+      ],
+      "extra": {
+        "polymarket_yes": "59%",
+        "polymarket_vol": "$78K"
+      }
+    },
+    {
+      "id": "n80_pred_tesla_fsd_scale",
+      "col": 9,
+      "label": "🔮🚗 Tesla FSD Nationwide by EOY?",
+      "category": "adoption",
+      "signal": "catalyst",
+      "sentiment": 0.3,
+      "desc": "PROGNOSIS: Musk says unsupervised FSD nationwide US + most countries by end 2026. Morgan Stanley: 1000 robotaxis 2026, 1M by 2035. Cybercab production April. But: only 31 vehicles in Austin, 7 crashes reported, trailing cars still following.",
+      "weight": 0.75,
+      "oddsDelta": -1,
+      "sourceAuthority": 0.6,
+      "momentum": "↑",
+      "volume": "high",
+      "from": [
+        "n67_tesla_cybercab_production",
+        "n66_tesla_robotaxi_austin_unsupervised"
+      ],
+      "sourceName": "Musk / Morgan Stanley / Electrek",
+      "sourceUrl": "https://electrek.co/2026/01/22/tesla-starts-robotaxi-rides-without-safety-monitor-in-austin-what-you-need-to-know/",
+      "timestamp": "2026-12-01T12:00:00Z",
+      "tags": [
+        "tesla",
+        "fsd",
+        "robotaxi",
+        "prediction",
+        "nationwide"
+      ],
+      "extra": {
+        "musk_target": "nationwide EOY",
+        "morgan_stanley": "1000 vehicles 2026"
+      }
+    }
+  ],
+  "cuiBono": {
+    "benefits": [
+      {
+        "actor": "Nvidia",
+        "category": "corps",
+        "desc": "Monopoly on AI training chips. $5T valuation. Every dollar of AI capex flows through Nvidia."
+      },
+      {
+        "actor": "Cloud providers (AWS, Azure, GCP)",
+        "category": "corps",
+        "desc": "AI capex = data center revenue. Infrastructure layer captures value regardless of which model wins."
+      },
+      {
+        "actor": "Energy sector",
+        "category": "sectors",
+        "desc": "AI data centers drive unprecedented power demand. Nuclear, fusion, renewables all benefit."
+      },
+      {
+        "actor": "Defense contractors",
+        "category": "corps",
+        "desc": "Military AI contracts expanding. OpenAI Pentagon deal. AI-powered autonomous systems."
+      },
+      {
+        "actor": "US tech dominance",
+        "category": "states",
+        "desc": "79% of AI investment flows to US. Stargate cements American AI infrastructure lead."
+      },
+      {
+        "actor": "Anthropic & safety-first labs",
+        "category": "corps",
+        "desc": "Regulatory concerns benefit safety-focused labs. Enterprise trust premium."
+      }
+    ],
+    "loses": [
+      {
+        "actor": "Traditional software companies",
+        "category": "corps",
+        "desc": "AI agents replace SaaS tools. Adobe kills Animate. Vibe coding threatens dev tools market."
+      },
+      {
+        "actor": "Knowledge workers",
+        "category": "sectors",
+        "desc": "AI coding agents, writing assistants, research tools displace white-collar tasks."
+      },
+      {
+        "actor": "Electricity ratepayers",
+        "category": "sectors",
+        "desc": "AI data centers strain grids, raise electricity bills for households and small businesses."
+      },
+      {
+        "actor": "China (partially)",
+        "category": "states",
+        "desc": "US chip bans limit frontier model training. But DeepSeek/GLM-5 show China adapts on domestic silicon."
+      },
+      {
+        "actor": "Late-stage AI investors",
+        "category": "sectors",
+        "desc": "Circular financing, inflated valuations. If bubble pops, late investors take biggest losses."
+      },
+      {
+        "actor": "Open-source ecosystem",
+        "category": "sectors",
+        "desc": "American open-source falling behind Chinese. Meta may go closed. Community loses access to frontier."
+      }
+    ]
+  },
+  "rightPanel": {
+    "states": [
+      {
+        "label": "🇺🇸 United States",
+        "role": "Leader",
+        "sentiment": 0.6,
+        "desc": "79% of AI investment. Stargate, deregulation, military AI. But circular financing risk."
+      },
+      {
+        "label": "🇨🇳 China",
+        "role": "Challenger",
+        "sentiment": 0.3,
+        "desc": "DeepSeek, GLM-5 on Huawei chips. Overcomes chip bans. Open-source leader."
+      },
+      {
+        "label": "🇪🇺 EU",
+        "role": "Regulator",
+        "sentiment": -0.2,
+        "desc": "AI Act transparency code. Gigafactories push. Regulatory friction with US approach."
+      },
+      {
+        "label": "🇬🇧 UK",
+        "role": "Innovator",
+        "sentiment": 0.3,
+        "desc": "Fusion breakthrough (STEP). AI safety leadership. Google DeepMind Berlin center."
+      },
+      {
+        "label": "🇦🇪 UAE",
+        "role": "Investor",
+        "sentiment": 0.5,
+        "desc": "Stargate UAE with G42. AI infrastructure hub. Bridge between US and Asian markets."
+      },
+      {
+        "label": "🇮🇳 India",
+        "role": "Emerging",
+        "sentiment": 0.4,
+        "desc": "Sovereign LLM launch. US tech billions pledged. Middle power AI acceleration."
+      }
+    ],
+    "corps": [
+      {
+        "label": "OpenAI",
+        "sentiment": 0.4,
+        "change": "IPO pending",
+        "desc": "Stargate, Cerebras deal, Pentagon contract. $300B+ valuation but losses and controversy."
+      },
+      {
+        "label": "Anthropic",
+        "sentiment": 0.5,
+        "change": "$111M lease",
+        "desc": "Claude Opus 4.6, safety leadership, enterprise adoption. Refused gov safety removal."
+      },
+      {
+        "label": "Google DeepMind",
+        "sentiment": 0.5,
+        "change": "Gemini 3.1",
+        "desc": "ARC-AGI-2 77.1%. Acquires CSM, Hume AI. Apple partnership for Siri."
+      },
+      {
+        "label": "Nvidia",
+        "sentiment": 0.3,
+        "change": "$5T → war risk",
+        "desc": "Monopoly but circular financing scrutiny. GTC upcoming. Iran war market impact."
+      },
+      {
+        "label": "Meta",
+        "sentiment": 0.2,
+        "change": "$100B AMD",
+        "desc": "Massive capex, AMD diversification. News deals. But open-source leadership waning."
+      },
+      {
+        "label": "xAI / SpaceX",
+        "sentiment": 0.4,
+        "change": "Merged",
+        "desc": "Orbital data centers vision. Musk consolidates stack. Wild card."
+      }
+    ],
+    "indices": [
+      {
+        "label": "NVDA",
+        "value": "$180 (cap $4.4T)",
+        "change": "-0.5% today",
+        "sentiment": -0.1,
+        "source": "Yahoo Finance, Mar 5 2026"
+      },
+      {
+        "label": "S&P 500",
+        "value": "~5,800",
+        "change": "-2.1% week",
+        "sentiment": -0.3
+      },
+      {
+        "label": "NASDAQ",
+        "value": "~18,200",
+        "change": "-3.4% week",
+        "sentiment": -0.4
+      },
+      {
+        "label": "AI Startup Funding 2025",
+        "value": "$202B",
+        "change": "+34% YoY",
+        "sentiment": 0.5,
+        "source": "AAF / Ropes & Gray"
+      },
+      {
+        "label": "Big Tech CapEx 2026E",
+        "value": "$500B+ projected",
+        "change": "analyst est.",
+        "sentiment": 0.2,
+        "source": "Understanding AI / Goldman Sachs"
+      },
+      {
+        "label": "Polymarket: AI Bubble 2026",
+        "value": "18% YES",
+        "change": "",
+        "sentiment": -0.2,
+        "source": "polymarket.com/event/ai-bubble-burst-by"
+      }
+    ],
+    "polymarketAnchors": [
+      {
+        "question": "Which company has best AI model end of Jan?",
+        "url": "https://polymarket.com/predictions/ai",
+        "volume": "$16M",
+        "status": "active",
+        "currentOdds": {
+          "Google": "94%"
+        },
+        "expiry": "2026-01-31",
+        "note": "Gemini 3.1 Pro dominant. Near resolution."
+      },
+      {
+        "question": "AI bubble burst by...?",
+        "url": "https://polymarket.com/event/ai-bubble-burst-by",
+        "volume": "$2M",
+        "status": "active",
+        "currentOdds": {
+          "Dec 2026": "18%",
+          "Mar 2026": "2%"
+        },
+        "expiry": "2026-12-31",
+        "ratexProb": {
+          "Dec 2026": 24
+        },
+        "alpha": 6,
+        "confidence": 0.62,
+        "note": "Circular financing + Iran war energy costs = RateXAI sees higher risk."
+      },
+      {
+        "question": "Tesla unsupervised FSD by...?",
+        "url": "https://polymarket.com/event/tesla-launches-unsupervised-full-self-driving-fsd-by",
+        "volume": "$2M",
+        "status": "active",
+        "currentOdds": {
+          "Jun 30": "38%"
+        },
+        "expiry": "rolling",
+        "ratexProb": {
+          "Jun 30": 55
+        },
+        "alpha": 17,
+        "confidence": 0.7,
+        "note": "Already launched unsupervised Austin Jan 22. 31 vehicles. 7 crashes. Trailing cars."
+      },
+      {
+        "question": "Largest company end of June?",
+        "url": "https://polymarket.com/event/largest-company-end-of-june-712",
+        "volume": "$1M",
+        "status": "active",
+        "currentOdds": {
+          "NVIDIA": "59%"
+        },
+        "expiry": "2026-06-30",
+        "ratexProb": {
+          "NVIDIA": 50
+        },
+        "alpha": -9,
+        "confidence": 0.55,
+        "note": "NVDA $4.4T. But Iran war + circular financing pressure."
+      },
+      {
+        "question": "Gemini 3 FrontierMath by Jan 31?",
+        "url": "https://polymarket.com/predictions/ai",
+        "volume": "$1M",
+        "status": "active",
+        "currentOdds": {
+          "40%+": "34%"
+        },
+        "expiry": "2026-01-31",
+        "note": "Benchmark-specific. Google pushing frontier."
+      },
+      {
+        "question": "OpenAI announces AGI before 2027?",
+        "url": "https://polymarket.com/event/openai-announces-it-has-achieved-agi-before-2027",
+        "volume": "$907K",
+        "status": "active",
+        "currentOdds": {
+          "Yes": "~10%"
+        },
+        "expiry": "2026-12-31",
+        "ratexProb": 6,
+        "alpha": -4,
+        "confidence": 0.45,
+        "note": "ARC-AGI-2: Gemini 77%. But AGI definition contested."
+      },
+      {
+        "question": "Best AI model end of June?",
+        "url": "https://polymarket.com/predictions/ai",
+        "volume": "$692K",
+        "status": "active",
+        "currentOdds": {
+          "Google": "72%"
+        },
+        "expiry": "2026-06-30",
+        "ratexProb": {
+          "Google": 60
+        },
+        "alpha": -12,
+        "confidence": 0.5,
+        "note": "Claude 4.5 family + GPT-5.x + Grok 4.20 may shift landscape."
+      },
+      {
+        "question": "Grok 4.20 released by...?",
+        "url": "https://polymarket.com/event/grok-4pt20-released-by",
+        "volume": "$436K",
+        "status": "active",
+        "currentOdds": {
+          "April 20": "97%"
+        },
+        "expiry": "2026-04-20",
+        "note": "xAI-SpaceX merger. Near certainty."
+      },
+      {
+        "question": "Best AI model end of March?",
+        "url": "https://polymarket.com/predictions/ai",
+        "volume": "$426K",
+        "status": "active",
+        "currentOdds": {
+          "Google": "79%"
+        },
+        "expiry": "2026-03-31",
+        "note": "Gemini 3.1 Pro. Nvidia GTC Mar 17 could shift."
+      },
+      {
+        "question": "Anthropic IPO by June?",
+        "url": "https://polymarket.com/event/anthropic-ipo-closing-market-cap",
+        "volume": "$397K",
+        "status": "active",
+        "currentOdds": {
+          "No IPO by June": "83%"
+        },
+        "expiry": "2026-06-30",
+        "note": "$111M SF office = growth not exit."
+      },
+      {
+        "question": "Largest company end Dec 2026?",
+        "url": "https://polymarket.com/event/largest-company-end-of-december-2026",
+        "volume": "$352K",
+        "status": "active",
+        "currentOdds": {
+          "NVIDIA": "41%",
+          "Alphabet": "25%",
+          "Apple": "21%"
+        },
+        "expiry": "2026-12-31",
+        "ratexProb": {
+          "NVIDIA": 35
+        },
+        "alpha": -6,
+        "confidence": 0.5,
+        "note": "Long horizon. War/bubble risk could reshuffle."
+      },
+      {
+        "question": "OpenAI consumer hardware by Dec 2026?",
+        "url": "https://polymarket.com/event/will-openai-launch-a-consumer-hardware-product-by",
+        "volume": "$78K",
+        "status": "active",
+        "currentOdds": {
+          "Dec 31": "59%"
+        },
+        "expiry": "2026-12-31",
+        "ratexProb": 65,
+        "alpha": 6,
+        "confidence": 0.6,
+        "note": "Jony Ive 'Gumdrop'/'Sweetpea'. Foxconn. H2 2026 confirmed."
+      },
+      {
+        "question": "Best AI coding model March 31?",
+        "url": "https://polymarket.com/predictions/ai",
+        "volume": "$48K",
+        "status": "active",
+        "currentOdds": {
+          "OpenAI": "45%"
+        },
+        "expiry": "2026-03-31",
+        "note": "Claude Code + Cursor strong. SWE-bench: GLM-5 77.8%."
+      }
+    ]
+  }
+}
