@@ -498,8 +498,8 @@ export function NarrativeLegendBar(props: NarrativeLegendBarProps) {
 
   return (
     <div style={{
-      position: "absolute", bottom: 8, left: 12, right: panelOffset + 12,
-      display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap",
+      position: "absolute", bottom: 8, left: 12,
+      display: "inline-flex", alignItems: "center", gap: 12,
       padding: "5px 12px", borderRadius: 8,
       background: `${theme.bg}ee`, backdropFilter: "blur(12px)",
       border: `1px solid ${theme.border}`, zIndex: 25,

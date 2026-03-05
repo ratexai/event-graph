@@ -495,7 +495,7 @@ const DualProbBar: React.FC<{
       </div>
       {/* Model bar */}
       <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 3 }}>
-        <span style={{ fontSize: 9, color: theme.positive, width: 28, flexShrink: 0, fontWeight: 700 }}>MDL</span>
+        <span style={{ fontSize: 9, color: theme.positive, width: 28, flexShrink: 0, fontWeight: 700 }}>RXAI</span>
         <div style={{ flex: 1, height: 6, borderRadius: 3, background: theme.bgAlt, overflow: "hidden" }}>
           <div style={{ height: 6, borderRadius: 3, background: theme.positive, width: `${rxProb}%`, transition: "width 0.3s" }} />
         </div>
@@ -642,7 +642,7 @@ const AlphaSignals: React.FC<{
               {s.label.replace(/^PM:\s*/, "").slice(0, 35)}
             </span>
             <span style={{ color: theme.muted, flexShrink: 0 }}>PM {s.pm}%</span>
-            <span style={{ color: theme.positive, fontWeight: 700, flexShrink: 0 }}>MDL {s.rx}%</span>
+            <span style={{ color: theme.positive, fontWeight: 700, flexShrink: 0 }}>RXAI {s.rx}%</span>
             <span style={{ color: al.color, fontWeight: 800, flexShrink: 0 }}>
               {s.alpha > 0 ? "+" : ""}{s.alpha}pp
             </span>

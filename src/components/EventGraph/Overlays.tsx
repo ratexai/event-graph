@@ -99,8 +99,8 @@ export const NarrativeLegend = memo<LegendBarProps>(({ theme, panelOffset }) => 
   const signals: NarrativeSignal[] = ["escalation", "catalyst", "resolution", "reversal", "noise"];
   return (
     <div style={{
-      position: "absolute", bottom: 8, left: 16, right: panelOffset + 16,
-      display: "flex", alignItems: "center", gap: 14, padding: "5px 12px",
+      position: "absolute", bottom: 8, left: 16,
+      display: "inline-flex", alignItems: "center", gap: 14, padding: "5px 12px",
       background: theme.surface, borderRadius: 8,
       border: `1px solid ${theme.border}`, zIndex: 20,
       fontSize: 12, fontFamily: theme.fontFamily,
