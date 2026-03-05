@@ -373,7 +373,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #1 RESOLVED: US strikes Iran ($529M) ──────────────────
     {
       id: "pm_us_strikes_iran",
-      col: 9,
+      col: 5,
       label: "PM: US strikes Iran by Feb 28 — $529M ✅",
       category: "war",
       signal: "catalyst",
@@ -405,7 +405,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #2 RESOLVED: US military action before July ($29.9M) ──
     {
       id: "pm_us_military_action_jul",
-      col: 9,
+      col: 5,
       label: "PM: US military action before July — $29.9M ✅",
       category: "war",
       signal: "catalyst",
@@ -491,7 +491,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #4 ACTIVE: Conflict ends by ($14M) ────────────────────
     {
       id: "pm_conflict_ends",
-      col: 13,
+      col: 12,
       label: "PM: Conflict ends by Mar 31? — $14M",
       category: "war",
       signal: "resolution",
@@ -544,7 +544,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #5 ACTIVE: US x Iran ceasefire ($12.5M) ───────────────
     {
       id: "pm_ceasefire",
-      col: 13,
+      col: 12,
       label: "PM: US-Iran ceasefire by...? — $12.5M",
       category: "war",
       signal: "resolution",
@@ -654,7 +654,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #7 ACTIVE: US forces enter Iran ($6M) ─────────────────
     {
       id: "pm_us_forces_enter",
-      col: 13,
+      col: 11,
       label: "PM: US ground forces enter Iran? — $6M",
       category: "war",
       signal: "escalation",
@@ -690,7 +690,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #8 RESOLVED: Israel x Iran ceasefire broken ($5.1M) ───
     {
       id: "pm_ceasefire_broken",
-      col: 9,
+      col: 6,
       label: "PM: Israel-Iran ceasefire broken — $5.1M ✅",
       category: "war",
       signal: "escalation",
@@ -720,7 +720,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #9 RESOLVED: Khamenei out 2026 ($4.6M) ───────────────
     {
       id: "pm_khamenei_out_2026",
-      col: 9,
+      col: 5,
       label: "PM: Khamenei out 2026 — $4.6M ✅",
       category: "politics",
       signal: "catalyst",
@@ -750,7 +750,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #10 ACTIVE: New Supreme Leader by Mar 31 ($4.3M) ──────
     {
       id: "pm_successor_named",
-      col: 13,
+      col: 11,
       label: "PM: Successor named by Mar 31? — $4.3M",
       category: "politics",
       signal: "catalyst",
@@ -787,7 +787,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #11 ACTIVE: Crude Oil by March ($3.4M) ────────────────
     {
       id: "pm_crude_oil_march",
-      col: 13,
+      col: 10,
       label: "PM: Crude Oil hit $90/$100/$120 by March? — $3.4M",
       category: "economics",
       signal: "escalation",
@@ -931,7 +931,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── #14 ACTIVE: Iran leader end of 2026 ($206K) ───────────
     {
       id: "pm_iran_leader_2026",
-      col: 14,
+      col: 15,
       label: "PM: Iran leader end of 2026? — $206K",
       category: "politics",
       signal: "catalyst",
@@ -967,7 +967,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── Standalone scenario nodes ─────────────────────────────
     {
       id: "scenario_oil_90",
-      col: 12,
+      col: 10,
       label: "Brent stays above $90",
       category: "economics",
       signal: "escalation",
@@ -1004,7 +1004,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     },
     {
       id: "scenario_ceasefire_early",
-      col: 12,
+      col: 11,
       label: "Early ceasefire by Mar 15",
       category: "war",
       signal: "resolution",
@@ -1098,7 +1098,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── Conflict ends scenarios (from pm_conflict_ends) ────────
     {
       id: "sc_conflict_ends_yes",
-      col: 14,
+      col: 13,
       label: "Conflict ends by Mar 31: resolution",
       category: "war",
       signal: "resolution",
@@ -1122,7 +1122,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     },
     {
       id: "sc_conflict_ends_no",
-      col: 14,
+      col: 13,
       label: "Conflict continues past March",
       category: "war",
       signal: "escalation",
@@ -1148,7 +1148,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── Ceasefire scenarios (from pm_ceasefire) ────────────────
     {
       id: "sc_ceasefire_yes",
-      col: 14,
+      col: 13,
       label: "Ceasefire by Mar 31: diplomacy wins",
       category: "war",
       signal: "resolution",
@@ -1181,7 +1181,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     },
     {
       id: "sc_ceasefire_no",
-      col: 14,
+      col: 13,
       label: "No ceasefire: fighting continues",
       category: "war",
       signal: "escalation",
@@ -1257,7 +1257,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     // ─── Oil scenarios (from pm_crude_oil_march) ────────────────
     {
       id: "sc_oil90_yes",
-      col: 14,
+      col: 11,
       label: "Oil hits $90+: stagflation fears",
       category: "economics",
       signal: "escalation",
@@ -1285,7 +1285,7 @@ export const iranEnrichedNodes: NarrativeNode[] = [
     },
     {
       id: "sc_oil90_no",
-      col: 14,
+      col: 11,
       label: "Oil stays below $90: managed crisis",
       category: "economics",
       signal: "resolution",

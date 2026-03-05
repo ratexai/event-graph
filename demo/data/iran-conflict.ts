@@ -98,7 +98,7 @@ export const iranConflictData = {
   },
   timeSlots: [
     ...baseData.timeSlots,
-    { index: 9, label: "Mar 5 (Day 6)", startDate: "2026-03-05", endDate: "2026-03-05", type: "current" as const },
+    { index: 9, label: "Mar 5", startDate: "2026-03-05", endDate: "2026-03-05", type: "current" as const },
     { index: 10, label: "Mar 6-7 (prog)", startDate: "2026-03-06", endDate: "2026-03-07", type: "near_future" as const },
     { index: 11, label: "Mar 8-10 (prog)", startDate: "2026-03-08", endDate: "2026-03-10", type: "near_future" as const },
     { index: 12, label: "Mar 11-15 (prog)", startDate: "2026-03-11", endDate: "2026-03-15", type: "anchor_date" as const },
