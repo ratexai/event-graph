@@ -749,7 +749,7 @@ export const DetailPanel: React.FC<DetailPanelProps> = ({
   isMobile = false,
 }) => {
   const W = pw ?? 340;
-  const T = tOff ?? 48;
+  const T = tOff ?? 0;
 
   const panelStyle: React.CSSProperties = isMobile
     ? {

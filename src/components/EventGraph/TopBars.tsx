@@ -94,38 +94,15 @@ export function TopBar(props: TopBarProps) {
   } = props;
 
   const [openFlyout, setOpenFlyout] = useState<"maps" | "projects" | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [searchFocused, setSearchFocused] = useState(false);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const searchInputRef = useRef<HTMLInputElement>(null);
-  const searchDropRef = useRef<HTMLDivElement>(null);
 
-  // ⌘K shortcut — focus the always-visible search input
+  // Escape to close flyouts
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
-        e.preventDefault();
-        searchInputRef.current?.focus();
-      }
-      if (e.key === "Escape") {
-        setOpenFlyout(null);
-        setSearchFocused(false);
-        searchInputRef.current?.blur();
-      }
+      if (e.key === "Escape") setOpenFlyout(null);
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
-  }, []);
-
-  // Close search dropdown on outside click
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (searchDropRef.current && !searchDropRef.current.contains(e.target as Node)) {
-        setSearchFocused(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   const hoverOpen = (which: "maps" | "projects") => {
@@ -150,12 +127,6 @@ export function TopBar(props: TopBarProps) {
     const cat = p.category || "Other";
     (acc[cat] = acc[cat] || []).push(p); return acc;
   }, {});
-
-  // Search results (unified)
-  const sq = searchQuery.trim().toLowerCase();
-  const searchMaps = sq ? maps.filter((m) => m.title.toLowerCase().includes(sq)) : [];
-  const searchProjects = sq ? projects.filter((p) => p.title.toLowerCase().includes(sq)) : [];
-  const hasSearchResults = searchMaps.length > 0 || searchProjects.length > 0;
 
   const navLabel: React.CSSProperties = {
     fontSize: 13, fontWeight: 500, cursor: "pointer",
@@ -344,68 +315,6 @@ export function TopBar(props: TopBarProps) {
 
       </div>{/* end scrollable filters wrapper */}
 
-      {/* Spacer */}
-      {!isMobile && <div style={{ flex: 1 }} />}
-
-      {/* Always-visible search input — top-right corner, hidden on mobile */}
-      {nav && !isMobile && (
-        <div ref={searchDropRef} style={{ position: "fixed", top: 6, right: 10, width: 180, zIndex: 35 }}>
-          <input
-            ref={searchInputRef}
-            type="text"
-            placeholder="Search... ⌘K"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setSearchFocused(true)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && sq) nav.onSearch?.(searchQuery);
-              if (e.key === "Escape") { setSearchFocused(false); searchInputRef.current?.blur(); }
-            }}
-            style={{
-              width: "100%", height: 24, background: theme.surface,
-              border: `1px solid ${searchFocused ? theme.accent + "60" : theme.border}`,
-              borderRadius: 5, padding: "0 8px", color: theme.text, fontSize: 11,
-              fontFamily: theme.fontFamily, outline: "none", boxSizing: "border-box",
-              transition: "border-color 0.15s",
-            }}
-          />
-          {searchFocused && sq && (hasSearchResults || sq) && (
-            <div style={{ ...flyoutStyle(theme), right: 0, left: "auto", width: 340, marginTop: 4 }}>
-              {searchMaps.length > 0 && (<>
-                <div style={{ padding: "4px 14px 1px", fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted }}>
-                  <LogoPlaceholder size={12} color={theme.accent} letter="P" /> PREDICTION MAPS
-                </div>
-                {searchMaps.map((m) => (
-                  <button key={m.id} onClick={() => { nav.onNavigateMap?.(m.id); setSearchQuery(""); setSearchFocused(false); }}
-                    style={rowItem(false)}>
-                    <LogoPlaceholder size={16} color={theme.accent} letter={m.title.charAt(0)} />
-                    <span style={{ flex: 1 }}>{m.title}</span>
-                    <span style={{ fontSize: 10, color: theme.muted }}>{m.nodeCount}</span>
-                    <span style={{ fontSize: 9, padding: "0 4px", borderRadius: 44, background: `${STATUS_COLOR[m.status]}18`, color: STATUS_COLOR[m.status] }}>● {m.status}</span>
-                  </button>
-                ))}
-              </>)}
-              {searchProjects.length > 0 && (<>
-                <div style={{ padding: "4px 14px 1px", fontSize: 9, fontWeight: 700, letterSpacing: 1.5, textTransform: "uppercase", color: theme.muted, marginTop: 2 }}>
-                  <LogoPlaceholder size={12} color={theme.complement} letter="H" /> HISTORYFI
-                </div>
-                {searchProjects.map((p) => (
-                  <button key={p.id} onClick={() => { nav.onNavigateProject?.(p.id); setSearchQuery(""); setSearchFocused(false); }}
-                    style={rowItem(false)}>
-                    <LogoPlaceholder size={16} color={theme.complement} letter={p.title.charAt(0)} />
-                    <span style={{ flex: 1 }}>{p.title}</span>
-                    <span style={{ fontSize: 10, color: theme.muted }}>{p.eventCount} ev</span>
-                    {p.rating && <span style={{ fontSize: 10, color: theme.accent, fontWeight: 600 }}>{p.rating}</span>}
-                  </button>
-                ))}
-              </>)}
-              {sq && !hasSearchResults && (
-                <div style={{ padding: 12, textAlign: "center", color: theme.muted, fontSize: 11 }}>No results for "{searchQuery}"</div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 }
