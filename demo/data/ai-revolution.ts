@@ -1,8 +1,8 @@
 /**
- * AI Revolution Prediction Map — 81 JSON + 15 enriched = 96 nodes
+ * AI Revolution Prediction Map — 81 JSON + 22 enriched = 103 nodes
  *
  * Source: Event database test/ai-revolution-prediction-map.json
- * Enriched: 5 Polymarket anchors + 10 YES/NO scenarios
+ * Enriched: 12 Polymarket anchors (verified) + 10 YES/NO scenarios
  * Normalized to NarrativeFlowData via normalize.ts
  */
 import type { RawAiRevolutionJson } from "./normalize";
@@ -88,6 +88,6 @@ export const aiRevolutionData = {
   },
   timeSlots: [
     ...baseData.timeSlots,
-    { index: 10, label: "H2 2026 (prog)", startDate: "2026-07-01", endDate: "2026-12-31", type: "anchor_date" as const },
+    { index: 17, label: "2027+ (prog)", startDate: "2027-01-01", endDate: "2027-12-31", type: "anchor_date" as const },
   ],
 };
