@@ -1,0 +1,27 @@
+# Development
+demo/
+src/__tests__/
+*.test.ts
+*.test.tsx
+
+# Config
+tsup.config.ts
+vite.config.ts
+demo/vite.config.ts
+tsconfig.json
+eslint.config.js
+.eslintrc*
+
+# Data files
+Event database test/
+
+# Git & IDE
+.git/
+.github/
+.vscode/
+.idea/
+
+# Misc
+node_modules/
+*.log
+.DS_Store

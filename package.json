@@ -37,17 +37,17 @@
   },
   "files": [
     "dist",
-    "src",
     "README.md"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
-    "dev": "tsup src/index.ts --format esm,cjs --dts --watch",
+    "build": "tsup",
+    "dev": "tsup --watch",
     "demo": "vite demo",
     "test": "vitest run",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src/"
+    "lint": "eslint src/",
+    "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
@@ -77,5 +77,9 @@
     "socialfi"
   ],
   "license": "UNLICENSED",
-  "private": true
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nickstupar/event-graph.git"
+  }
 }
