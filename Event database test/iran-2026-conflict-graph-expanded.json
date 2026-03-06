@@ -53,18 +53,6 @@
       "label": "Mar 4",
       "startDate": "2026-03-04",
       "endDate": "2026-03-04"
-    },
-    {
-      "index": 9,
-      "label": "Mar 5-6 (prog)",
-      "startDate": "2026-03-05",
-      "endDate": "2026-03-06"
-    },
-    {
-      "index": 10,
-      "label": "Mar 7-10 (prog)",
-      "startDate": "2026-03-07",
-      "endDate": "2026-03-10"
     }
   ],
   "narrative": {
@@ -1422,7 +1410,7 @@
     },
     {
       "id": "n31_opinion_musk",
-      "col": 7,
+      "col": 6,
       "label": "Musk: 'Highest ever X usage in history'",
       "category": "war",
       "signal": "noise",
@@ -1474,7 +1462,7 @@
     },
     {
       "id": "n35_pred_ceasefire_pressure",
-      "col": 10,
+      "col": 11,
       "label": "Global ceasefire pressure peaks (prog)",
       "category": "war",
       "signal": "resolution",
@@ -1502,7 +1490,7 @@
     },
     {
       "id": "n35b_pred_iran_succession",
-      "col": 10,
+      "col": 11,
       "label": "Iran succession crisis crystallizes (prog)",
       "category": "war",
       "signal": "noise",
@@ -1529,7 +1517,7 @@
     },
     {
       "id": "n35c_pred_oil_scenario",
-      "col": 10,
+      "col": 11,
       "label": "Oil scenario: $80 short / $100+ if prolonged (prog)",
       "category": "macro",
       "signal": "noise",
