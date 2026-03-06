@@ -1,5 +1,5 @@
 /**
- * Iran–US–Israel War: 74 JSON + 18 fact + 14 anchors + 16 scenarios + 23 Day-6 = 145 nodes
+ * Iran–US–Israel War: 74 JSON + 18 fact + 14 anchors + 16 scenarios + 23 Day-6 + 17 Day-7 = 162 nodes
  *
  * Fact nodes: Event database test/iran-2026-conflict-graph-expanded.json
  * Enriched nodes: 14 Polymarket anchors (verified) + 16 scenario branches
@@ -10,6 +10,7 @@ import type { NarrativeCuiBono } from "../../src";
 import { normalizeIranConflict } from "./normalize";
 import { iranEnrichedNodes } from "./iran-enriched-nodes";
 import { iranDay6Nodes } from "./iran-day6-nodes";
+import { iranDay7Nodes } from "./iran-day7-nodes";
 import rawJson from "../../Event database test/iran-2026-conflict-graph-expanded.json";
 
 const baseData = normalizeIranConflict(rawJson as unknown as RawIranConflictJson);
@@ -87,23 +88,24 @@ const cuiBono: NarrativeCuiBono = {
   ],
 };
 
-// Merge fact nodes from JSON + enriched anchor/scenario + Day 6 nodes
-// Also extend timeSlots to cover columns 9-15
+// Merge fact nodes from JSON + enriched anchor/scenario + Day 6 + Day 7 nodes
+// Also extend timeSlots to cover columns 9-16
 export const iranConflictData = {
   ...baseData,
-  nodes: [...baseData.nodes, ...iranEnrichedNodes, ...iranDay6Nodes],
+  nodes: [...baseData.nodes, ...iranEnrichedNodes, ...iranDay6Nodes, ...iranDay7Nodes],
   narrative: {
     ...baseData.narrative!,
     cuiBono,
   },
   timeSlots: [
     ...baseData.timeSlots.filter(ts => ts.index <= 8),
-    { index: 9, label: "Mar 5", startDate: "2026-03-05", endDate: "2026-03-05", type: "current" as const },
-    { index: 10, label: "Mar 6-7 (prog)", startDate: "2026-03-06", endDate: "2026-03-07", type: "near_future" as const },
-    { index: 11, label: "Mar 8-10 (prog)", startDate: "2026-03-08", endDate: "2026-03-10", type: "near_future" as const },
-    { index: 12, label: "Mar 11-15 (prog)", startDate: "2026-03-11", endDate: "2026-03-15", type: "anchor_date" as const },
-    { index: 13, label: "Mar 16-31 (prog)", startDate: "2026-03-16", endDate: "2026-03-31", type: "anchor_date" as const },
-    { index: 14, label: "Apr-Jun (prog)", startDate: "2026-04-01", endDate: "2026-06-30", type: "anchor_date" as const },
-    { index: 15, label: "Scenarios", startDate: "2026-06-01", endDate: "2026-12-31", type: "anchor_date" as const },
+    { index: 9, label: "Mar 5", startDate: "2026-03-05", endDate: "2026-03-05" },
+    { index: 10, label: "Mar 6", startDate: "2026-03-06", endDate: "2026-03-06", type: "current" as const },
+    { index: 11, label: "Mar 7-8 (prog)", startDate: "2026-03-07", endDate: "2026-03-08", type: "near_future" as const },
+    { index: 12, label: "Mar 9-12 (prog)", startDate: "2026-03-09", endDate: "2026-03-12", type: "near_future" as const },
+    { index: 13, label: "Mar 13-20 (prog)", startDate: "2026-03-13", endDate: "2026-03-20", type: "anchor_date" as const },
+    { index: 14, label: "Mar 21-31 (prog)", startDate: "2026-03-21", endDate: "2026-03-31", type: "anchor_date" as const },
+    { index: 15, label: "Apr-Jun (prog)", startDate: "2026-04-01", endDate: "2026-06-30", type: "anchor_date" as const },
+    { index: 16, label: "Scenarios", startDate: "2026-06-01", endDate: "2026-12-31", type: "anchor_date" as const },
   ],
 };
