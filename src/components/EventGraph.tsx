@@ -238,6 +238,8 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           onToggleCategory={graphFilters.toggleCategory}
           hasMarket={graphFilters.filters.hasMarket}
           onToggleHasMarket={graphFilters.toggleHasMarket}
+          minWeight={graphFilters.filters.minWeight ?? 0}
+          onSetMinWeight={graphFilters.setMinWeight}
           isMobile={isMobile}
         />
       )}

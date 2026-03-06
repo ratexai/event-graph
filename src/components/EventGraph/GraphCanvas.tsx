@@ -121,6 +121,16 @@ export function GraphCanvas({
     return (edge: EventEdge) => kolStreamWidth(kolById.get(edge.to)?.followers ?? 10000);
   }, [eventById, isEventsMode, isNarrativeMode, kolById, narrativeById]);
 
+  // Connection counts per node (incoming + outgoing edges)
+  const connectionCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const edge of edges) {
+      counts.set(edge.from, (counts.get(edge.from) || 0) + 1);
+      counts.set(edge.to, (counts.get(edge.to) || 0) + 1);
+    }
+    return counts;
+  }, [edges]);
+
   // Split narrative nodes into facts, anchors, scenarios
   const { factNodes, anchorNodes, scenarioNodeList } = useMemo(() => {
     if (!isNarrativeMode) return { factNodes: [] as NarrativeNode[], anchorNodes: [] as NarrativeNode[], scenarioNodeList: [] as NarrativeNode[] };
@@ -235,6 +245,7 @@ export function GraphCanvas({
                   y={pos.y}
                   theme={theme}
                   time={time}
+                  connectionCount={connectionCounts.get(eventNode.id) || 0}
                   isHovered={hoveredId === eventNode.id}
                   isSelected={selectedId === eventNode.id}
                   isDimmed={!!hoveredId && !activeChain.has(eventNode.id)}
@@ -259,6 +270,7 @@ export function GraphCanvas({
                       y={pos.y}
                       theme={theme}
                       time={time}
+                      connectionCount={connectionCounts.get(narNode.id) || 0}
                       isHovered={hoveredId === narNode.id}
                       isSelected={selectedId === narNode.id}
                       isDimmed={!!hoveredId && !activeChain.has(narNode.id)}

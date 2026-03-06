@@ -47,7 +47,7 @@ export {
   computeKolStats, computeNarrativeStats,
   filterEvents, filterKols, filterNarratives,
   streamPath, formatNumber, truncateLabel, wrapLabel, sentimentLabel, sentimentArrow,
-  nodeRadius, kolRadius, narrativeNodeRadius, narrativeSizeTier,
+  nodeRadius, effectiveNodeRadius, kolRadius, narrativeNodeRadius, effectiveNarrativeRadius, narrativeSizeTier,
   streamWidth, kolStreamWidth, narrativeStreamWidth,
   getNodeEmojis, getSourceAbbr,
   influenceStreamWidth, ANCHOR_NODE_RADIUS, isAnchorNode, isScenarioNode,

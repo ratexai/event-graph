@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from "react";
 import type { NarrativeNode as NarrativeNodeType, NarrativeSignal, GraphTheme } from "../../types";
 import { getNarrativeCategoryStyle, getNarrativeSignalStyle, getSentimentColor, NARRATIVE_SIGNAL_META } from "../../styles/theme";
-import { narrativeNodeRadius, wrapLabel, getNodeEmojis, getSourceAbbr } from "../../utils";
+import { effectiveNarrativeRadius, wrapLabel, getNodeEmojis, getSourceAbbr } from "../../utils";
 import { NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
   y: number;
   theme: GraphTheme;
   time: number;
+  connectionCount: number;
   isHovered: boolean;
   isSelected: boolean;
   isDimmed: boolean;
@@ -140,10 +141,10 @@ SourceBadge.displayName = "SourceBadge";
 // ─── Main component ─────────────────────────────────────────
 
 export const NarrativeNodeComponent = memo<Props>(({
-  node, x, y, theme, time: _time, isHovered, isSelected, isDimmed,
+  node, x, y, theme, time: _time, connectionCount, isHovered, isSelected, isDimmed,
   onHoverStart, onHoverEnd, onSelect,
 }) => {
-  const r = narrativeNodeRadius(node.weight, node.oddsDelta);
+  const r = effectiveNarrativeRadius(node, connectionCount);
   const catStyle = getNarrativeCategoryStyle(theme, node.category);
   const sigStyle = getNarrativeSignalStyle(theme, node.signal);
   const sigMeta = NARRATIVE_SIGNAL_META[node.signal];
@@ -162,9 +163,10 @@ export const NarrativeNodeComponent = memo<Props>(({
   const [flag, ctxIcon] = useMemo(() => getNodeEmojis(node.tags), [node.tags]);
   const emojiLine = ctxIcon && flag ? `${ctxIcon}${flag}` : ctxIcon || flag || "";
 
-  // 2-line label
-  const lines = useMemo(() => wrapLabel(node.label, 18), [node.label]);
-  const labelFontSize = Math.max(7, Math.min(9.5, r * 0.38));
+  // 2-line label — wider wrap for bigger nodes, bigger font
+  const maxChars = r > 35 ? 24 : r > 25 ? 20 : 16;
+  const lines = useMemo(() => wrapLabel(node.label, maxChars), [node.label, maxChars]);
+  const labelFontSize = Math.max(7.5, Math.min(12, r * 0.32));
 
   // Odds delta badge
   const deltaText = node.oddsDelta > 0 ? `+${node.oddsDelta.toFixed(1)}pp` : node.oddsDelta < 0 ? `${node.oddsDelta.toFixed(1)}pp` : "";
@@ -247,18 +249,19 @@ export const NarrativeNodeComponent = memo<Props>(({
         </text>
       ) : null}
 
-      {/* 2-line label with background plate — left-aligned */}
+      {/* 2-line label with dark background plate — left-aligned */}
       {lines.map((line, i) => {
         const baseY = emojiLine
-          ? r * 0.15 + i * (labelFontSize + 1.5)
-          : -labelFontSize * 0.3 + i * (labelFontSize + 1.5);
-        const textW = line.length * labelFontSize * 0.58 + 6;
+          ? r * 0.15 + i * (labelFontSize + 2.5)
+          : -labelFontSize * 0.3 + i * (labelFontSize + 2.5);
+        const textW = line.length * labelFontSize * 0.6 + 10;
         const lx = -r * 0.85;
         return (
           <g key={i}>
-            <rect x={lx} y={baseY - labelFontSize * 0.75} width={textW} height={labelFontSize + 3}
-              rx={3} fill={theme.bg} opacity={0.75} />
-            <text x={lx + 3} y={baseY}
+            <rect x={lx - 1} y={baseY - labelFontSize * 0.8} width={textW} height={labelFontSize + 5}
+              rx={4} fill={theme.bg} opacity={0.92}
+              stroke={catStyle.color} strokeWidth={0.3} strokeOpacity={0.4} />
+            <text x={lx + 4} y={baseY + 1}
               textAnchor="start" fill={theme.text}
               fontSize={labelFontSize}
               fontWeight={isHovered ? 700 : 600}
