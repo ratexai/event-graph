@@ -75,6 +75,8 @@ interface TopBarProps {
   onToggleCategory?: (category: NarrativeCategory) => void;
   hasMarket?: boolean;
   onToggleHasMarket?: () => void;
+  minWeight?: number;
+  onSetMinWeight?: (w: number) => void;
   isMobile?: boolean;
 }
 
@@ -90,6 +92,7 @@ export function TopBar(props: TopBarProps) {
     onToggleEventType, onToggleTier, onTogglePlatform,
     onToggleCategory,
     hasMarket, onToggleHasMarket,
+    minWeight = 0, onSetMinWeight,
     isMobile = false,
   } = props;
 
@@ -312,6 +315,23 @@ export function TopBar(props: TopBarProps) {
           );
         })}
       </>) : null}
+
+      {/* Importance slider — events & narratives modes */}
+      {(mode === "events" || mode === "narratives") && onSetMinWeight && !isMobile && (<>
+        <div style={{ width: 1, height: 12, background: theme.border, margin: "0 2px", flexShrink: 0 }} />
+        <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 0 }}>
+          <span style={{ fontSize: 9, fontWeight: 600, color: theme.muted, letterSpacing: 0.5, whiteSpace: "nowrap" }}>Detail</span>
+          <input
+            type="range"
+            min={0} max={90} step={5}
+            value={Math.round(minWeight * 100)}
+            onChange={(e) => onSetMinWeight(Number(e.target.value) / 100)}
+            style={{ width: 64, height: 3, accentColor: theme.accent, cursor: "pointer" }}
+            aria-label="Importance filter"
+          />
+          <span style={{ fontSize: 9, fontWeight: 600, color: theme.muted, letterSpacing: 0.5, whiteSpace: "nowrap" }}>Focus</span>
+        </div>
+      </>)}
 
       </div>{/* end scrollable filters wrapper */}
 

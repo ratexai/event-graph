@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from "react";
 import type { EventNode as EventNodeType, GraphTheme } from "../../types";
 import { getEventTypeStyle, EVENT_TYPE_META } from "../../styles/theme";
-import { nodeRadius, truncateLabel } from "../../utils";
+import { effectiveNodeRadius, truncateLabel } from "../../utils";
 import { NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
@@ -10,6 +10,7 @@ interface Props {
   y: number;
   theme: GraphTheme;
   time: number;
+  connectionCount: number;
   isHovered: boolean;
   isSelected: boolean;
   isDimmed: boolean;
@@ -19,10 +20,10 @@ interface Props {
 }
 
 export const EventNodeComponent = memo<Props>(({
-  event, x, y, theme, time: _time, isHovered, isSelected, isDimmed,
+  event, x, y, theme, time: _time, connectionCount, isHovered, isSelected, isDimmed,
   onHoverStart, onHoverEnd, onSelect,
 }) => {
-  const r = nodeRadius(event.weight);
+  const r = effectiveNodeRadius(event, connectionCount);
   const style = getEventTypeStyle(theme, event.type);
   const meta = EVENT_TYPE_META[event.type];
   const isActive = isHovered || isSelected;
@@ -62,24 +63,30 @@ export const EventNodeComponent = memo<Props>(({
         strokeWidth={2} strokeOpacity={isActive ? 0.85 : 0.6}
         style={{ transition: "stroke-opacity 0.3s" }} />
 
-      {/* Avatar or label */}
+      {/* Avatar or type label inside */}
       {event.imageUrl ? (
         <NodeImage href={event.imageUrl} radius={Math.max(r / 2.8, 10)} nodeId={event.id} borderColor={style.color} borderWidth={1} />
-      ) : r > 24 ? (
-        <text x={-r * 0.8} y={1} textAnchor="start" fontSize={Math.min(r / 4.5, 12)} fontWeight={500}
-          fill={theme.text} fontFamily={theme.fontFamily}
+      ) : r > 20 ? (
+        <text x={-r * 0.75} y={1} textAnchor="start"
+          fontSize={Math.max(8, Math.min(r / 3.5, 14))} fontWeight={600}
+          fill={theme.text} fontFamily={theme.monoFontFamily}
           style={{ pointerEvents: "none" }}>{meta?.label || event.type}</text>
       ) : null}
 
-      {/* Name label below — left-aligned */}
-      {r > 18 && (() => {
-        const lbl = truncateLabel(event.label, 14);
-        const fs = Math.min(r / 4.5, 12);
-        const ly = r + 12;
+      {/* Name label below — with dark background plate */}
+      {r > 14 && (() => {
+        const lbl = truncateLabel(event.label, r > 30 ? 22 : 14);
+        const fs = Math.max(8, Math.min(r / 3.5, 13));
+        const ly = r + 14;
+        const textW = lbl.length * fs * 0.6 + 8;
         return (
-          <text x={-r} y={ly} textAnchor="start" fill={theme.text} fontSize={fs}
-            fontWeight={500} fontFamily={theme.fontFamily}
-            style={{ pointerEvents: "none" }}>{lbl}</text>
+          <g>
+            <rect x={-r - 2} y={ly - fs * 0.8} width={textW} height={fs + 4}
+              rx={3} fill={theme.bg} opacity={0.88} />
+            <text x={-r + 2} y={ly} textAnchor="start" fill={theme.text} fontSize={fs}
+              fontWeight={600} fontFamily={theme.monoFontFamily}
+              style={{ pointerEvents: "none" }}>{lbl}</text>
+          </g>
         );
       })()}
 
