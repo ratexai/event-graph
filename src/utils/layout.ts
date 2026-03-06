@@ -13,8 +13,8 @@ export const DEFAULT_LAYOUT: LayoutConfig = {
   padding: { top: 55, right: 98, bottom: 45, left: 98 },
   minNodeSpacing: 99,
   maxNodeSpacing: 213,
-  nodeBaseRadius: 12,
-  nodeWeightScale: 38,
+  nodeBaseRadius: 18,
+  nodeWeightScale: 18,
   streamWidthScale: 22,
   streamMinWidth: 4,
 };

@@ -1,7 +1,7 @@
 import React, { memo, useCallback } from "react";
 import type { EventNode as EventNodeType, GraphTheme } from "../../types";
 import { getEventTypeStyle, EVENT_TYPE_META } from "../../styles/theme";
-import { effectiveNodeRadius, truncateLabel } from "../../utils";
+import { effectiveNodeRadius, importanceTier, truncateLabel } from "../../utils";
 import { NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
@@ -27,6 +27,7 @@ export const EventNodeComponent = memo<Props>(({
   const style = getEventTypeStyle(theme, event.type);
   const meta = EVENT_TYPE_META[event.type];
   const isActive = isHovered || isSelected;
+  const tier = importanceTier(event.weight, connectionCount);
   const handleEnter = useCallback(() => onHoverStart(event.id), [event.id, onHoverStart]);
   const handleClick = useCallback(() => onSelect(event.id), [event.id, onSelect]);
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
@@ -52,15 +53,31 @@ export const EventNodeComponent = memo<Props>(({
         </radialGradient>
       </defs>
 
-      {/* §12 Outer ring — always visible: dashed default, solid on select */}
-      {!isDimmed && (
-        <circle r={r + 5} fill="none" stroke={style.color} strokeWidth={isActive ? 1.5 : 1}
-          opacity={isActive ? 0.5 : 0.25} strokeDasharray={isSelected ? "none" : "4,3"} />
+      {/* Tier 3 (critical): pulsing outer glow ring */}
+      {tier === 3 && !isDimmed && (
+        <circle r={r + 12} fill="none" stroke={style.color} strokeWidth={1.5} opacity={0.3}
+          strokeDasharray="6 4">
+          <animate attributeName="opacity" values="0.15;0.45;0.15" dur="2.5s" repeatCount="indefinite" />
+          <animate attributeName="r" values={`${r + 10};${r + 15};${r + 10}`} dur="2.5s" repeatCount="indefinite" />
+        </circle>
+      )}
+
+      {/* Tier 2+3: second ring */}
+      {tier >= 2 && !isDimmed && (
+        <circle r={r + 8} fill="none" stroke={style.color}
+          strokeWidth={isActive ? 1.2 : 0.8} opacity={isActive ? 0.5 : 0.3}
+          strokeDasharray={tier === 3 ? "none" : "6,3"} />
+      )}
+
+      {/* §12 Outer ring — always visible for tier >= 1 */}
+      {!isDimmed && tier >= 1 && (
+        <circle r={r + 4} fill="none" stroke={style.color} strokeWidth={isActive ? 1.5 : 1}
+          opacity={isActive ? 0.5 : 0.25} strokeDasharray={isSelected || tier >= 2 ? "none" : "4,3"} />
       )}
 
       {/* Main circle — radial gradient fill, 2px stroke always */}
       <circle r={r} fill={`url(#${gradId})`} stroke={style.color}
-        strokeWidth={2} strokeOpacity={isActive ? 0.85 : 0.6}
+        strokeWidth={tier >= 2 ? 2.5 : 2} strokeOpacity={isActive ? 0.85 : tier >= 2 ? 0.75 : 0.6}
         style={{ transition: "stroke-opacity 0.3s" }} />
 
       {/* Avatar or type label inside */}

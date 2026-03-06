@@ -32,30 +32,44 @@ export function sentimentArrow(s: Sentiment): string {
 
 // ─── Sizing ─────────────────────────────────────────────────────
 
-/** Base node radius from weight — uses power curve for dramatic size hierarchy */
+/** Base node radius from weight — original compact linear formula */
 export function nodeRadius(weight: number, layout: LayoutConfig = DEFAULT_LAYOUT): number {
-  // Power curve (exponent 1.8) makes small weights much smaller and large weights much larger
-  const curved = Math.pow(Math.max(0, weight), 1.8);
-  return layout.nodeBaseRadius + curved * layout.nodeWeightScale;
+  return layout.nodeBaseRadius + weight * layout.nodeWeightScale;
 }
 
 /**
- * Effective radius incorporating connectivity (edge count) and volume.
- * - connectionCount: number of edges connecting to this node
- * - volume: optional trading/market volume (normalized 0..1 or raw)
+ * Effective radius — same compact size as nodeRadius.
+ * Kept for API compatibility; connectionCount is used for visual rings, not size.
  */
 export function effectiveNodeRadius(
   event: EventNode,
-  connectionCount: number,
+  _connectionCount: number,
   layout: LayoutConfig = DEFAULT_LAYOUT,
 ): number {
-  const base = nodeRadius(event.weight, layout);
-  // Connectivity boost: each connection adds up to +3px, capped at +15px
-  const connBoost = Math.min(connectionCount * 3, 15);
-  // Volume boost: if event has volume field, scale up to +10px
-  const vol = (event as unknown as Record<string, unknown>).volume;
-  const volBoost = typeof vol === "number" ? Math.min(Math.log10(Math.max(vol, 1)) * 2.5, 10) : 0;
-  return base + connBoost + volBoost;
+  return nodeRadius(event.weight, layout);
+}
+
+/**
+ * Importance tier for visual emphasis (rings, pulse).
+ * Returns 0 (noise) | 1 (normal) | 2 (important) | 3 (critical).
+ * Based on weight + connectivity + volume.
+ */
+export function importanceTier(
+  weight: number,
+  connectionCount: number,
+  volume?: number,
+): 0 | 1 | 2 | 3 {
+  let score = weight;
+  // Connectivity adds up to 0.25
+  score += Math.min(connectionCount * 0.05, 0.25);
+  // Volume adds up to 0.15
+  if (typeof volume === "number" && volume > 0) {
+    score += Math.min(Math.log10(Math.max(volume, 1)) * 0.03, 0.15);
+  }
+  if (score >= 0.85) return 3; // critical — triple ring + pulse
+  if (score >= 0.6) return 2;  // important — double ring
+  if (score >= 0.3) return 1;  // normal — single ring
+  return 0;                    // noise — no extra ring
 }
 
 export function kolRadius(followers: number): number {
@@ -72,27 +86,23 @@ export function kolStreamWidth(followers: number): number {
 
 /** Narrative node radius — 5 discrete size tiers based on weight, plus oddsDelta boost */
 export function narrativeNodeRadius(weight: number, oddsDelta: number, _layout?: LayoutConfig): number {
-  // 5 tiers with stronger visual hierarchy: XS(10) S(16) M(24) L(34) XL(44)
-  const base = weight >= 0.92 ? 44
-    : weight >= 0.80 ? 34
-    : weight >= 0.65 ? 24
-    : weight >= 0.50 ? 16
-    : 10;
-  const boost = Math.min(Math.abs(oddsDelta) * 0.4, 8);
+  // Original compact tiers: XS(15) S(18) M(22) L(25) XL(30)
+  const base = weight >= 0.92 ? 30
+    : weight >= 0.80 ? 25
+    : weight >= 0.65 ? 22
+    : weight >= 0.50 ? 18
+    : 15;
+  const boost = Math.min(Math.abs(oddsDelta) * 0.2, 4);
   return base + boost;
 }
 
-/** Effective narrative radius with connectivity boost */
+/** Effective narrative radius — compact size, rings handle emphasis */
 export function effectiveNarrativeRadius(
   node: NarrativeNode,
-  connectionCount: number,
+  _connectionCount: number,
   _layout?: LayoutConfig,
 ): number {
-  const base = narrativeNodeRadius(node.weight, node.oddsDelta);
-  const connBoost = Math.min(connectionCount * 3, 15);
-  const vol = node.volume;
-  const volBoost = typeof vol === "number" && vol > 0 ? Math.min(Math.log10(Math.max(vol, 1)) * 2.5, 10) : 0;
-  return base + connBoost + volBoost;
+  return narrativeNodeRadius(node.weight, node.oddsDelta);
 }
 
 /** Size tier label for display */

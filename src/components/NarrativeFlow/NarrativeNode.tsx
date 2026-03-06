@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from "react";
 import type { NarrativeNode as NarrativeNodeType, NarrativeSignal, GraphTheme } from "../../types";
 import { getNarrativeCategoryStyle, getNarrativeSignalStyle, getSentimentColor, NARRATIVE_SIGNAL_META } from "../../styles/theme";
-import { effectiveNarrativeRadius, wrapLabel, getNodeEmojis, getSourceAbbr } from "../../utils";
+import { effectiveNarrativeRadius, importanceTier, wrapLabel, getNodeEmojis, getSourceAbbr } from "../../utils";
 import { NodeImage } from "../Shared/SvgPrimitives";
 
 interface Props {
@@ -145,6 +145,7 @@ export const NarrativeNodeComponent = memo<Props>(({
   onHoverStart, onHoverEnd, onSelect,
 }) => {
   const r = effectiveNarrativeRadius(node, connectionCount);
+  const tier = importanceTier(node.weight, connectionCount, node.volume);
   const catStyle = getNarrativeCategoryStyle(theme, node.category);
   const sigStyle = getNarrativeSignalStyle(theme, node.signal);
   const sigMeta = NARRATIVE_SIGNAL_META[node.signal];
@@ -199,35 +200,46 @@ export const NarrativeNodeComponent = memo<Props>(({
         </radialGradient>
       </defs>
 
-      {/* Future nodes get a pulsing outer glow */}
-      {isFuture && !isDimmed && (
-        <circle r={outerR + 6} fill="none" stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
-          strokeWidth={1.5} opacity={0.3} strokeDasharray="4 6">
-          <animate attributeName="opacity" values="0.15;0.4;0.15" dur="3s" repeatCount="indefinite" />
-          <animate attributeName="r" values={`${outerR + 4};${outerR + 8};${outerR + 4}`} dur="3s" repeatCount="indefinite" />
+      {/* Tier 3 (critical) OR future: pulsing outer glow */}
+      {(tier === 3 || isFuture) && !isDimmed && (
+        <circle r={outerR + 8} fill="none"
+          stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
+          strokeWidth={1.5} opacity={0.3} strokeDasharray={isFuture ? "4 6" : "6 4"}>
+          <animate attributeName="opacity" values="0.15;0.45;0.15" dur="2.5s" repeatCount="indefinite" />
+          <animate attributeName="r" values={`${outerR + 6};${outerR + 11};${outerR + 6}`} dur="2.5s" repeatCount="indefinite" />
         </circle>
       )}
 
-      {/* §12 Outer ring — always visible: dashed default, solid on select */}
-      {!isDimmed && (
-        <circle r={outerR} fill="none" stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
-          strokeWidth={(isHovered || isSelected) ? 1.5 : 1} opacity={(isHovered || isSelected) ? 0.5 : 0.25}
-          strokeDasharray={isSelected ? "none" : "4,3"} />
+      {/* Tier 2+3: second emphasis ring */}
+      {tier >= 2 && !isDimmed && (
+        <circle r={outerR + 3} fill="none"
+          stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
+          strokeWidth={(isHovered || isSelected) ? 1.2 : 0.8}
+          opacity={(isHovered || isSelected) ? 0.5 : 0.3}
+          strokeDasharray={tier === 3 ? "none" : "6,3"} />
       )}
 
-      {/* Main shape — radial gradient fill, 2px stroke always */}
+      {/* Outer ring — visible for tier >= 1 */}
+      {!isDimmed && tier >= 1 && (
+        <circle r={outerR} fill="none" stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
+          strokeWidth={(isHovered || isSelected) ? 1.5 : 1}
+          opacity={(isHovered || isSelected) ? 0.5 : 0.25}
+          strokeDasharray={isSelected || tier >= 2 ? "none" : "4,3"} />
+      )}
+
+      {/* Main shape — radial gradient fill */}
       {isCircle ? (
         <circle r={r} fill={`url(#ng-${node.id})`}
           stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
-          strokeWidth={2}
-          strokeOpacity={(isHovered || isSelected) ? 0.85 : 0.6}
+          strokeWidth={tier >= 2 ? 2.5 : 2}
+          strokeOpacity={(isHovered || isSelected) ? 0.85 : tier >= 2 ? 0.75 : 0.6}
           strokeDasharray={isFuture ? "5 3" : "none"}
           style={{ transition: "stroke-opacity 0.3s" }} />
       ) : (
         <path d={shapePath} fill={`url(#ng-${node.id})`}
           stroke={isPredictionEndpoint ? theme.complement : catStyle.color}
-          strokeWidth={2}
-          strokeOpacity={(isHovered || isSelected) ? 0.85 : 0.6}
+          strokeWidth={tier >= 2 ? 2.5 : 2}
+          strokeOpacity={(isHovered || isSelected) ? 0.85 : tier >= 2 ? 0.75 : 0.6}
           strokeLinejoin="round"
           strokeDasharray={isFuture ? "5 3" : "none"}
           style={{ transition: "stroke-opacity 0.3s" }} />
