@@ -427,7 +427,7 @@ interface NarrativeLegendBarProps {
 
 export function NarrativeLegendBar(props: NarrativeLegendBarProps) {
   const {
-    theme, panelOffset, allSignals, activeSignals, onToggleSignal,
+    theme, panelOffset: _panelOffset, allSignals, activeSignals, onToggleSignal,
     minWeight = 0, onSetMinWeight,
   } = props;
 

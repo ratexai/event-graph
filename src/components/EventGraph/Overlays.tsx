@@ -95,7 +95,7 @@ const SIGNAL_SHAPES: Record<NarrativeSignal, { label: string; svg: string }> = {
   noise:      { label: "Noise",      svg: "" }, // circle (special case)
 };
 
-export const NarrativeLegend = memo<LegendBarProps>(({ theme, panelOffset }) => {
+export const NarrativeLegend = memo<LegendBarProps>(({ theme, panelOffset: _panelOffset }) => {
   const signals: NarrativeSignal[] = ["escalation", "catalyst", "resolution", "reversal", "noise"];
   return (
     <div style={{
