@@ -1,8 +1,10 @@
 /**
- * Iran–US–Israel War: 74 JSON + 18 fact + 14 anchors + 16 scenarios + 23 Day-6 + 17 Day-7 = 162 nodes
+ * Iran–US–Israel War: 74 JSON + 18 fact + 14 anchors + 16 scenarios + 23 Day-6
+ * + 17 Day-7 + 11 Day-7-extra + 11 Day-8 + 6 Day-9 + 10 Day-10 = 200 nodes
  *
  * Fact nodes: Event database test/iran-2026-conflict-graph-expanded.json
  * Enriched nodes: 14 Polymarket anchors (verified) + 16 scenario branches
+ * Day 7-10: Deduplicated merge of Iran-framed + balanced multi-perspective datasets
  * Normalized to NarrativeFlowData via normalize.ts
  */
 import type { RawIranConflictJson } from "./normalize";
@@ -11,6 +13,10 @@ import { normalizeIranConflict } from "./normalize";
 import { iranEnrichedNodes } from "./iran-enriched-nodes";
 import { iranDay6Nodes } from "./iran-day6-nodes";
 import { iranDay7Nodes } from "./iran-day7-nodes";
+import { iranDay7ExtraNodes } from "./iran-day7-extra-nodes";
+import { iranDay8Nodes } from "./iran-day8-nodes";
+import { iranDay9Nodes } from "./iran-day9-nodes";
+import { iranDay10Nodes } from "./iran-day10-nodes";
 import rawJson from "../../Event database test/iran-2026-conflict-graph-expanded.json";
 
 const baseData = normalizeIranConflict(rawJson as unknown as RawIranConflictJson);
@@ -88,11 +94,20 @@ const cuiBono: NarrativeCuiBono = {
   ],
 };
 
-// Merge fact nodes from JSON + enriched anchor/scenario + Day 6 + Day 7 nodes
+// Merge fact nodes from JSON + enriched anchor/scenario + Day 6-10 nodes
 // Also extend timeSlots to cover columns 9-16
 export const iranConflictData = {
   ...baseData,
-  nodes: [...baseData.nodes, ...iranEnrichedNodes, ...iranDay6Nodes, ...iranDay7Nodes],
+  nodes: [
+    ...baseData.nodes,
+    ...iranEnrichedNodes,
+    ...iranDay6Nodes,
+    ...iranDay7Nodes,
+    ...iranDay7ExtraNodes,
+    ...iranDay8Nodes,
+    ...iranDay9Nodes,
+    ...iranDay10Nodes,
+  ],
   narrative: {
     ...baseData.narrative!,
     cuiBono,
