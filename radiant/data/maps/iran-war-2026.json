@@ -3492,6 +3492,62 @@
           "mechanism": "Test convoy scenario",
           "reasoning": "Hypothetical convoy test shows path to reopening exists, but not yet attempted."
         }
+      ],
+      "causalNodeIds": [
+        "n8_hormuz",
+        "n40_trump_hormuz_escort",
+        "n41_oil_interventions",
+        "n60_pred_hormuz_escort_test",
+        "n36_irgc_econ_threat",
+        "n42_iran_wave3",
+        "n12_opec_increase",
+        "n12b_markets_monday",
+        "n24_markets_tuesday",
+        "n9_larijani"
+      ],
+      "forResolution": [
+        {
+          "node": "n40_trump_hormuz_escort",
+          "effect": "+10%",
+          "reason": "US Navy escort convoys force strait open"
+        },
+        {
+          "node": "n41_oil_interventions",
+          "effect": "+8%",
+          "reason": "Oil market interventions reduce Iran leverage"
+        },
+        {
+          "node": "n12_opec_increase",
+          "effect": "+5%",
+          "reason": "OPEC output increase lowers blockade value"
+        },
+        {
+          "node": "n9_larijani",
+          "effect": "+3%",
+          "reason": "Diplomatic backchannel signals flexibility"
+        }
+      ],
+      "againstResolution": [
+        {
+          "node": "n8_hormuz",
+          "effect": "-12%",
+          "reason": "IRGC mining Hormuz creates physical danger"
+        },
+        {
+          "node": "n42_iran_wave3",
+          "effect": "-10%",
+          "reason": "Third wave of strikes hardens Iran position"
+        },
+        {
+          "node": "n36_irgc_econ_threat",
+          "effect": "-8%",
+          "reason": "IRGC economic warfare doctrine prioritizes strait control"
+        },
+        {
+          "node": "n60_pred_hormuz_escort_test",
+          "effect": "-5%",
+          "reason": "Escort test confrontation risks escalation"
+        }
       ]
     },
     {
@@ -3653,6 +3709,57 @@
           "date": "2026-03-05",
           "polymarket": 72,
           "rateX": 76
+        }
+      ],
+      "causalNodeIds": [
+        "n42_iran_wave3",
+        "n30_opinion_trump_weeks",
+        "n25_rubio_hardest_hits",
+        "n63_pred_iran_capacity_degrade",
+        "n62_pred_congress_warpower",
+        "n21_losses_us",
+        "n38_irgc_no_unanswered",
+        "n4_strikes",
+        "n20_losses_iran",
+        "n37_uae_strikes_iran"
+      ],
+      "forResolution": [
+        {
+          "node": "n42_iran_wave3",
+          "effect": "+15%",
+          "reason": "Iran's third wave proves they won't stop — US must escalate"
+        },
+        {
+          "node": "n25_rubio_hardest_hits",
+          "effect": "+10%",
+          "reason": "SecState Rubio advocates maximum pressure"
+        },
+        {
+          "node": "n38_irgc_no_unanswered",
+          "effect": "+8%",
+          "reason": "IRGC vows no attack goes unanswered — cycle continues"
+        },
+        {
+          "node": "n30_opinion_trump_weeks",
+          "effect": "+5%",
+          "reason": "Public opinion supports short decisive action"
+        }
+      ],
+      "againstResolution": [
+        {
+          "node": "n62_pred_congress_warpower",
+          "effect": "-10%",
+          "reason": "Congress War Powers pressure may limit escalation"
+        },
+        {
+          "node": "n21_losses_us",
+          "effect": "-8%",
+          "reason": "US casualties create political blowback"
+        },
+        {
+          "node": "n63_pred_iran_capacity_degrade",
+          "effect": "-5%",
+          "reason": "Iran capacity already degraded — less need to expand"
         }
       ]
     },
@@ -4051,6 +4158,68 @@
           "mechanism": "Succession chaos complicates negotiations",
           "reasoning": "No clear negotiating authority in Iran during succession crisis."
         }
+      ],
+      "causalNodeIds": [
+        "n2_talks",
+        "n3_iaea",
+        "n4_strikes",
+        "n9_larijani",
+        "n7b_trump_talk_offer",
+        "n11_hezbollah_attack",
+        "n24_markets_tuesday",
+        "n35_pred_ceasefire_pressure",
+        "n35b_pred_iran_succession",
+        "n25_rubio_hardest_hits",
+        "n42_iran_wave3"
+      ],
+      "forResolution": [
+        {
+          "node": "n7b_trump_talk_offer",
+          "effect": "+5%",
+          "reason": "Trump surprisingly signals willingness to negotiate"
+        },
+        {
+          "node": "n9_larijani",
+          "effect": "+4%",
+          "reason": "Larijani diplomatic channel offers compromise path"
+        },
+        {
+          "node": "n35_pred_ceasefire_pressure",
+          "effect": "+3%",
+          "reason": "Economic pressure may force Iran to deal"
+        },
+        {
+          "node": "n3_iaea",
+          "effect": "+2%",
+          "reason": "IAEA verification framework already exists"
+        }
+      ],
+      "againstResolution": [
+        {
+          "node": "n4_strikes",
+          "effect": "-8%",
+          "reason": "Active military strikes make diplomacy impossible"
+        },
+        {
+          "node": "n42_iran_wave3",
+          "effect": "-6%",
+          "reason": "Iran retaliatory waves show no interest in deal"
+        },
+        {
+          "node": "n25_rubio_hardest_hits",
+          "effect": "-5%",
+          "reason": "Rubio opposes any deal that leaves enrichment capacity"
+        },
+        {
+          "node": "n11_hezbollah_attack",
+          "effect": "-4%",
+          "reason": "Proxy attacks undermine trust for negotiations"
+        },
+        {
+          "node": "n35b_pred_iran_succession",
+          "effect": "-3%",
+          "reason": "Succession crisis means no stable negotiating partner"
+        }
       ]
     },
     {
@@ -4194,6 +4363,49 @@
           "date": "2026-03-03",
           "polymarket": 8,
           "rateX": 5
+        }
+      ],
+      "causalNodeIds": [
+        "n7a_khamenei_confirmed",
+        "n35b_pred_iran_succession",
+        "n63_pred_iran_capacity_degrade",
+        "n20_losses_iran",
+        "n38_irgc_no_unanswered",
+        "n42_iran_wave3",
+        "n4_strikes"
+      ],
+      "forResolution": [
+        {
+          "node": "n63_pred_iran_capacity_degrade",
+          "effect": "+3%",
+          "reason": "Military degradation weakens regime grip"
+        },
+        {
+          "node": "n20_losses_iran",
+          "effect": "+2%",
+          "reason": "Heavy casualties may trigger internal unrest"
+        },
+        {
+          "node": "n35b_pred_iran_succession",
+          "effect": "+2%",
+          "reason": "Succession uncertainty creates power vacuum"
+        }
+      ],
+      "againstResolution": [
+        {
+          "node": "n7a_khamenei_confirmed",
+          "effect": "-5%",
+          "reason": "Khamenei confirmed alive — regime leadership stable"
+        },
+        {
+          "node": "n38_irgc_no_unanswered",
+          "effect": "-4%",
+          "reason": "IRGC rallies nationalist support through resistance"
+        },
+        {
+          "node": "n42_iran_wave3",
+          "effect": "-3%",
+          "reason": "Military action unites population against external threat"
         }
       ]
     },
@@ -4351,6 +4563,55 @@
           "polymarket": 38,
           "rateX": 31
         }
+      ],
+      "causalNodeIds": [
+        "n8_hormuz",
+        "n12b_markets_monday",
+        "n41_oil_interventions",
+        "n12_opec_increase",
+        "n24_markets_tuesday",
+        "n36_irgc_econ_threat",
+        "n42_iran_wave3",
+        "n37_uae_strikes_iran"
+      ],
+      "forResolution": [
+        {
+          "node": "n8_hormuz",
+          "effect": "+12%",
+          "reason": "Hormuz mining disrupts 20% of global oil transit"
+        },
+        {
+          "node": "n42_iran_wave3",
+          "effect": "+8%",
+          "reason": "Escalation cycle adds war premium to oil"
+        },
+        {
+          "node": "n36_irgc_econ_threat",
+          "effect": "+5%",
+          "reason": "IRGC threatens Gulf infrastructure"
+        },
+        {
+          "node": "n37_uae_strikes_iran",
+          "effect": "+4%",
+          "reason": "UAE involvement widens Gulf disruption risk"
+        }
+      ],
+      "againstResolution": [
+        {
+          "node": "n41_oil_interventions",
+          "effect": "-10%",
+          "reason": "Strategic reserve releases cap price spikes"
+        },
+        {
+          "node": "n12_opec_increase",
+          "effect": "-8%",
+          "reason": "OPEC production increase absorbs supply shock"
+        },
+        {
+          "node": "n12b_markets_monday",
+          "effect": "-3%",
+          "reason": "Markets already pricing in conflict — limited upside"
+        }
       ]
     },
     {
@@ -4487,6 +4748,48 @@
           "date": "2026-03-05",
           "polymarket": 54,
           "rateX": 50
+        }
+      ],
+      "causalNodeIds": [
+        "n24_markets_tuesday",
+        "n12b_markets_monday",
+        "n41_oil_interventions",
+        "n12_opec_increase",
+        "n8_hormuz",
+        "n42_iran_wave3"
+      ],
+      "forResolution": [
+        {
+          "node": "n42_iran_wave3",
+          "effect": "+6%",
+          "reason": "Geopolitical uncertainty drives flight to USD"
+        },
+        {
+          "node": "n8_hormuz",
+          "effect": "+4%",
+          "reason": "Oil shock strengthens petrodollar demand"
+        },
+        {
+          "node": "n24_markets_tuesday",
+          "effect": "+3%",
+          "reason": "Risk-off sentiment favors dollar"
+        }
+      ],
+      "againstResolution": [
+        {
+          "node": "n41_oil_interventions",
+          "effect": "-5%",
+          "reason": "Successful interventions reduce panic premium"
+        },
+        {
+          "node": "n12_opec_increase",
+          "effect": "-4%",
+          "reason": "Oil stability reduces dollar safe-haven demand"
+        },
+        {
+          "node": "n12b_markets_monday",
+          "effect": "-3%",
+          "reason": "Market stabilization reduces volatility premium"
         }
       ]
     },
@@ -4642,6 +4945,68 @@
           "date": "2026-03-05",
           "polymarket": 73,
           "rateX": 67
+        }
+      ],
+      "causalNodeIds": [
+        "n35_pred_ceasefire_pressure",
+        "n9_larijani",
+        "n7b_trump_talk_offer",
+        "n42_iran_wave3",
+        "n25_rubio_hardest_hits",
+        "n37_uae_strikes_iran",
+        "n21_losses_us",
+        "n20_losses_iran",
+        "n62_pred_congress_warpower",
+        "n63_pred_iran_capacity_degrade",
+        "n38_irgc_no_unanswered"
+      ],
+      "forResolution": [
+        {
+          "node": "n35_pred_ceasefire_pressure",
+          "effect": "+12%",
+          "reason": "Economic pressure on both sides makes ceasefire attractive"
+        },
+        {
+          "node": "n63_pred_iran_capacity_degrade",
+          "effect": "+8%",
+          "reason": "Iran capacity degraded — forced to negotiate"
+        },
+        {
+          "node": "n7b_trump_talk_offer",
+          "effect": "+5%",
+          "reason": "Diplomatic overture provides face-saving exit"
+        },
+        {
+          "node": "n62_pred_congress_warpower",
+          "effect": "+4%",
+          "reason": "Congress may force administration to negotiate"
+        },
+        {
+          "node": "n21_losses_us",
+          "effect": "+3%",
+          "reason": "US casualties increase domestic pressure for peace"
+        }
+      ],
+      "againstResolution": [
+        {
+          "node": "n42_iran_wave3",
+          "effect": "-10%",
+          "reason": "Continued strikes show no willingness to stop"
+        },
+        {
+          "node": "n25_rubio_hardest_hits",
+          "effect": "-8%",
+          "reason": "Rubio's hardline stance opposes ceasefire without capitulation"
+        },
+        {
+          "node": "n38_irgc_no_unanswered",
+          "effect": "-6%",
+          "reason": "IRGC doctrine demands retaliation — can't stop cycle"
+        },
+        {
+          "node": "n37_uae_strikes_iran",
+          "effect": "-4%",
+          "reason": "Multi-front conflict harder to de-escalate"
         }
       ]
     },

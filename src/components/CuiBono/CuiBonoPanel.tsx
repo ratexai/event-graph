@@ -5,7 +5,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useState, useMemo, useCallback } from "react";
-import type { GraphTheme, NarrativeCuiBono, CuiBono, CuiBonoEntry, NarrativeNode } from "../../types";
+import type { GraphTheme, NarrativeCuiBono, CuiBono, CuiBonoEntry, NarrativeNode, PredictionCausalLink, PredictionFocusState } from "../../types";
 import { isAnchorNode } from "../../utils";
 
 // ─── Props ───────────────────────────────────────────────────────
@@ -25,6 +25,12 @@ export interface CuiBonoPanelProps {
   panelWidth?: number;
   isMobile?: boolean;
   onClose?: () => void;
+  /** Currently focused prediction (prediction-first filtering) */
+  predictionFocus?: PredictionFocusState | null;
+  /** Callback to focus a prediction — filters graph to show only related nodes */
+  onPredictionFocus?: (anchorId: string) => void;
+  /** Callback to clear prediction focus */
+  onPredictionClear?: () => void;
 }
 
 // ─── Tab Type ────────────────────────────────────────────────────
@@ -653,11 +659,217 @@ const AlphaSignals: React.FC<{
   );
 };
 
+/** Causal link row — shows a single for/against entry */
+const CausalLinkRow: React.FC<{
+  link: PredictionCausalLink; variant: "for" | "against"; theme: GraphTheme;
+  nodeLabel?: string;
+}> = ({ link, variant, theme, nodeLabel }) => {
+  const color = variant === "for" ? theme.positive : theme.negative;
+  const bgColor = variant === "for" ? theme.positiveDim : theme.negativeDim;
+
+  return (
+    <div style={{
+      padding: "8px 10px", borderRadius: 8,
+      background: bgColor, marginBottom: 6,
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{
+          fontSize: 11, fontWeight: 700, color: theme.text,
+          overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          flex: 1, marginRight: 6,
+        }}>
+          {nodeLabel || link.node}
+        </span>
+        <span style={{
+          fontSize: 11, fontWeight: 800, color,
+          fontFamily: theme.monoFontFamily, flexShrink: 0,
+        }}>
+          {link.effect}
+        </span>
+      </div>
+      <div style={{ fontSize: 11, color: theme.textSecondary, marginTop: 4, lineHeight: 1.4 }}>
+        {link.reason}
+      </div>
+    </div>
+  );
+};
+
+/** Prediction focus detail view — for/against analysis */
+const PredictionFocusDetail: React.FC<{
+  anchor: NarrativeNode;
+  allNodes: NarrativeNode[];
+  theme: GraphTheme;
+  onClear: () => void;
+  onNodeNavigate?: (nodeId: string) => void;
+}> = ({ anchor, allNodes, theme, onClear, onNodeNavigate }) => {
+  const nodeMap = useMemo(() => {
+    const m = new Map<string, NarrativeNode>();
+    for (const n of allNodes) m.set(n.id, n);
+    return m;
+  }, [allNodes]);
+
+  const pmProb = anchor.marketProb ?? 0;
+  const rxProb = anchor.rateXProb ?? pmProb;
+  const alpha = anchor.alpha ?? (rxProb - pmProb);
+  const al = alphaLevel(alpha);
+
+  const forLinks = anchor.forResolution ?? [];
+  const againstLinks = anchor.againstResolution ?? [];
+  const forTotal = forLinks.reduce((s, l) => s + parseFloat(l.effect.replace(/[^-\d.]/g, "")) || 0, 0);
+  const againstTotal = againstLinks.reduce((s, l) => s + parseFloat(l.effect.replace(/[^-\d.]/g, "")) || 0, 0);
+
+  const causalCount = anchor.causalNodeIds?.length ?? 0;
+
+  return (
+    <div>
+      {/* Focused prediction header */}
+      <div style={{
+        padding: 12, borderRadius: 10,
+        background: `${theme.complement}15`,
+        border: `1px solid ${theme.complement}40`,
+        marginBottom: 12,
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+          <div style={{ fontSize: 13, fontWeight: 700, color: theme.text, lineHeight: 1.4, flex: 1 }}>
+            {anchor.marketQuestion || anchor.label}
+          </div>
+          <button
+            onClick={onClear}
+            style={{
+              background: theme.surface, border: `1px solid ${theme.border}`,
+              borderRadius: 6, color: theme.muted, fontSize: 14, cursor: "pointer",
+              width: 28, height: 28, display: "flex", alignItems: "center", justifyContent: "center",
+              fontFamily: "inherit", flexShrink: 0, marginLeft: 8,
+            }}
+            aria-label="Clear prediction focus"
+          >
+            ✕
+          </button>
+        </div>
+
+        {/* Dual prob bars */}
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+          <span style={{ fontSize: 9, color: theme.muted, width: 28 }}>PM</span>
+          <div style={{ flex: 1, height: 8, borderRadius: 4, background: theme.bgAlt, overflow: "hidden" }}>
+            <div style={{ height: 8, borderRadius: 4, background: theme.complement, width: `${pmProb}%` }} />
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 800, color: theme.muted, fontFamily: theme.monoFontFamily, width: 36, textAlign: "right" }}>{pmProb}%</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+          <span style={{ fontSize: 9, color: theme.positive, width: 28, fontWeight: 700 }}>RXAI</span>
+          <div style={{ flex: 1, height: 8, borderRadius: 4, background: theme.bgAlt, overflow: "hidden" }}>
+            <div style={{ height: 8, borderRadius: 4, background: theme.positive, width: `${rxProb}%` }} />
+          </div>
+          <span style={{ fontSize: 12, fontWeight: 800, color: theme.positive, fontFamily: theme.monoFontFamily, width: 36, textAlign: "right" }}>{rxProb}%</span>
+        </div>
+        {/* Alpha + causal count */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 6 }}>
+          <span style={{
+            fontSize: 10, fontWeight: 800, color: al.color,
+            fontFamily: theme.monoFontFamily,
+            padding: "2px 8px", borderRadius: 4,
+            background: al.color === "#30fd82" ? theme.positiveDim : al.color === "#ff495f" ? theme.negativeDim : theme.neutralDim,
+          }}>
+            Alpha: {alpha > 0 ? "+" : ""}{alpha}pp {al.icon}
+          </span>
+          <span style={{ fontSize: 10, color: theme.muted }}>
+            {causalCount} causal nodes
+          </span>
+        </div>
+      </div>
+
+      {/* FOR resolution */}
+      {forLinks.length > 0 && (
+        <>
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            marginBottom: 8, marginTop: 14,
+          }}>
+            <span style={{
+              fontSize: 11, fontWeight: 700, color: theme.positive,
+              letterSpacing: 1.5, textTransform: "uppercase",
+            }}>
+              For Resolution
+            </span>
+            <span style={{
+              fontSize: 11, fontWeight: 800, color: theme.positive,
+              fontFamily: theme.monoFontFamily,
+            }}>
+              +{Math.abs(forTotal).toFixed(0)}%
+            </span>
+          </div>
+          {forLinks.map((link, i) => (
+            <div key={`for-${i}`} onClick={() => onNodeNavigate?.(link.node)} style={{ cursor: onNodeNavigate ? "pointer" : "default" }}>
+              <CausalLinkRow
+                link={link}
+                variant="for"
+                theme={theme}
+                nodeLabel={nodeMap.get(link.node)?.label}
+              />
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* AGAINST resolution */}
+      {againstLinks.length > 0 && (
+        <>
+          <div style={{
+            display: "flex", alignItems: "center", justifyContent: "space-between",
+            marginBottom: 8, marginTop: 14,
+          }}>
+            <span style={{
+              fontSize: 11, fontWeight: 700, color: theme.negative,
+              letterSpacing: 1.5, textTransform: "uppercase",
+            }}>
+              Against Resolution
+            </span>
+            <span style={{
+              fontSize: 11, fontWeight: 800, color: theme.negative,
+              fontFamily: theme.monoFontFamily,
+            }}>
+              {againstTotal.toFixed(0)}%
+            </span>
+          </div>
+          {againstLinks.map((link, i) => (
+            <div key={`against-${i}`} onClick={() => onNodeNavigate?.(link.node)} style={{ cursor: onNodeNavigate ? "pointer" : "default" }}>
+              <CausalLinkRow
+                link={link}
+                variant="against"
+                theme={theme}
+                nodeLabel={nodeMap.get(link.node)?.label}
+              />
+            </div>
+          ))}
+        </>
+      )}
+
+      {/* Reasoning */}
+      {anchor.rateXReasoning && (
+        <div style={{
+          marginTop: 14, padding: 10, borderRadius: 8,
+          background: theme.bgAlt, border: `1px solid ${theme.border}`,
+        }}>
+          <div style={{ fontSize: 9, fontWeight: 700, color: theme.accent, letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
+            RateXAI Analysis
+          </div>
+          <div style={{ fontSize: 11, color: theme.textSecondary, lineHeight: 1.5 }}>
+            {anchor.rateXReasoning}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const MarketsTab: React.FC<{
   narrativeNodes?: NarrativeNode[];
   theme: GraphTheme;
   onMarketSelect?: (anchorId: string) => void;
-}> = ({ narrativeNodes, theme, onMarketSelect }) => {
+  predictionFocus?: PredictionFocusState | null;
+  onPredictionFocus?: (anchorId: string) => void;
+  onPredictionClear?: () => void;
+}> = ({ narrativeNodes, theme, onMarketSelect, predictionFocus, onPredictionFocus, onPredictionClear }) => {
   const anchors = useMemo(() => {
     if (!narrativeNodes) return [];
     return narrativeNodes.filter(isAnchorNode);
@@ -671,18 +883,56 @@ const MarketsTab: React.FC<{
     );
   }
 
+  // If a prediction is focused, show the detailed for/against view
+  if (predictionFocus && onPredictionClear) {
+    return (
+      <PredictionFocusDetail
+        anchor={predictionFocus.anchor}
+        allNodes={narrativeNodes ?? []}
+        theme={theme}
+        onClear={onPredictionClear}
+        onNodeNavigate={onMarketSelect}
+      />
+    );
+  }
+
   return (
     <div>
       <AlphaSignals anchors={anchors} theme={theme} />
       <SectionLabel text={`Active Predictions (${anchors.length})`} theme={theme} />
-      {anchors.map((anchor) => (
-        <MarketCard
-          key={anchor.id}
-          anchor={anchor}
-          theme={theme}
-          onClick={() => onMarketSelect?.(anchor.id)}
-        />
-      ))}
+      {anchors.map((anchor) => {
+        const isFocused = predictionFocus?.anchorId === anchor.id;
+        return (
+          <div key={anchor.id} style={{ position: "relative" }}>
+            <MarketCard
+              anchor={anchor}
+              theme={theme}
+              onClick={() => onMarketSelect?.(anchor.id)}
+            />
+            {/* Focus button — prediction-first filtering */}
+            {onPredictionFocus && (anchor.causalNodeIds?.length ?? 0) > 0 && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onPredictionFocus(anchor.id); }}
+                style={{
+                  position: "absolute", top: 8, right: 8,
+                  width: 26, height: 26, borderRadius: 6,
+                  background: isFocused ? theme.accent : theme.surface,
+                  border: `1px solid ${isFocused ? theme.accent : theme.border}`,
+                  color: isFocused ? "#fff" : theme.muted,
+                  fontSize: 12, cursor: "pointer",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "inherit",
+                  transition: "all 0.2s",
+                }}
+                aria-label={`Focus graph on: ${anchor.marketQuestion || anchor.label}`}
+                title="Focus graph on this prediction"
+              >
+                {"\u{1F50D}"}
+              </button>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
@@ -703,6 +953,9 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
   panelWidth: externalWidth,
   isMobile = false,
   onClose,
+  predictionFocus,
+  onPredictionFocus,
+  onPredictionClear,
 }) => {
   const PANEL_W = externalWidth ?? PANEL_WIDTH;
   const [activeTab, setActiveTab] = useState<TabKey>("markets");
@@ -799,12 +1052,14 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
           fontSize: 13, fontWeight: 800, color: theme.text,
           letterSpacing: 0.5,
         }}>
-          Cui Bono
+          {activeTab === "markets" && predictionFocus ? "Prediction Focus" : "Cui Bono"}
         </div>
         <div style={{
           fontSize: 10, color: theme.muted, marginTop: 2,
         }}>
-          Who benefits / who loses
+          {activeTab === "markets" && predictionFocus
+            ? `${predictionFocus.causalNodeIds.size} related nodes highlighted`
+            : "Who benefits / who loses"}
         </div>
       </div>
 
@@ -840,6 +1095,9 @@ const CuiBonoPanel: React.FC<CuiBonoPanelProps> = ({
             narrativeNodes={narrativeNodes}
             theme={theme}
             onMarketSelect={onMarketSelect}
+            predictionFocus={predictionFocus}
+            onPredictionFocus={onPredictionFocus}
+            onPredictionClear={onPredictionClear}
           />
         )}
       </div>

@@ -295,6 +295,14 @@ export interface NarrativeNode {
 
   /** Cui Bono — who benefits / who loses from this event */
   cuiBono?: CuiBono;
+
+  // ─── Prediction focus fields (anchor nodes only) ──────────
+  /** For anchors: IDs of causal fact nodes that influence this prediction */
+  causalNodeIds?: string[];
+  /** For anchors: events that push FOR resolution (increase probability) */
+  forResolution?: PredictionCausalLink[];
+  /** For anchors: events that push AGAINST resolution (decrease probability) */
+  againstResolution?: PredictionCausalLink[];
 }
 
 /** Influence link from a fact node to an anchor node */
@@ -358,6 +366,16 @@ export interface CuiBono {
   indices?: CuiBonoEntry[];
   /** Hidden motives — "who really gains behind the scenes" */
   hiddenMotives?: string[];
+}
+
+/** Link from a causal event to a prediction anchor — used for prediction-first filtering */
+export interface PredictionCausalLink {
+  /** Source fact node ID */
+  node: string;
+  /** How much this event shifts probability (e.g., "+12%" or "-15%") */
+  effect: string;
+  /** Brief explanation of why this event affects the prediction */
+  reason: string;
 }
 
 /** Aggregated Cui Bono scoreboard for an entire narrative */
@@ -462,6 +480,16 @@ export interface LayoutConfig {
 
 // ─── Component Props ────────────────────────────────────────────
 
+/** State of prediction-first focus filtering */
+export interface PredictionFocusState {
+  /** The anchor node ID currently focused */
+  anchorId: string;
+  /** Set of causal node IDs that are related to this prediction */
+  causalNodeIds: Set<string>;
+  /** The anchor node data */
+  anchor: NarrativeNode;
+}
+
 export interface EventGraphProps {
   defaultMode?: ViewMode;
   eventData?: EventFlowData;
@@ -482,6 +510,8 @@ export interface EventGraphProps {
   onNodeHover?: (nodeId: string | null, mode: ViewMode) => void;
   onModeChange?: (mode: ViewMode) => void;
   onFilterChange?: (filters: FilterState) => void;
+  /** Callback when user focuses/unfocuses a prediction */
+  onPredictionFocus?: (focus: PredictionFocusState | null) => void;
   loading?: boolean;
   error?: string | null;
   className?: string;

@@ -78,6 +78,10 @@ interface TopBarProps {
   minWeight?: number;
   onSetMinWeight?: (w: number) => void;
   isMobile?: boolean;
+  /** Prediction focus badge label (e.g., "Ceasefire by Mar 31") */
+  predictionFocusLabel?: string | null;
+  /** Callback to clear prediction focus */
+  onPredictionClear?: () => void;
 }
 
 export function TopBar(props: TopBarProps) {
@@ -94,6 +98,7 @@ export function TopBar(props: TopBarProps) {
     hasMarket, onToggleHasMarket,
     minWeight = 0, onSetMinWeight,
     isMobile = false,
+    predictionFocusLabel, onPredictionClear,
   } = props;
 
   const [openFlyout, setOpenFlyout] = useState<"maps" | "projects" | null>(null);
@@ -163,6 +168,38 @@ export function TopBar(props: TopBarProps) {
         color: theme.accent, fontFamily: theme.monoFontFamily,
         flexShrink: 0,
       }}>{isMobile ? "◈" : "◈ RADIANT"}</span>
+
+      {/* Prediction focus badge */}
+      {predictionFocusLabel && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 4,
+          padding: "2px 8px 2px 10px", borderRadius: 6,
+          background: `${theme.complement}20`,
+          border: `1px solid ${theme.complement}40`,
+          flexShrink: 0, maxWidth: isMobile ? 180 : 260,
+        }}>
+          <span style={{
+            fontSize: 10, fontWeight: 700, color: theme.complement,
+            overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+          }}>
+            Focus: {predictionFocusLabel}
+          </span>
+          {onPredictionClear && (
+            <button
+              onClick={onPredictionClear}
+              style={{
+                background: "none", border: "none",
+                color: theme.muted, fontSize: 12, cursor: "pointer",
+                fontFamily: "inherit", padding: "0 2px",
+                display: "flex", alignItems: "center",
+              }}
+              aria-label="Clear prediction focus"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Prediction Map nav — hidden on mobile (no hover) */}
       {nav && !isMobile && (

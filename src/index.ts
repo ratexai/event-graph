@@ -16,6 +16,7 @@ export type {
   NarrativeNode, Narrative, NarrativeFlowData, NarrativeAggregateStats,
   CuiBonoEntry, CuiBono, NarrativeCuiBono, AnchorInfluenceLink,
   AnchorOutcome, AnchorFactor, DualProbPoint,
+  PredictionCausalLink, PredictionFocusState,
   ProjectInfo, Point2D, NodePosition, LayoutConfig,
   FilterState, BrandingConfig, GraphTheme,
   EventFlowRequest, EventFlowResponse,

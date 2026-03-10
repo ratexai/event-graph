@@ -50,6 +50,8 @@ interface GraphCanvasProps {
   onHover: (id: string | null) => void;
   onSelect: (id: string) => void;
   onBackgroundClick?: () => void;
+  /** Set of node IDs that are causally linked to the focused prediction */
+  predictionFocusIds?: Set<string> | null;
 }
 
 export function GraphCanvas({
@@ -79,11 +81,36 @@ export function GraphCanvas({
   onHover,
   onSelect,
   onBackgroundClick,
+  predictionFocusIds,
 }: GraphCanvasProps) {
   const isEventsMode = mode === "events";
   const isNarrativeMode = mode === "narratives";
+  const hasPredictionFocus = !!predictionFocusIds && predictionFocusIds.size > 0;
 
   const handleHoverEnd = useCallback(() => onHover(null), [onHover]);
+
+  /** Determine if a node should be dimmed — combines hover chain + prediction focus */
+  const isNodeDimmed = useCallback((nodeId: string): boolean => {
+    // Hover dimming takes priority
+    if (hoveredId) return !activeChain.has(nodeId);
+    // Prediction focus dimming
+    if (hasPredictionFocus) return !predictionFocusIds!.has(nodeId);
+    return false;
+  }, [hoveredId, activeChain, hasPredictionFocus, predictionFocusIds]);
+
+  /** Determine if an edge should be dimmed */
+  const isEdgeDimmed = useCallback((fromId: string, toId: string): boolean => {
+    if (hoveredId) return !(activeChain.has(fromId) && activeChain.has(toId));
+    if (hasPredictionFocus) return !(predictionFocusIds!.has(fromId) && predictionFocusIds!.has(toId));
+    return false;
+  }, [hoveredId, activeChain, hasPredictionFocus, predictionFocusIds]);
+
+  /** Determine if an edge is active (highlighted) */
+  const isEdgeActive = useCallback((fromId: string, toId: string): boolean => {
+    if (hoveredId) return activeChain.has(fromId) && activeChain.has(toId);
+    if (hasPredictionFocus) return predictionFocusIds!.has(fromId) && predictionFocusIds!.has(toId);
+    return false;
+  }, [hoveredId, activeChain, hasPredictionFocus, predictionFocusIds]);
 
   const colorResolver = useMemo(() => {
     if (isEventsMode) {
@@ -205,7 +232,7 @@ export function GraphCanvas({
           const to = positions[edge.to];
           if (!from || !to) return null;
 
-          const active = !!hoveredId && activeChain.has(edge.from) && activeChain.has(edge.to);
+          const active = isEdgeActive(edge.from, edge.to);
           const toNode = isNarrativeMode ? narrativeById?.get(edge.to) : null;
           const fromNode = isNarrativeMode ? narrativeById?.get(edge.from) : null;
           const edgeIsFuture = isNarrativeMode && (toNode?.temporal === "future" || fromNode?.temporal === "future");
@@ -223,7 +250,7 @@ export function GraphCanvas({
               fromColor={edgeToAnchor ? colorResolver(edge.from) : edgeIsFuture ? theme.complement : colorResolver(edge.from)}
               toColor={edgeToAnchor ? theme.complement : edgeIsFuture ? theme.complement : colorResolver(edge.to)}
               isActive={active}
-              isDimmed={!!hoveredId && !active}
+              isDimmed={isEdgeDimmed(edge.from, edge.to)}
               isFuture={edgeIsFuture && !edgeIsInfluence && !edgeToScenario}
               influence={edgeIsInfluence ? edge.influence : undefined}
               mechanism={edgeIsInfluence ? edge.mechanism : undefined}
@@ -248,7 +275,7 @@ export function GraphCanvas({
                   connectionCount={connectionCounts.get(eventNode.id) || 0}
                   isHovered={hoveredId === eventNode.id}
                   isSelected={selectedId === eventNode.id}
-                  isDimmed={!!hoveredId && !activeChain.has(eventNode.id)}
+                  isDimmed={isNodeDimmed(eventNode.id)}
                   onHoverStart={onHover}
                   onHoverEnd={handleHoverEnd}
                   onSelect={onSelect}
@@ -273,7 +300,7 @@ export function GraphCanvas({
                       connectionCount={connectionCounts.get(narNode.id) || 0}
                       isHovered={hoveredId === narNode.id}
                       isSelected={selectedId === narNode.id}
-                      isDimmed={!!hoveredId && !activeChain.has(narNode.id)}
+                      isDimmed={isNodeDimmed(narNode.id)}
                       onHoverStart={onHover}
                       onHoverEnd={handleHoverEnd}
                       onSelect={onSelect}
@@ -294,7 +321,7 @@ export function GraphCanvas({
                       time={time}
                       isHovered={hoveredId === anchor.id}
                       isSelected={selectedId === anchor.id}
-                      isDimmed={!!hoveredId && !activeChain.has(anchor.id)}
+                      isDimmed={isNodeDimmed(anchor.id)}
                       onHoverStart={onHover}
                       onHoverEnd={handleHoverEnd}
                       onSelect={onSelect}
@@ -315,7 +342,7 @@ export function GraphCanvas({
                       time={time}
                       isHovered={hoveredId === sc.id}
                       isSelected={selectedId === sc.id}
-                      isDimmed={!!hoveredId && !activeChain.has(sc.id)}
+                      isDimmed={isNodeDimmed(sc.id)}
                       onHoverStart={onHover}
                       onHoverEnd={handleHoverEnd}
                       onSelect={onSelect}
@@ -337,7 +364,7 @@ export function GraphCanvas({
                     time={time}
                     isHovered={hoveredId === kolNode.id}
                     isSelected={selectedId === kolNode.id}
-                    isDimmed={!!hoveredId && !activeChain.has(kolNode.id)}
+                    isDimmed={isNodeDimmed(kolNode.id)}
                     onHoverStart={onHover}
                     onHoverEnd={handleHoverEnd}
                     onSelect={onSelect}
