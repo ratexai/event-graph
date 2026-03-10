@@ -9,7 +9,7 @@
    ═══════════════════════════════════════════════════════════════ */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { EventGraphProps, EventNode, EventType, KolNode, NarrativeNode, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode } from "../types";
+import type { EventGraphProps, EventNode, EventType, KolNode, NarrativeNode, KolTier, Platform, NarrativeCategory, NarrativeSignal, ViewMode, PredictionFocusState } from "../types";
 import { mergeTheme } from "../styles/theme";
 import {
   useAnimationTime,
@@ -62,6 +62,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   onNodeHover,
   onModeChange,
   onFilterChange,
+  onPredictionFocus: onPredictionFocusProp,
   loading = false,
   error = null,
   className,
@@ -79,6 +80,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const panZoom = usePanZoom();
   const selection = useGraphSelection();
   const theme = useMemo(() => mergeTheme(themeOverrides), [themeOverrides]);
+  const [predictionFocus, setPredictionFocus] = useState<PredictionFocusState | null>(null);
 
   const eventNodes = eventData?.nodes ?? EMPTY_EVENT_NODES;
   const kolNodes = kolData?.nodes ?? EMPTY_KOL_NODES;
@@ -152,12 +154,15 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   onNodeSelectRef.current = onNodeSelect;
   const onFilterChangeRef = useRef(onFilterChange);
   onFilterChangeRef.current = onFilterChange;
+  const onPredictionFocusRef = useRef(onPredictionFocusProp);
+  onPredictionFocusRef.current = onPredictionFocusProp;
   const modeRef = useRef(mode);
   modeRef.current = mode;
 
   const handleModeChange = useCallback((nextMode: ViewMode) => {
     setMode(nextMode);
     selection.closePanel();
+    setPredictionFocus(null);
     onModeChangeRef.current?.(nextMode);
   }, [selection.closePanel]);
 
@@ -185,6 +190,27 @@ export const EventGraph: React.FC<EventGraphProps> = ({
     selection.setHovered(anchorId);
     setAnchorModalId(anchorId);
   }, [selection.setHovered]);
+
+  /** Focus graph on a specific prediction — dim all non-related nodes */
+  const handlePredictionFocus = useCallback((anchorId: string) => {
+    const anchor = narrativeById.get(anchorId);
+    if (!anchor) return;
+    const causalIds = new Set<string>(anchor.causalNodeIds ?? []);
+    // Always include the anchor itself and its scenarios
+    causalIds.add(anchorId);
+    if (anchor.scenarios) {
+      for (const sid of anchor.scenarios) causalIds.add(sid);
+    }
+    const focus: PredictionFocusState = { anchorId, causalNodeIds: causalIds, anchor };
+    setPredictionFocus(focus);
+    onPredictionFocusRef.current?.(focus);
+  }, [narrativeById]);
+
+  /** Clear prediction focus — show all nodes */
+  const handlePredictionClear = useCallback(() => {
+    setPredictionFocus(null);
+    onPredictionFocusRef.current?.(null);
+  }, []);
 
   const selectedEvent = mode === "events" && selection.selected ? eventById.get(selection.selected) ?? null : null;
   const selectedKol = mode === "kols" && selection.selected ? kolById.get(selection.selected) ?? null : null;
@@ -239,6 +265,8 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           hasMarket={graphFilters.filters.hasMarket}
           onToggleHasMarket={graphFilters.toggleHasMarket}
           isMobile={isMobile}
+          predictionFocusLabel={predictionFocus ? (predictionFocus.anchor.marketQuestion || predictionFocus.anchor.label)?.replace(/^PM:\s*/, "") : null}
+          onPredictionClear={predictionFocus ? handlePredictionClear : undefined}
         />
       )}
 
@@ -290,6 +318,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           onHover={handleNodeHover}
           onSelect={handleNodeSelect}
           onBackgroundClick={selection.closePanel}
+          predictionFocusIds={predictionFocus?.causalNodeIds}
         />
       </GraphErrorBoundary>
 
@@ -332,6 +361,9 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           panelWidth={isMobile ? dims.w : cuiBonoWidth}
           isMobile={isMobile}
           onClose={() => setMobilePanel(null)}
+          predictionFocus={predictionFocus}
+          onPredictionFocus={handlePredictionFocus}
+          onPredictionClear={handlePredictionClear}
         />
       )}
 
