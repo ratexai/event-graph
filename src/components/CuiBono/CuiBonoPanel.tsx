@@ -901,36 +901,22 @@ const MarketsTab: React.FC<{
       <AlphaSignals anchors={anchors} theme={theme} />
       <SectionLabel text={`Active Predictions (${anchors.length})`} theme={theme} />
       {anchors.map((anchor) => {
-        const isFocused = predictionFocus?.anchorId === anchor.id;
+        const hasCausal = (anchor.causalNodeIds?.length ?? 0) > 0;
         return (
-          <div key={anchor.id} style={{ position: "relative" }}>
-            <MarketCard
-              anchor={anchor}
-              theme={theme}
-              onClick={() => onMarketSelect?.(anchor.id)}
-            />
-            {/* Focus button — prediction-first filtering */}
-            {onPredictionFocus && (anchor.causalNodeIds?.length ?? 0) > 0 && (
-              <button
-                onClick={(e) => { e.stopPropagation(); onPredictionFocus(anchor.id); }}
-                style={{
-                  position: "absolute", top: 8, right: 8,
-                  width: 26, height: 26, borderRadius: 6,
-                  background: isFocused ? theme.accent : theme.surface,
-                  border: `1px solid ${isFocused ? theme.accent : theme.border}`,
-                  color: isFocused ? "#fff" : theme.muted,
-                  fontSize: 12, cursor: "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontFamily: "inherit",
-                  transition: "all 0.2s",
-                }}
-                aria-label={`Focus graph on: ${anchor.marketQuestion || anchor.label}`}
-                title="Focus graph on this prediction"
-              >
-                {"\u{1F50D}"}
-              </button>
-            )}
-          </div>
+          <MarketCard
+            key={anchor.id}
+            anchor={anchor}
+            theme={theme}
+            onClick={() => {
+              // Primary action: if anchor has causal data → focus graph
+              // Fallback: open modal (old behavior) if no causal data
+              if (hasCausal && onPredictionFocus) {
+                onPredictionFocus(anchor.id);
+              } else {
+                onMarketSelect?.(anchor.id);
+              }
+            }}
+          />
         );
       })}
     </div>

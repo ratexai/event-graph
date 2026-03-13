@@ -172,10 +172,10 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   }, [selection.setHovered]);
 
   const handleNodeSelect = useCallback((id: string) => {
-    // If clicking an anchor node, show the anchor modal instead of detail panel
+    // If clicking an anchor node, show the anchor modal — UNLESS prediction focus is active
     if (modeRef.current === "narratives") {
       const node = narrativeById.get(id);
-      if (node && isAnchorNode(node)) {
+      if (node && isAnchorNode(node) && !predictionFocus) {
         setAnchorModalId(id);
         return;
       }
@@ -183,13 +183,21 @@ export const EventGraph: React.FC<EventGraphProps> = ({
     selection.setSelected(id);
     setMobilePanel("detail");
     onNodeSelectRef.current?.(id, modeRef.current);
-  }, [selection.setSelected, narrativeById]);
+  }, [selection.setSelected, narrativeById, predictionFocus]);
 
   const handleMarketSelect = useCallback((anchorId: string) => {
-    // Highlight the anchor on the graph + all causal chains
+    // If prediction focus is active, navigate to the node instead of opening modal
+    const node = narrativeById.get(anchorId);
+    if (node && !isAnchorNode(node)) {
+      // It's a fact node — select + highlight it
+      selection.setSelected(anchorId);
+      setMobilePanel("detail");
+      return;
+    }
+    // It's an anchor node — open modal
     selection.setHovered(anchorId);
     setAnchorModalId(anchorId);
-  }, [selection.setHovered]);
+  }, [selection.setHovered, selection.setSelected, narrativeById]);
 
   /** Focus graph on a specific prediction — dim all non-related nodes */
   const handlePredictionFocus = useCallback((anchorId: string) => {
