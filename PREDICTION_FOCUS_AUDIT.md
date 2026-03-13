@@ -173,10 +173,10 @@ Re-render: all nodes restored to full opacity, badge removed
 
 ---
 
-## Remaining Tasks (Future)
+## Remaining Tasks (Completed)
 
-- [ ] Add for/against role indicator badges on graph nodes (green/red dot)
-- [ ] Animate camera pan to center causal cluster when focus activates
-- [ ] Add "View on Polymarket" button in PredictionFocusDetail
-- [ ] Persist prediction focus across mode switches (if returning to narratives)
-- [ ] E2E test: click prediction → verify dimming → verify for/against panel
+- [x] Add for/against role indicator badges on graph nodes (green/red dot)
+- [x] Animate camera pan to center causal cluster when focus activates
+- [x] Add "View on Polymarket" button in PredictionFocusDetail
+- [x] Persist prediction focus across mode switches (if returning to narratives)
+- [x] E2E test: click prediction → verify dimming → verify for/against panel

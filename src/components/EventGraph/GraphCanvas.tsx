@@ -52,6 +52,8 @@ interface GraphCanvasProps {
   onBackgroundClick?: () => void;
   /** Set of node IDs that are causally linked to the focused prediction */
   predictionFocusIds?: Set<string> | null;
+  /** Map of node ID → "for" | "against" for prediction role badges */
+  predictionRoleMap?: Map<string, "for" | "against"> | null;
 }
 
 export function GraphCanvas({
@@ -82,6 +84,7 @@ export function GraphCanvas({
   onSelect,
   onBackgroundClick,
   predictionFocusIds,
+  predictionRoleMap,
 }: GraphCanvasProps) {
   const isEventsMode = mode === "events";
   const isNarrativeMode = mode === "narratives";
@@ -337,6 +340,24 @@ export function GraphCanvas({
                     />
                   );
                 })}
+                {/* Layer 4: Prediction role badges (for/against dots) */}
+                {predictionRoleMap && predictionRoleMap.size > 0 && (
+                  [...factNodes, ...anchorNodes].map((node) => {
+                    const role = predictionRoleMap.get(node.id);
+                    if (!role) return null;
+                    const pos = positions[node.id];
+                    if (!pos) return null;
+                    const r = 6;
+                    const color = role === "for" ? theme.positive : theme.negative;
+                    const label = role === "for" ? "+" : "\u2212";
+                    return (
+                      <g key={`role-${node.id}`} transform={`translate(${pos.x + 12},${pos.y - 12})`} style={{ pointerEvents: "none" }}>
+                        <circle r={r} fill={color} stroke={theme.bg} strokeWidth={2} />
+                        <text textAnchor="middle" dy="0.35em" fontSize={9} fontWeight={800} fill="#fff" fontFamily={theme.monoFontFamily}>{label}</text>
+                      </g>
+                    );
+                  })
+                )}
               </>
             )
             : kolNodes.map((kolNode) => {

@@ -844,6 +844,29 @@ const PredictionFocusDetail: React.FC<{
         </>
       )}
 
+      {/* View on Polymarket */}
+      {anchor.marketUrl && (
+        <a
+          href={anchor.marketUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            marginTop: 14, padding: "10px 14px", borderRadius: 8,
+            background: `${theme.complement}18`,
+            border: `1px solid ${theme.complement}30`,
+            color: theme.complement, fontSize: 12, fontWeight: 700,
+            textDecoration: "none", cursor: "pointer",
+            fontFamily: theme.fontFamily,
+          }}
+        >
+          <svg width={14} height={14} viewBox="0 0 16 16" fill="none">
+            <path d="M6 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1v-3M9 1h6m0 0v6m0-6L8 8" stroke="currentColor" strokeWidth={1.5} strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+          View on Polymarket
+        </a>
+      )}
+
       {/* Reasoning */}
       {anchor.rateXReasoning && (
         <div style={{

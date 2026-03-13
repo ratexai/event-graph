@@ -23,6 +23,8 @@ export interface PanZoomState {
   reset: () => void;
   /** Fit all content into the viewport. extraZoomOut < 1 zooms out further (e.g. 0.85 for mobile overview). */
   fitContent: (contentWidth: number, contentHeight: number, viewportWidth: number, viewportHeight: number, extraZoomOut?: number) => void;
+  /** Pan + zoom to fit a specific bounding rect within the viewport */
+  fitRect: (rect: { minX: number; minY: number; maxX: number; maxY: number }, viewportWidth: number, viewportHeight: number, padding?: number) => void;
 }
 
 export function usePanZoom(opts?: {
@@ -129,6 +131,27 @@ export function usePanZoom(opts?: {
     setPan({ x: Math.max(0, offsetX), y: Math.max(0, offsetY) });
   }, [minZoom]);
 
+  const fitRect = useCallback((
+    rect: { minX: number; minY: number; maxX: number; maxY: number },
+    viewportWidth: number,
+    viewportHeight: number,
+    padding = 60,
+  ) => {
+    const rectW = rect.maxX - rect.minX + padding * 2;
+    const rectH = rect.maxY - rect.minY + padding * 2;
+    if (rectW <= 0 || rectH <= 0 || viewportWidth <= 0 || viewportHeight <= 0) return;
+    const zx = viewportWidth / rectW;
+    const zy = viewportHeight / rectH;
+    const fitZoom = Math.max(minZoom, Math.min(maxZoom, Math.min(zx, zy)));
+    setZoom(fitZoom);
+    const cx = (rect.minX + rect.maxX) / 2;
+    const cy = (rect.minY + rect.maxY) / 2;
+    setPan({
+      x: viewportWidth / 2 - cx * fitZoom,
+      y: viewportHeight / 2 - cy * fitZoom,
+    });
+  }, [minZoom, maxZoom]);
+
   return {
     zoom, pan, isPanning,
     handlers,
@@ -136,5 +159,6 @@ export function usePanZoom(opts?: {
     zoomOut: useCallback(() => setZoom((z) => Math.max(minZoom, z - zoomStep)), [minZoom, zoomStep]),
     reset: useCallback(() => { setZoom(1); setPan({ x: 0, y: 0 }); }, []),
     fitContent,
+    fitRect,
   };
 }

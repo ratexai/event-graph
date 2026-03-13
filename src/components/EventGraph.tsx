@@ -162,7 +162,8 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const handleModeChange = useCallback((nextMode: ViewMode) => {
     setMode(nextMode);
     selection.closePanel();
-    setPredictionFocus(null);
+    // Only clear prediction focus when leaving narratives mode
+    if (nextMode !== "narratives") setPredictionFocus(null);
     onModeChangeRef.current?.(nextMode);
   }, [selection.closePanel]);
 
@@ -220,6 +221,27 @@ export const EventGraph: React.FC<EventGraphProps> = ({
     onPredictionFocusRef.current?.(null);
   }, []);
 
+  // Auto-pan to center causal cluster when prediction focus activates
+  useEffect(() => {
+    if (!predictionFocus || svgWidth <= 0 || svgHeight <= 0) return;
+    const positions = narGraph.positions;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    let count = 0;
+    for (const nodeId of predictionFocus.causalNodeIds) {
+      const pos = positions[nodeId];
+      if (!pos) continue;
+      minX = Math.min(minX, pos.x);
+      minY = Math.min(minY, pos.y);
+      maxX = Math.max(maxX, pos.x);
+      maxY = Math.max(maxY, pos.y);
+      count++;
+    }
+    if (count >= 2) {
+      panZoom.fitRect({ minX, minY, maxX, maxY }, svgWidth, svgHeight);
+    }
+  // Only trigger on focus change, not on every position recompute
+  }, [predictionFocus?.anchorId]);
+
   const selectedEvent = mode === "events" && selection.selected ? eventById.get(selection.selected) ?? null : null;
   const selectedKol = mode === "kols" && selection.selected ? kolById.get(selection.selected) ?? null : null;
   const selectedNarrative = mode === "narratives" && selection.selected ? narrativeById.get(selection.selected) ?? null : null;
@@ -227,6 +249,20 @@ export const EventGraph: React.FC<EventGraphProps> = ({
   const hoveredKol = mode === "kols" && selection.hovered && !selection.panelOpen ? kolById.get(selection.hovered) ?? null : null;
   const hoveredNarrative = mode === "narratives" && selection.hovered && !selection.panelOpen ? narrativeById.get(selection.hovered) ?? null : null;
   const timeSlotLabels = useMemo(() => timeSlots.map((slot) => slot.label), [timeSlots]);
+
+  // Build prediction role map (for/against) from focused anchor's causal data
+  const predictionRoleMap = useMemo(() => {
+    if (!predictionFocus) return null;
+    const map = new Map<string, "for" | "against">();
+    const anchor = predictionFocus.anchor;
+    if (anchor.forResolution) {
+      for (const link of anchor.forResolution) map.set(link.node, "for");
+    }
+    if (anchor.againstResolution) {
+      for (const link of anchor.againstResolution) map.set(link.node, "against");
+    }
+    return map;
+  }, [predictionFocus]);
 
   return (
     <div
@@ -327,6 +363,7 @@ export const EventGraph: React.FC<EventGraphProps> = ({
           onSelect={handleNodeSelect}
           onBackgroundClick={selection.closePanel}
           predictionFocusIds={predictionFocus?.causalNodeIds}
+          predictionRoleMap={predictionRoleMap}
         />
       </GraphErrorBoundary>
 
