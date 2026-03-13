@@ -1,30 +1,166 @@
-# Radiant — Refactoring Plan: JSON → Full-Stack Service
+# Radiant — Refactoring Plan v2: Prediction Domain Service
 
-> Status: **DRAFT — requires team sign-off**
+> Status: **DRAFT v2 — requires team sign-off**
 > Author: Claude / RateX AI
 > Date: 2026-03-13
+> Supersedes: v1 (standalone full-stack approach)
 
 ---
 
 ## Table of Contents
 
-1. [Current Architecture](#1-current-architecture)
-2. [Target Architecture](#2-target-architecture)
-3. [Final Database Schema (PostgreSQL)](#3-final-database-schema-postgresql)
-4. [Monorepo Restructure](#4-monorepo-restructure)
-5. [Refactoring Phases](#5-refactoring-phases)
-6. [Detailed Task Breakdown](#6-detailed-task-breakdown)
-7. [API Contract: Before → After](#7-api-contract-before--after)
-8. [Agent Migration Plan](#8-agent-migration-plan)
-9. [Frontend Client Changes](#9-frontend-client-changes)
-10. [Testing Strategy](#10-testing-strategy)
-11. [Infrastructure & Deployment](#11-infrastructure--deployment)
-12. [Risks & Mitigations](#12-risks--mitigations)
-13. [Decision Log](#13-decision-log)
+1. [Strategic Context: Where event-graph Fits](#1-strategic-context)
+2. [Why Drizzle? Why Hono?](#2-technology-choices)
+3. [Current Architecture](#3-current-architecture)
+4. [Target Architecture (Domain Service Model)](#4-target-architecture)
+5. [Domain Boundaries: What Lives Where](#5-domain-boundaries)
+6. [Integration Layer: event-graph ↔ TradingAgenticChat](#6-integration-layer)
+7. [Data Sources: Harvesters, Polymarket, MCP](#7-data-sources)
+8. [Database Schema (Prediction Domain Only)](#8-database-schema)
+9. [Monorepo Restructure](#9-monorepo-restructure)
+10. [Refactoring Phases](#10-refactoring-phases)
+11. [API Contract](#11-api-contract)
+12. [Agent Strategy: Delegation, Not Duplication](#12-agent-strategy)
+13. [Frontend Client Changes](#13-frontend-client-changes)
+14. [Testing Strategy](#14-testing-strategy)
+15. [Infrastructure & Deployment](#15-infrastructure--deployment)
+16. [Risks & Mitigations](#16-risks--mitigations)
+17. [Decision Log](#17-decision-log)
 
 ---
 
-## 1. Current Architecture
+## 1. Strategic Context
+
+### The RateXAI Ecosystem
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                         RateXAI PLATFORM                                │
+│                                                                         │
+│  ┌────────────────────────────────────────────────────┐                 │
+│  │  TradingAgenticChat (Control Plane)                │                 │
+│  │                                                    │                 │
+│  │  ▸ Identity: users, workspaces, workspace_members  │                 │
+│  │  ▸ Auth: JWT, OAuth (Google/GitHub), linked accts  │                 │
+│  │  ▸ Chat: conversations, messages, message_parts    │                 │
+│  │  ▸ Agent Runtime: agents, agent_versions, runs     │                 │
+│  │  ▸ Billing: billing_ledger, llm_transactions       │                 │
+│  │  ▸ Execution: wallet_bindings, execution_intents   │                 │
+│  │  ▸ Marketplace: agent profiles, forks, installs    │                 │
+│  │  ▸ Events: Avro → Kafka → Spark/Iceberg            │                 │
+│  │  ▸ Infra: PostgreSQL + Alembic, RLS, audit         │                 │
+│  │                                                    │                 │
+│  │  Stack: Python, FastAPI, Alembic, PostgreSQL        │                 │
+│  └───────────────────────┬────────────────────────────┘                 │
+│                          │                                              │
+│                   JWT tokens, Kafka events,                             │
+│                   Agent run API, User context                           │
+│                          │                                              │
+│  ┌───────────────────────▼────────────────────────────┐                 │
+│  │  event-graph / Radiant (Prediction Domain Service) │  ← THIS REPO   │
+│  │                                                    │                 │
+│  │  ▸ Prediction Maps: maps, nodes, edges, timeslots  │                 │
+│  │  ▸ Probability Engine: prob_history, influence      │                 │
+│  │  ▸ Market Integration: Polymarket API/MCP           │                 │
+│  │  ▸ Visualization: React graph library               │                 │
+│  │  ▸ Agent Runs: tracked in TradingAgenticChat        │                 │
+│  │  ▸ Auth: validates TradingAgenticChat JWTs          │                 │
+│  │                                                    │                 │
+│  │  Stack: TypeScript, Hono, Drizzle, PostgreSQL       │                 │
+│  └────────────────────────────────────────────────────┘                 │
+│                                                                         │
+│  ┌────────────────────────────────┐                                     │
+│  │  Legacy Services               │                                     │
+│  │  ▸ Harvester (news parsing)    │                                     │
+│  │  ▸ Existing RateXAI auth       │                                     │
+│  └────────────────────────────────┘                                     │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Key Insight
+
+**event-graph is a domain service, not a platform.**
+
+TradingAgenticChat is the platform — it owns users, auth, agents, billing, execution.
+event-graph owns **prediction maps** — the specialized visualization + probability tracking
+for prediction market audiences.
+
+**Consequences:**
+- NO auth system in event-graph → validate JWTs issued by TradingAgenticChat
+- NO agent runner in event-graph → register prediction agents in TradingAgenticChat's runtime
+- NO billing in event-graph → cost events flow to TradingAgenticChat's ledger
+- NO user management → user context comes from JWT claims
+- YES own database → prediction-specific schema (maps, nodes, prob_history)
+- YES own API → prediction-specific endpoints (Hono, lightweight)
+- YES own Polymarket integration → domain-specific, not platform concern
+- YES own visualization → React library (@ratexai/event-graph)
+
+---
+
+## 2. Technology Choices
+
+### Why Hono (not FastAPI, not Express)?
+
+| Factor | Hono | FastAPI (TradingAgenticChat) | Express |
+|--------|------|-----|---------|
+| **Language** | TypeScript | Python | TypeScript |
+| **Why it fits** | Same language as React library = shared types, single toolchain | Already powers the platform | Heavy, old patterns |
+| **Performance** | ~50K req/s, Web Standard API | ~15K req/s (uvicorn) | ~20K req/s |
+| **Bundle** | 14KB | N/A | 200KB+ |
+| **Edge deploy** | CF Workers, Deno, Bun, Node | Server only | Server only |
+| **Middleware** | Built-in JWT validation, CORS, rate-limit | Built-in | Needs express-jwt, cors, etc. |
+
+**The real reason:** event-graph is a TypeScript monorepo. The React library, shared types,
+API server, and Drizzle schema all share one language. Introducing Python for a 79-line
+API server means two runtimes, two CI pipelines, no shared types. Hono lets us keep
+everything in one `pnpm build`.
+
+The Python agents stay Python — they call our API over HTTP. But the API itself is TS.
+
+### Why Drizzle (not Alembic, not Prisma)?
+
+| Factor | Drizzle | Alembic (TradingAgenticChat) | Prisma |
+|--------|---------|---------|--------|
+| **Language** | TypeScript | Python | TypeScript |
+| **Schema definition** | TS code → SQL | Python code → SQL | .prisma DSL → TS |
+| **Type inference** | Direct from schema (zero codegen) | N/A (Python types separate) | Generated client |
+| **Migration** | `drizzle-kit generate` + `push` | `alembic revision --autogenerate` | `prisma migrate` |
+| **Query builder** | SQL-like, composable | SQLAlchemy | Abstracted, limited raw SQL |
+| **Bundle size** | ~50KB | N/A | ~2MB |
+
+**The real reason:** TradingAgenticChat uses Alembic because it's Python. We're TypeScript.
+Drizzle is the lightest, most type-safe ORM in the TS ecosystem. Schema-as-code, zero codegen,
+direct SQL composability. We don't need Prisma's abstraction layer for a domain service
+with well-defined queries.
+
+**Both services use PostgreSQL** — this is intentional. Shared DB engine means shared operational
+knowledge, shared connection pooling patterns, and the option to share a cluster if needed.
+
+### Why not share TradingAgenticChat's database directly?
+
+**Tempting but wrong.** Shared database = coupled services. If TradingAgenticChat runs a migration,
+event-graph breaks. If event-graph runs a heavy query, TradingAgenticChat slows down.
+
+Instead: **separate databases, shared auth tokens, event-driven sync.**
+
+```
+TradingAgenticChat DB (Alembic)    event-graph DB (Drizzle)
+├── users                          ├── maps
+├── workspaces                     ├── nodes
+├── conversations                  ├── edges
+├── agents                         ├── time_slots
+├── billing_ledger                 ├── influence_links
+├── ...                            ├── prob_history
+│                                  ├── agent_run_refs  ← references, not copies
+│                                  ├── map_access      ← thin ACL cache
+│                                  └── bookmarks / alerts
+
+Sync: JWT claims (user_id, workspace_id) + Kafka events + API calls
+```
+
+---
+
+## 3. Current Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -41,9 +177,9 @@
 │ server.py (Fast  │               │ *.json              │
 │ API, 79 lines)   │               │ registry.json       │
 └──────────────────┘               └─────────────────────┘
-                                           ▲
-┌──────────────────┐  writes JSON          │
-│ radiant/agents/  │──────────────────────→│
+                                          ▲
+┌──────────────────┐  writes JSON         │
+│ radiant/agents/  │─────────────────────→│
 │ update_map.py    │  (full file rewrite)
 │ map_predict.py   │
 └──────────────────┘
@@ -60,85 +196,392 @@
 | `src/types/index.ts` | TS | 686 | All data contracts |
 | `src/api/client.ts` | TS | 239 | Frontend API client (fetch + cache + retry) |
 | `src/hooks/useApi.ts` | TS | 81 | React data fetching hooks |
-| `src/components/EventGraph.tsx` | TSX | ~400 | Main orchestrator |
-| `src/components/EventGraph/GraphCanvas.tsx` | TSX | ~500 | SVG graph renderer |
-| `src/components/CuiBono/CuiBonoPanel.tsx` | TSX | ~400 | Right sidebar |
+| `src/components/EventGraph.tsx` | TSX | ~476 | Main orchestrator |
+| `src/components/` (all) | TSX | ~6900 | Full graph rendering suite |
 | `radiant/api/server.py` | Python | 79 | FastAPI — serves JSON files |
-| `radiant/agents/update_map.py` | Python | ~8000 | Claude agent — discovers events |
-| `radiant/agents/map_predictions.py` | Python | ~8000 | Claude agent — maps predictions |
+| `radiant/agents/update_map.py` | Python | ~273 | Claude agent — discovers events |
+| `radiant/agents/map_predictions.py` | Python | ~249 | Claude agent — maps predictions |
 | `radiant/agents/config.py` | Python | 11 | Agent config |
 | `radiant/data/maps/*.json` | JSON | varies | 5 map files, 1 populated (74 nodes) |
 | `radiant/data/registry.json` | JSON | 54 | Map index |
-| `demo/` | TSX | ~3000 | Demo app with hardcoded data |
+| `demo/` | TSX | ~3400 | Demo app with hardcoded data |
 
 ### Problems Blocking Service Launch
 
-| # | Problem | Impact |
-|---|---------|--------|
-| 1 | **No database** — JSON files on disk | No concurrent writes, no transactions, agent can corrupt |
-| 2 | **No user system** | Can't track who sees what, no auth |
-| 3 | **No audit trail** | Agent runs are fire-and-forget, no history |
-| 4 | **No real-time** | Client must poll, no push updates |
-| 5 | **No search** | Can't search across maps or nodes |
-| 6 | **No version history** | Can't see how probability evolved over time |
-| 7 | **Python API is minimal** | 4 endpoints, no validation, no auth, no pagination |
-| 8 | **Mixed Python + TS** | Two runtimes to deploy, no shared types |
-| 9 | **No incremental updates** | Agent rewrites entire map file each run |
-| 10 | **No tests for API/agents** | Only frontend unit tests (72 passing) |
+| # | Problem | Impact | v2 Solution |
+|---|---------|--------|-------------|
+| 1 | **No database** — JSON files on disk | No concurrent writes, no transactions | Own PostgreSQL (Drizzle) |
+| 2 | **No user system** | Can't track who sees what | Validate TradingAgenticChat JWTs |
+| 3 | **No audit trail** | Agent runs fire-and-forget | Log agent_run_refs, details in TradingAgenticChat |
+| 4 | **No real-time** | Client must poll | PG NOTIFY → SSE |
+| 5 | **No search** | Can't search across maps/nodes | PG full-text search (GIN) |
+| 6 | **No version history** | Can't see probability evolution | `prob_history` table |
+| 7 | **Python API is minimal** | 4 endpoints, no validation | Hono with Zod validation |
+| 8 | **Mixed Python + TS** | Two runtimes for API | TS API, Python agents stay Python |
+| 9 | **No incremental updates** | Agent rewrites entire map file | Node-level CRUD via API |
+| 10 | **No Polymarket sync** | Manual probability updates | MCP/API direct integration |
+| 11 | **Duplicates platform concerns** | Would rebuild auth, billing, agents | Delegates to TradingAgenticChat |
 
 ---
 
-## 2. Target Architecture
+## 4. Target Architecture (Domain Service Model)
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│  TARGET STATE — PostgreSQL + TypeScript API + Real-time     │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│  TARGET STATE — Prediction Domain Service within RateXAI               │
+└─────────────────────────────────────────────────────────────────────────┘
 
-┌──────────┐  npm pkg    ┌───────────────────┐   SSE/WS
-│ packages/│────────────→│ Host App (Next.js) │←────────────┐
-│ ui/      │             │ or standalone      │              │
-│ (React)  │             └───────────────────┘              │
-└──────────┘                                                │
-                                                            │
-┌──────────────────────────────────────────────────┐        │
-│ packages/api/  — Hono + Drizzle + PostgreSQL     │        │
-│                                                  │        │
-│  routes/maps.ts       → CRUD maps               │────────┘
-│  routes/nodes.ts      → CRUD nodes + search      │  NOTIFY →
-│  routes/predictions.ts→ prob history, alerts      │  SSE broadcast
-│  routes/auth.ts       → JWT + OAuth              │
-│  routes/agents.ts     → agent run tracking       │
-│  routes/sse.ts        → real-time stream         │
+                    ┌──────────────────────────────────┐
+                    │  TradingAgenticChat (Platform)    │
+                    │                                  │
+                    │  ▸ Auth (JWT issuer)             │
+                    │  ▸ Agent Runtime                 │
+                    │  ▸ Billing Ledger                │
+                    │  ▸ Kafka Event Bus               │
+                    │  ▸ User/Workspace mgmt           │
+                    └──────┬─────────────┬─────────────┘
+                           │             │
+              JWT tokens   │             │  Kafka events
+              Agent API    │             │  (Avro schemas)
+                           │             │
+┌──────────┐  npm pkg  ┌──▼─────────────▼──────────────────────────┐
+│ packages/│──────────→│  Host App (Next.js / RateXAI frontend)    │
+│ ui/      │           │  or TradingAgenticChat chat UI             │
+│ (React)  │           └─────────────────┬─────────────────────────┘
+└──────────┘                             │
+                                         │ REST + SSE
+                                         │
+┌────────────────────────────────────────▼─────────────────────────┐
+│  packages/api/ — Hono + Drizzle + PostgreSQL                     │
+│  (Prediction Domain Service)                                     │
+│                                                                  │
+│  Auth:                                                           │
+│  ├── middleware/auth.ts  → validates TradingAgenticChat JWTs     │
+│  ├── middleware/agent.ts → validates agent API keys              │
+│  └── NO own user management                                     │
+│                                                                  │
+│  Routes (prediction-specific):                                   │
+│  ├── routes/maps.ts          → CRUD maps                        │
+│  ├── routes/nodes.ts         → CRUD nodes + batch upsert        │
+│  ├── routes/predictions.ts   → prob history, alpha, anchors     │
+│  ├── routes/search.ts        → full-text across maps            │
+│  ├── routes/polymarket.ts    → market sync status, triggers     │
+│  ├── routes/sse.ts           → real-time map change stream      │
+│  └── routes/health.ts        → liveness/readiness               │
+│                                                                  │
+│  Integration:                                                    │
+│  ├── lib/polymarket.ts       → Polymarket CLOB API client       │
+│  ├── lib/mcp-polymarket.ts   → MCP server for Polymarket tools  │
+│  ├── lib/harvester-client.ts → Consume news from legacy API     │
+│  ├── lib/kafka.ts            → Publish/consume Avro events      │
+│  └── lib/platform-client.ts  → Call TradingAgenticChat API      │
+│                                                                  │
+│  DB:                                                             │
+│  ├── db/schema.ts            → Drizzle tables (prediction only) │
+│  ├── db/client.ts            → Connection pool                  │
+│  └── db/seed.ts              → JSON → DB import                 │
+└──────────────────────┬───────────────────────────────────────────┘
+                       │
+                       ▼
+               ┌──────────────┐
+               │ PostgreSQL   │  event-graph's own DB
+               │ (prediction) │  NOT shared with TradingAgenticChat
+               └──────────────┘
+                       ▲
+                       │ HTTP API calls
+┌──────────────────────┴──────────────────────────────────────────┐
+│  agents/ (Python) — registered in TradingAgenticChat runtime    │
+│                                                                 │
+│  update_map.py      → POST /api/v1/maps/:id/nodes/batch        │
+│  map_predictions.py → PATCH /api/v1/maps/:id/nodes/:id         │
+│  polymarket_sync.py → GET polymarket API → POST prob_history    │
+│                                                                 │
+│  These agents are REGISTERED in TradingAgenticChat's agent      │
+│  runtime (agent_versions table). Their runs are tracked there.  │
+│  event-graph only stores a lightweight agent_run_ref.           │
+└─────────────────────────────────────────────────────────────────┘
+
+┌─────────────────────────────────────────────────────────────────┐
+│  External Data Sources                                          │
+│                                                                 │
+│  ┌──────────────┐  ┌──────────────┐  ┌────────────────────┐    │
+│  │ Polymarket   │  │ Legacy       │  │ TradingAgenticChat │    │
+│  │ CLOB API     │  │ Harvester    │  │ Kafka Events       │    │
+│  │              │  │ (news parse) │  │ (Avro)             │    │
+│  └──────┬───────┘  └──────┬───────┘  └────────┬───────────┘    │
+│         │                 │                    │                │
+│         │  REST/MCP       │  REST              │  Kafka consume │
+│         └─────────────────┴────────────────────┘                │
+│                           │                                     │
+│                  event-graph API ingests                        │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 5. Domain Boundaries: What Lives Where
+
+### event-graph OWNS (this repo)
+
+| Domain | Data | API | Rationale |
+|--------|------|-----|-----------|
+| **Prediction Maps** | maps, nodes, edges, time_slots | Full CRUD | Core domain entity |
+| **Probability Engine** | prob_history, influence_links | Read/write | Prediction-specific time-series |
+| **Market Integration** | Polymarket sync state | Sync triggers | Domain-specific data source |
+| **Visualization** | React components, hooks, themes | npm package | Rendering is the product |
+| **Map Access Control** | map_access (thin ACL cache) | Check on read | Cached from platform, not authoritative |
+| **User Engagement** | bookmarks, alerts (prediction-specific) | CRUD | UX features scoped to maps |
+| **Agent Run References** | agent_run_refs (FK-less) | Read only | Lightweight log, details in platform |
+
+### TradingAgenticChat OWNS (delegated)
+
+| Domain | Why NOT in event-graph |
+|--------|----------------------|
+| **Users & Identity** | UUID-first model, external_id bootstrap, username policy — already built |
+| **Workspaces & Tenancy** | workspace_members, RLS policies — already built with Alembic |
+| **Authentication** | JWT issuance, OAuth flows, linked accounts — already built |
+| **Agent Runtime** | agent_versions, agent_runs, memory_snapshots — would duplicate 006/007 migrations |
+| **Billing & Cost** | billing_ledger, llm_transactions — append-only with idempotency keys |
+| **Execution** | wallet_bindings, execution_intents — trading domain, not prediction |
+| **Chat** | conversations, messages — chat is the platform, maps are a widget inside it |
+| **Avro Event Bus** | Schema governance, Kafka infra — centralized |
+
+### Shared / Negotiated
+
+| Concern | Approach |
+|---------|----------|
+| **Auth tokens** | TradingAgenticChat issues JWTs → event-graph validates with shared JWKS |
+| **User context** | JWT claims carry `user_id`, `workspace_id`, `role` — no user table needed |
+| **Agent registration** | Prediction agents registered as `agent_versions` in TradingAgenticChat |
+| **Agent run tracking** | Runs tracked in TradingAgenticChat's `agent_runs` → event-graph stores `agent_run_ref` |
+| **Cost attribution** | Agent LLM costs → TradingAgenticChat's `llm_transactions` → billing_ledger |
+| **Events** | event-graph publishes `prediction.map.updated.v1` to Kafka, TradingAgenticChat consumes |
+| **News data** | Legacy harvester → TradingAgenticChat integration → Kafka event → event-graph consumes |
+
+---
+
+## 6. Integration Layer: event-graph ↔ TradingAgenticChat
+
+### 6.1 Authentication Flow
+
+```
+User → RateXAI Frontend → TradingAgenticChat /auth/login
+                                    │
+                                    ▼
+                             JWT { user_id, workspace_id, role, exp }
+                                    │
+                          ┌─────────┴─────────┐
+                          │                   │
+                          ▼                   ▼
+                TradingAgenticChat    event-graph API
+                (issuer, full user)   (validator, claims only)
+```
+
+**event-graph auth middleware:**
+```typescript
+// packages/api/src/middleware/auth.ts
+// Validates JWT using TradingAgenticChat's JWKS endpoint
+// Extracts: user_id, workspace_id, role
+// NO user table lookup — trust the token
+
+const JWKS_URL = process.env.PLATFORM_JWKS_URL; // TradingAgenticChat /.well-known/jwks.json
+
+async function validateToken(token: string): Promise<TokenClaims> {
+  const jwks = createRemoteJWKSet(new URL(JWKS_URL));
+  const { payload } = await jwtVerify(token, jwks, {
+    issuer: 'ratexai-platform',
+    audience: 'ratexai-services',
+  });
+  return {
+    userId: payload.sub as string,
+    workspaceId: payload.workspace_id as string,
+    role: payload.role as string,
+  };
+}
+```
+
+**Why no user table?** TradingAgenticChat already has users with 17 Alembic revisions of
+hardening. Duplicating it here means sync drift, double migration burden, and split
+identity. JWT claims are sufficient for authorization.
+
+**Exception: map_access cache.** We cache workspace → map permissions locally so we don't
+need to call TradingAgenticChat on every map read. Cache is refreshed on token refresh
+or via Kafka `workspace.member.changed.v1` events.
+
+### 6.2 Agent Integration Flow
+
+```
+┌────────────────────────────────────┐
+│  TradingAgenticChat Agent Runtime  │
+│                                    │
+│  agent_versions:                   │
+│  ├── radiant-update-map v1.0       │  ← registered here
+│  ├── radiant-map-predictions v1.0  │
+│  └── radiant-polymarket-sync v1.0  │
+│                                    │
+│  agent_runs:                       │
+│  ├── run_abc123 (update-map, iran) │  ← tracked here
+│  │   ├── llm_transactions: $0.12   │
+│  │   └── tool_calls: web_search ×3 │
+│  └── run_def456 (predictions, iran)│
+└──────────────┬─────────────────────┘
+               │
+               │ 1. Platform schedules agent run
+               │ 2. Agent calls event-graph API
+               │ 3. Platform logs cost/audit
+               │
+               ▼
+┌──────────────────────────────────────┐
+│  event-graph API                     │
+│                                      │
+│  POST /api/v1/maps/:id/nodes/batch   │  ← agent writes nodes
+│  PATCH /api/v1/maps/:id/nodes/:id    │  ← agent updates predictions
+│  POST /api/v1/maps/:id/prob          │  ← agent records probability
+│                                      │
+│  agent_run_refs:                     │
+│  ├── platform_run_id: "run_abc123"   │  ← lightweight reference
+│  │   map_id: "iran-war-2026"         │
+│  │   nodes_added: 5                  │
+│  │   completed_at: 2026-03-13T18:00  │
+│  └── (no cost data — that's in the   │
+│       platform's billing_ledger)     │
+└──────────────────────────────────────┘
+```
+
+**Why not run agents independently?**
+- TradingAgenticChat already has `agent_runs` table with `parent_run_id`, depth guards,
+  memory snapshots, and LLM cost tracking (Phase 4, revisions 006/007).
+- Duplicating this means re-implementing idempotency, billing reconciliation, and
+  the marketplace install model.
+- Prediction agents are just another agent type in the platform. They happen to
+  write to event-graph's DB instead of the chat DB.
+
+### 6.3 Event Flow (Kafka/Avro)
+
+```
+event-graph PUBLISHES:
+├── prediction.map.updated.v1        → map metadata changed
+├── prediction.node.created.v1       → new event/anchor/scenario added
+├── prediction.prob.changed.v1       → probability reading recorded
+└── prediction.alert.triggered.v1    → alert threshold crossed
+
+event-graph CONSUMES:
+├── workspace.member.changed.v1      → refresh map_access cache
+├── agent.run.completed.v1           → update agent_run_refs
+├── harvester.news.published.v1      → candidate events for map update
+└── chat.request.recorded.v1         → link chat context to map interactions
+```
+
+**Avro schema compatibility:** event-graph follows the same Avro governance model
+as TradingAgenticChat (versioned schemas under `schemas/avro/`, Schema Registry
+compatibility checks, DLQ for decode failures).
+
+### 6.4 Cross-Service API Calls
+
+| Direction | Call | When |
+|-----------|------|------|
+| event-graph → Platform | `GET /api/v1/agent-runs/:id` | Display agent run details in UI |
+| event-graph → Platform | `POST /api/v1/agent-runs` | Start a prediction agent run on-demand |
+| event-graph → Platform | `GET /api/v1/workspaces/:id/members` | Refresh map_access cache |
+| Platform → event-graph | `GET /api/v1/maps` | Show prediction maps in chat sidebar |
+| Platform → event-graph | `GET /api/v1/maps/:id` | Embed prediction widget in chat |
+| Platform → event-graph | `GET /api/v1/maps/:id/predictions` | Show prediction summary |
+
+---
+
+## 7. Data Sources: Harvesters, Polymarket, MCP
+
+### 7.1 Polymarket Integration
+
+Polymarket is core to the prediction domain. event-graph owns this integration directly.
+
+**Option A: Direct REST API (recommended for MVP)**
+```
+┌──────────────┐     REST      ┌─────────────────────────────┐
+│ Polymarket   │──────────────→│ packages/api/src/lib/        │
+│ CLOB API     │               │ polymarket.ts                │
+│              │               │                              │
+│ GET /markets │               │ ▸ fetchMarketBySlug(slug)    │
+│ GET /prices  │               │ ▸ fetchCurrentPrice(tokenId) │
+│ WS /prices   │               │ ▸ subscribePrice(slug, cb)   │
+└──────────────┘               └─────────────────────────────┘
+```
+
+**Option B: MCP Server (recommended for agent interaction)**
+```
+┌──────────────────────────────────────────────────┐
+│ MCP Server: @ratexai/mcp-polymarket              │
 │                                                  │
-│  db/schema.ts         → Drizzle table defs       │
-│  db/queries/          → typed query functions     │
-│  db/seed.ts           → import from JSON         │
-└─────────────────────┬────────────────────────────┘
-                      │
-                      ▼
-              ┌──────────────┐
-              │ PostgreSQL   │
-              │ 16 + JSONB   │
-              └──────────────┘
-                      ▲
-                      │ HTTP API calls
-┌──────────────────────────────────┐
-│ packages/agents/  (Python)       │
-│                                  │
-│  update_map.py → POST /nodes     │
-│  map_predictions.py → PATCH      │
-│  polymarket_sync.py → new!       │
-│                                  │
-│  Writes via API, not direct DB   │
-└──────────────────────────────────┘
+│ Tools:                                           │
+│ ├── polymarket_search(query)                     │
+│ │   → search markets by keyword                  │
+│ ├── polymarket_market(slug)                      │
+│ │   → get market details + current price         │
+│ ├── polymarket_price_history(slug, days)         │
+│ │   → get price history for sparklines           │
+│ ├── polymarket_orderbook(slug)                   │
+│ │   → get order book depth                       │
+│ └── polymarket_related(slug)                     │
+│     → find related markets                       │
+│                                                  │
+│ Resources:                                       │
+│ ├── polymarket://market/{slug}                   │
+│ └── polymarket://market/{slug}/history           │
+│                                                  │
+│ Used by:                                         │
+│ ├── Claude agents (via TradingAgenticChat)       │
+│ ├── event-graph API (server-side)                │
+│ └── Chat UI (via agent tool calls)               │
+└──────────────────────────────────────────────────┘
 ```
+
+**Recommendation:** Build BOTH.
+- Direct REST client for the `polymarket_sync.py` scheduled agent (runs every 30min).
+- MCP server for ad-hoc queries from Claude agents during map updates.
+- MCP tools are registered in TradingAgenticChat's agent runtime so any chat agent
+  can query Polymarket through the prediction service.
+
+### 7.2 Legacy Harvester Integration
+
+The existing harvester service parses news. event-graph consumes its output.
+
+**Two consumption paths:**
+
+```
+Path 1: REST API (synchronous, on-demand)
+┌─────────────┐    GET /news?topic=iran    ┌──────────────────┐
+│ Harvester   │◄──────────────────────────│ event-graph API  │
+│ API         │─────────────────────────→│ lib/harvester.ts │
+│             │    [{ title, url, date }] │                  │
+└─────────────┘                           └──────────────────┘
+Used by: update_map.py agent when it needs recent news context
+
+Path 2: Kafka events (async, real-time)
+┌─────────────┐  harvester.news.published.v1  ┌──────────────────┐
+│ Harvester   │──────────────────────────────→│ event-graph      │
+│             │          Kafka                │ Kafka consumer   │
+└─────────────┘                               └──────────────────┘
+Used by: background process that flags candidate events for map updates
+```
+
+### 7.3 Data Source Priority Matrix
+
+| Source | Protocol | Frequency | Owner | Priority |
+|--------|----------|-----------|-------|----------|
+| **Polymarket CLOB API** | REST + WebSocket | Every 30min (sync) + real-time (WS) | event-graph | P0 — core to product |
+| **Legacy Harvester** | REST + Kafka | On-demand + streaming | Shared | P1 — news feeds agents |
+| **Claude Web Search** | Tool call (via agent) | Per agent run (2x/day) | TradingAgenticChat runtime | P0 — agent discovers events |
+| **User input** | REST (event-graph API) | Ad-hoc | event-graph | P1 — manual node creation |
+| **TradingAgenticChat events** | Kafka (Avro) | Continuous | Platform | P2 — cross-service sync |
 
 ---
 
-## 3. Final Database Schema (PostgreSQL)
+## 8. Database Schema (Prediction Domain Only)
 
-### 3.1 Entity-Relationship Diagram
+**Key change from v1:** Removed `users`, `user_map_access` (full user table),
+and `agent_runs` (full audit). Replaced with thin references.
+
+### 8.1 Entity-Relationship Diagram
 
 ```
 maps 1──∞ time_slots
@@ -146,13 +589,13 @@ maps 1──∞ nodes
 maps 1──∞ edges
 nodes 1──∞ influence_links (anchor → facts)
 nodes 1──∞ prob_history (time-series)
-maps 1──∞ agent_runs
-users 1──∞ user_map_access ∞──1 maps
-users 1──∞ bookmarks ∞──1 nodes
-users 1──∞ alerts
+maps 1──∞ agent_run_refs (lightweight references to platform runs)
+maps 1──∞ map_access (cached ACL from platform)
+maps 1──∞ bookmarks (user engagement, keyed by platform user_id)
+maps 1──∞ alerts (user engagement)
 ```
 
-### 3.2 Table Definitions
+### 8.2 Tables — Prediction Core
 
 #### `maps` — Top-level narrative containers
 
@@ -160,9 +603,9 @@ users 1──∞ alerts
 CREATE TABLE maps (
   id            TEXT PRIMARY KEY,              -- "iran-war-2026"
   title         TEXT NOT NULL,
-  status        TEXT NOT NULL DEFAULT 'active' -- active | developing | monitoring | archived
+  status        TEXT NOT NULL DEFAULT 'active'
                 CHECK (status IN ('active','developing','monitoring','archived')),
-  update_cycle  INTERVAL DEFAULT '12 hours',  -- changed from TEXT to native INTERVAL
+  update_cycle  INTERVAL DEFAULT '12 hours',
   headline_prob REAL CHECK (headline_prob BETWEEN 0 AND 100),
   trend         TEXT CHECK (trend IN ('up','down','flat')),
   emoji         TEXT,
@@ -173,292 +616,91 @@ CREATE TABLE maps (
   start_prob    REAL CHECK (start_prob BETWEEN 0 AND 100),
   current_prob  REAL CHECK (current_prob BETWEEN 0 AND 100),
 
-  -- Aggregated data (denormalized for fast reads)
+  -- Aggregated (denormalized)
   node_count    INT DEFAULT 0,
   cui_bono      JSONB DEFAULT '{}',
   branches      TEXT[] DEFAULT '{}',
+
+  -- Platform references (NOT foreign keys — different database)
+  owner_workspace_id TEXT,                    -- workspace that created this map
+  created_by_user_id TEXT,                    -- user who created (from JWT claims)
 
   created_at    TIMESTAMPTZ DEFAULT now(),
   updated_at    TIMESTAMPTZ DEFAULT now()
 );
 
 CREATE INDEX idx_maps_status ON maps(status);
-
--- Auto-update updated_at
-CREATE TRIGGER maps_updated_at
-  BEFORE UPDATE ON maps
-  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+CREATE INDEX idx_maps_workspace ON maps(owner_workspace_id);
 ```
 
-#### `time_slots` — Timeline columns
+#### `time_slots`, `nodes`, `edges`, `influence_links`, `prob_history`
+
+Same as v1 (see DATABASE_DESIGN.md) — these are prediction-domain tables,
+no changes needed. The schema is correct as designed.
+
+### 8.3 Tables — Platform Integration (NEW / CHANGED)
+
+#### `map_access` — Cached ACL (replaces `user_map_access`)
 
 ```sql
-CREATE TABLE time_slots (
-  id          SERIAL PRIMARY KEY,
-  map_id      TEXT NOT NULL REFERENCES maps(id) ON DELETE CASCADE,
-  slot_index  INT NOT NULL,                -- renamed from "index" (reserved word)
-  label       TEXT NOT NULL,
-  start_date  DATE NOT NULL,
-  end_date    DATE NOT NULL,
-  slot_type   TEXT DEFAULT 'past'
-              CHECK (slot_type IN ('past','present','near_future','anchor_date')),
-  anchor_id   TEXT,                         -- for anchor_date: linked anchor node
+-- Thin ACL cache. Source of truth is TradingAgenticChat's workspace_members.
+-- Refreshed on JWT validation + Kafka workspace.member.changed.v1 events.
+-- If cache misses, fall back to platform API call.
 
-  UNIQUE(map_id, slot_index)
+CREATE TABLE map_access (
+  workspace_id  TEXT NOT NULL,                -- from platform
+  map_id        TEXT NOT NULL REFERENCES maps(id) ON DELETE CASCADE,
+  role          TEXT DEFAULT 'viewer'
+                CHECK (role IN ('viewer','editor','owner')),
+  cached_at     TIMESTAMPTZ DEFAULT now(),
+
+  PRIMARY KEY (workspace_id, map_id)
 );
 
-CREATE INDEX idx_timeslots_map ON time_slots(map_id);
+-- TTL: entries older than 1 hour are considered stale → re-validate
+CREATE INDEX idx_map_access_stale ON map_access(cached_at);
 ```
 
-#### `nodes` — Events, anchors, scenarios
+#### `agent_run_refs` — Lightweight references (replaces `agent_runs`)
 
 ```sql
-CREATE TABLE nodes (
-  id              TEXT NOT NULL,
-  map_id          TEXT NOT NULL REFERENCES maps(id) ON DELETE CASCADE,
+-- We don't duplicate the full agent run lifecycle.
+-- TradingAgenticChat owns the agent_runs table with cost tracking,
+-- LLM transactions, memory snapshots, etc.
+-- We only store what we need for local display + debugging.
 
-  -- Core
-  col             INT NOT NULL,
-  label           TEXT NOT NULL,
-  node_type       TEXT DEFAULT 'fact'
-                  CHECK (node_type IN ('fact','anchor','scenario')),
-  category        TEXT NOT NULL,
-  signal          TEXT DEFAULT 'noise'
-                  CHECK (signal IN ('catalyst','escalation','resolution','reversal','noise')),
-  sentiment       TEXT DEFAULT 'neu'
-                  CHECK (sentiment IN ('pos','neg','neu')),
-  description     TEXT,
-  weight          REAL DEFAULT 0.5 CHECK (weight BETWEEN 0 AND 1),
-
-  -- Scoring
-  odds_delta      REAL DEFAULT 0,
-  market_prob     REAL CHECK (market_prob IS NULL OR market_prob BETWEEN 0 AND 100),
-  source_authority REAL DEFAULT 50 CHECK (source_authority BETWEEN 0 AND 100),
-  momentum        REAL DEFAULT 0,
-  volume          REAL DEFAULT 0,
-
-  -- Source
-  source_url      TEXT,
-  source_name     TEXT,
-  timestamp       TIMESTAMPTZ,
-  image_url       TEXT,
-  extra           TEXT,
-  tags            TEXT[] DEFAULT '{}',
-  temporal        TEXT DEFAULT 'past'
-                  CHECK (temporal IN ('past','present','future')),
-
-  -- Prediction market (anchor nodes)
-  market_platform TEXT,
-  market_question TEXT,
-  market_url      TEXT,
-  market_slug     TEXT,
-  resolves_at     TIMESTAMPTZ,
-  trading_volume  TEXT,
-  liquidity       TEXT,
-  scenarios       TEXT[] DEFAULT '{}',
-
-  -- RateX probability engine (anchor nodes)
-  ratex_prob       REAL CHECK (ratex_prob IS NULL OR ratex_prob BETWEEN 0 AND 100),
-  alpha            REAL,
-  alpha_signal     TEXT CHECK (alpha_signal IS NULL OR alpha_signal IN ('underpriced','overpriced','in_line')),
-  ratex_confidence REAL CHECK (ratex_confidence IS NULL OR ratex_confidence BETWEEN 0 AND 1),
-  ratex_reasoning  TEXT,
-
-  -- Scenario fields
-  parent_anchor   TEXT,
-  outcome         TEXT CHECK (outcome IS NULL OR outcome IN ('YES','NO','PARTIAL')),
-  outcome_prob    REAL CHECK (outcome_prob IS NULL OR outcome_prob BETWEEN 0 AND 100),
-  conditions      TEXT[] DEFAULT '{}',
-  next_events     TEXT[] DEFAULT '{}',
-
-  -- JSONB fields (complex nested data — not worth normalizing at current scale)
-  cui_bono           JSONB DEFAULT '{}',
-  outcomes           JSONB DEFAULT '[]',   -- AnchorOutcome[]
-  factors            JSONB DEFAULT '[]',   -- AnchorFactor[]
-  dual_prob_history  JSONB DEFAULT '[]',   -- DualProbPoint[]
-  for_resolution     JSONB DEFAULT '[]',   -- PredictionCausalLink[]
-  against_resolution JSONB DEFAULT '[]',   -- PredictionCausalLink[]
-  meta               JSONB DEFAULT '{}',
-
-  -- Denormalized for fast graph queries
-  parent_ids      TEXT[] DEFAULT '{}',     -- was "from" in JSON
-  causal_node_ids TEXT[] DEFAULT '{}',     -- for anchors
-
-  created_at      TIMESTAMPTZ DEFAULT now(),
-  updated_at      TIMESTAMPTZ DEFAULT now(),
-
-  PRIMARY KEY (map_id, id)
-);
-
--- Indexes
-CREATE INDEX idx_nodes_map        ON nodes(map_id);
-CREATE INDEX idx_nodes_type       ON nodes(map_id, node_type);
-CREATE INDEX idx_nodes_category   ON nodes(map_id, category);
-CREATE INDEX idx_nodes_timestamp  ON nodes(map_id, timestamp DESC);
-CREATE INDEX idx_nodes_anchor     ON nodes(map_id) WHERE node_type = 'anchor';
-CREATE INDEX idx_nodes_parent     ON nodes USING GIN (parent_ids);
-CREATE INDEX idx_nodes_tags       ON nodes USING GIN (tags);
-CREATE INDEX idx_nodes_search     ON nodes USING GIN (
-  to_tsvector('english', label || ' ' || COALESCE(description, ''))
-);
-
-CREATE TRIGGER nodes_updated_at
-  BEFORE UPDATE ON nodes
-  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
-```
-
-#### `edges` — Causal/temporal links
-
-```sql
-CREATE TABLE edges (
-  id          SERIAL PRIMARY KEY,
-  map_id      TEXT NOT NULL REFERENCES maps(id) ON DELETE CASCADE,
-  from_node   TEXT NOT NULL,
-  to_node     TEXT NOT NULL,
-  weight      REAL DEFAULT 1,
-  edge_type   TEXT DEFAULT 'causal'
-              CHECK (edge_type IN ('causal','temporal','reference','influence')),
-  influence   REAL,                         -- pp shift (influence edges)
-  mechanism   TEXT,
-
-  UNIQUE(map_id, from_node, to_node),
-  FOREIGN KEY (map_id, from_node) REFERENCES nodes(map_id, id) ON DELETE CASCADE,
-  FOREIGN KEY (map_id, to_node) REFERENCES nodes(map_id, id) ON DELETE CASCADE
-);
-
-CREATE INDEX idx_edges_map  ON edges(map_id);
-CREATE INDEX idx_edges_from ON edges(map_id, from_node);
-CREATE INDEX idx_edges_to   ON edges(map_id, to_node);
-```
-
-#### `influence_links` — Rich fact→anchor links
-
-```sql
-CREATE TABLE influence_links (
-  id          SERIAL PRIMARY KEY,
-  map_id      TEXT NOT NULL,
-  anchor_id   TEXT NOT NULL,
-  fact_id     TEXT NOT NULL,
-  influence   REAL NOT NULL,               -- pp shift
-  mechanism   TEXT NOT NULL,
-  created_at  TIMESTAMPTZ DEFAULT now(),
-
-  UNIQUE(map_id, anchor_id, fact_id),
-  FOREIGN KEY (map_id, anchor_id) REFERENCES nodes(map_id, id) ON DELETE CASCADE,
-  FOREIGN KEY (map_id, fact_id) REFERENCES nodes(map_id, id) ON DELETE CASCADE
-);
-
-CREATE INDEX idx_influence_anchor ON influence_links(map_id, anchor_id);
-CREATE INDEX idx_influence_fact   ON influence_links(map_id, fact_id);
-```
-
-#### `prob_history` — Time-series probability tracking
-
-```sql
-CREATE TABLE prob_history (
-  id          BIGSERIAL PRIMARY KEY,
-  map_id      TEXT NOT NULL,
-  node_id     TEXT NOT NULL,
-  recorded_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-  market_prob REAL,
-  ratex_prob  REAL,
-  alpha       REAL,
-  source      TEXT DEFAULT 'agent'
-              CHECK (source IN ('agent','manual','polymarket_api','system')),
-
-  FOREIGN KEY (map_id, node_id) REFERENCES nodes(map_id, id) ON DELETE CASCADE
-);
-
-CREATE INDEX idx_prob_node_time ON prob_history(map_id, node_id, recorded_at DESC);
-
--- Partition by month if volume grows (optional TimescaleDB):
--- SELECT create_hypertable('prob_history', 'recorded_at', chunk_time_interval => INTERVAL '1 month');
-```
-
-#### `agent_runs` — Audit trail
-
-```sql
-CREATE TABLE agent_runs (
-  id            BIGSERIAL PRIMARY KEY,
-  map_id        TEXT NOT NULL REFERENCES maps(id),
+CREATE TABLE agent_run_refs (
+  id            SERIAL PRIMARY KEY,
+  map_id        TEXT NOT NULL REFERENCES maps(id) ON DELETE CASCADE,
+  platform_run_id TEXT NOT NULL,              -- TradingAgenticChat agent_runs.id
   agent_type    TEXT NOT NULL
-                CHECK (agent_type IN ('update_map','map_predictions','polymarket_sync','manual')),
-  model         TEXT NOT NULL,
+                CHECK (agent_type IN ('update_map','map_predictions','polymarket_sync')),
+  status        TEXT DEFAULT 'running'
+                CHECK (status IN ('running','success','failed')),
   started_at    TIMESTAMPTZ DEFAULT now(),
   completed_at  TIMESTAMPTZ,
-  status        TEXT DEFAULT 'running'
-                CHECK (status IN ('running','success','failed','cancelled')),
-  duration_ms   INT,
 
-  -- What changed
+  -- Summary of what changed in event-graph
   nodes_added   INT DEFAULT 0,
   nodes_updated INT DEFAULT 0,
   edges_added   INT DEFAULT 0,
   summary       TEXT,
 
-  -- Cost tracking
-  input_tokens  INT,
-  output_tokens INT,
-  cost_usd      REAL,
-
-  -- Error info
-  error_message TEXT,
-  raw_response  JSONB
+  UNIQUE(platform_run_id)
 );
 
-CREATE INDEX idx_agent_runs_map ON agent_runs(map_id, started_at DESC);
-CREATE INDEX idx_agent_runs_status ON agent_runs(status) WHERE status = 'running';
+CREATE INDEX idx_run_refs_map ON agent_run_refs(map_id, started_at DESC);
 ```
 
-#### `users` — Authentication
+#### `bookmarks` + `alerts` — User engagement (simplified)
 
 ```sql
-CREATE TABLE users (
-  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email       TEXT UNIQUE NOT NULL,
-  name        TEXT,
-  avatar_url  TEXT,
-  role        TEXT DEFAULT 'viewer'
-              CHECK (role IN ('viewer','editor','admin','agent')),
+-- User references by platform user_id (UUID string, NOT a foreign key)
+-- No local user table — user_id comes from JWT claims
 
-  -- Auth
-  auth_provider TEXT CHECK (auth_provider IN ('google','github','email','api_key')),
-  auth_id       TEXT,
-  password_hash TEXT,
-  api_key       TEXT UNIQUE,               -- for agent/programmatic access
-
-  preferences JSONB DEFAULT '{}',
-
-  created_at  TIMESTAMPTZ DEFAULT now(),
-  last_login  TIMESTAMPTZ
-);
-
-CREATE UNIQUE INDEX idx_users_auth ON users(auth_provider, auth_id)
-  WHERE auth_provider IS NOT NULL;
-CREATE UNIQUE INDEX idx_users_api_key ON users(api_key) WHERE api_key IS NOT NULL;
-```
-
-#### `user_map_access` — Permissions
-
-```sql
-CREATE TABLE user_map_access (
-  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  map_id      TEXT NOT NULL REFERENCES maps(id) ON DELETE CASCADE,
-  role        TEXT DEFAULT 'viewer'
-              CHECK (role IN ('viewer','editor','owner')),
-  granted_at  TIMESTAMPTZ DEFAULT now(),
-  granted_by  UUID REFERENCES users(id),
-
-  PRIMARY KEY (user_id, map_id)
-);
-```
-
-#### `bookmarks` + `alerts` — User engagement
-
-```sql
 CREATE TABLE bookmarks (
   id          SERIAL PRIMARY KEY,
-  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id     TEXT NOT NULL,                  -- platform user UUID
   map_id      TEXT NOT NULL,
   node_id     TEXT NOT NULL,
   note        TEXT,
@@ -470,7 +712,7 @@ CREATE TABLE bookmarks (
 
 CREATE TABLE alerts (
   id          SERIAL PRIMARY KEY,
-  user_id     UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  user_id     TEXT NOT NULL,                  -- platform user UUID
   map_id      TEXT NOT NULL REFERENCES maps(id) ON DELETE CASCADE,
   node_id     TEXT,
   alert_type  TEXT NOT NULL
@@ -481,94 +723,35 @@ CREATE TABLE alerts (
   created_at  TIMESTAMPTZ DEFAULT now()
 );
 
+CREATE INDEX idx_bookmarks_user ON bookmarks(user_id);
 CREATE INDEX idx_alerts_active ON alerts(user_id) WHERE active = true;
 ```
 
-#### Shared helpers
+### 8.4 What Was Removed vs v1
 
-```sql
--- updated_at trigger function (reused by all tables)
-CREATE OR REPLACE FUNCTION set_updated_at() RETURNS trigger AS $$
-BEGIN
-  NEW.updated_at = now();
-  RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
+| v1 Table | v2 Decision | Reason |
+|----------|-------------|--------|
+| `users` | **REMOVED** | TradingAgenticChat owns user identity (17 Alembic revisions of hardening) |
+| `user_map_access` (full) | **→ `map_access`** (cache) | No user FK needed, workspace-level ACL, cached from platform |
+| `agent_runs` (full) | **→ `agent_run_refs`** (ref) | Cost/LLM/audit data stays in platform's billing_ledger |
 
--- Real-time notification trigger
-CREATE OR REPLACE FUNCTION notify_map_change() RETURNS trigger AS $$
-BEGIN
-  PERFORM pg_notify('map_changes', json_build_object(
-    'table', TG_TABLE_NAME,
-    'map_id', COALESCE(NEW.map_id, OLD.map_id),
-    'id', COALESCE(NEW.id, OLD.id),
-    'op', TG_OP
-  )::text);
-  RETURN COALESCE(NEW, OLD);
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER nodes_change_notify
-  AFTER INSERT OR UPDATE OR DELETE ON nodes
-  FOR EACH ROW EXECUTE FUNCTION notify_map_change();
-
-CREATE TRIGGER edges_change_notify
-  AFTER INSERT OR UPDATE OR DELETE ON edges
-  FOR EACH ROW EXECUTE FUNCTION notify_map_change();
-```
-
-### 3.3 Schema Decisions & Rationale
+### 8.5 Schema Decisions
 
 | Decision | Rationale |
 |----------|-----------|
-| **Composite PK `(map_id, id)` on nodes** | All queries are scoped to a map; this makes partition-ready and eliminates need for extra index |
-| **`parent_ids TEXT[]`** instead of junction table | < 10 parents per node, array is simpler; GIN index allows `@>` containment queries |
-| **JSONB for `cui_bono`, `outcomes`, `factors`** | Deeply nested, rarely queried independently; normalizing would add 5+ tables for < 100 rows |
-| **`prob_history` as separate table** | Time-series data grows unboundedly; needs its own index + optional TimescaleDB |
-| **`INTERVAL` for `update_cycle`** | PostgreSQL native; enables `WHERE now() - updated_at > update_cycle` for stale map detection |
-| **CHECK constraints everywhere** | Catch bad data at DB level, not just app level |
-| **FK from edges to nodes** | Referential integrity; prevents orphan edges |
-| **`api_key` on users** | Agents authenticate with API keys, not OAuth |
-| **`agent` role** | Agents are first-class users with audit trail |
-| **No `prob_history` array on nodes** | Moved to dedicated table; sparkline data computed via `SELECT ... ORDER BY recorded_at DESC LIMIT 30` |
-
-### 3.4 What Changed vs. DATABASE_DESIGN.md Draft
-
-| Change | Before (draft) | After (final) |
-|--------|----------------|---------------|
-| `update_cycle` type | TEXT ("12h") | INTERVAL (native) |
-| `index` column name | `index` | `slot_index` (reserved word) |
-| `from` field | `from` | `parent_ids` (reserved word) |
-| CHECK constraints | None | All enum-like fields |
-| Edge foreign keys | Only to maps | To nodes (map_id, id) composite |
-| `api_key` on users | Missing | Added for agent auth |
-| `agent` role | Missing | Added |
-| `cost_usd` on agent_runs | Missing | Added |
-| `duration_ms` on agent_runs | Missing | Added |
-| `granted_by` on access | Missing | Added for audit |
-| `prob_history` on nodes | `REAL[]` | Removed — use `prob_history` table |
-| Node `from` field | Ambiguous | Split into `parent_ids` (array) + `edges` table |
+| **No `users` table** | JWT claims provide user_id/workspace_id; TradingAgenticChat is identity authority |
+| **`map_access` as cache** | Avoids cross-DB foreign keys; TTL + Kafka sync keeps it fresh |
+| **`agent_run_refs` not `agent_runs`** | Full audit trail (cost, LLM tokens, tool calls) lives in platform |
+| **`user_id TEXT` not `UUID`** | No FK to local users table; just a reference string from JWT |
+| **Platform references are TEXT, not FK** | Different databases; referential integrity is eventual via events |
+| **Prediction tables unchanged** | maps/nodes/edges/prob_history are domain-owned, schema is correct |
 
 ---
 
-## 4. Monorepo Restructure
-
-### Current Layout
-```
-event-graph/
-├── src/              # React library source
-├── demo/             # Vite demo app
-├── radiant/
-│   ├── api/          # Python FastAPI (79 lines)
-│   ├── agents/       # Python Claude agents
-│   ├── data/         # JSON files
-│   └── requirements.txt
-├── package.json      # Single package
-├── tsconfig.json
-└── tsup.config.*
-```
+## 9. Monorepo Restructure
 
 ### Target Layout
+
 ```
 event-graph/
 ├── packages/
@@ -583,7 +766,7 @@ event-graph/
 │   │   ├── package.json             # @ratexai/event-graph
 │   │   └── tsconfig.json
 │   │
-│   ├── api/                         # Backend API server (NEW)
+│   ├── api/                         # Prediction Domain API (NEW)
 │   │   ├── src/
 │   │   │   ├── routes/
 │   │   │   │   ├── maps.ts
@@ -591,543 +774,458 @@ event-graph/
 │   │   │   │   ├── edges.ts
 │   │   │   │   ├── predictions.ts
 │   │   │   │   ├── search.ts
-│   │   │   │   ├── agents.ts
-│   │   │   │   ├── auth.ts
+│   │   │   │   ├── polymarket.ts
 │   │   │   │   └── sse.ts
 │   │   │   ├── middleware/
-│   │   │   │   ├── auth.ts
+│   │   │   │   ├── auth.ts          # JWT validation (TradingAgenticChat tokens)
+│   │   │   │   ├── agent-auth.ts    # API key auth (for prediction agents)
 │   │   │   │   ├── rateLimit.ts
 │   │   │   │   └── cors.ts
 │   │   │   ├── db/
-│   │   │   │   ├── schema.ts        # Drizzle schema
+│   │   │   │   ├── schema.ts        # Drizzle schema (prediction tables only)
 │   │   │   │   ├── client.ts        # Connection pool
-│   │   │   │   ├── migrate.ts       # Migrations runner
+│   │   │   │   ├── migrate.ts
 │   │   │   │   └── seed.ts          # JSON → DB import
 │   │   │   ├── lib/
-│   │   │   │   ├── notify.ts        # PG NOTIFY → SSE bridge
-│   │   │   │   └── polymarket.ts    # Polymarket API client
+│   │   │   │   ├── polymarket.ts    # Polymarket REST client
+│   │   │   │   ├── harvester.ts     # Legacy harvester API client
+│   │   │   │   ├── platform.ts      # TradingAgenticChat API client
+│   │   │   │   ├── kafka.ts         # Avro event pub/sub
+│   │   │   │   └── notify.ts        # PG NOTIFY → SSE bridge
 │   │   │   └── server.ts            # Hono app entry
 │   │   ├── drizzle/                 # Generated migrations
-│   │   ├── package.json             # @ratexai/api
+│   │   ├── package.json             # @ratexai/prediction-api
 │   │   └── tsconfig.json
 │   │
-│   └── shared/                      # Shared types & utils (NEW)
+│   ├── mcp-polymarket/              # MCP Server for Polymarket (NEW)
+│   │   ├── src/
+│   │   │   ├── server.ts            # MCP server entry
+│   │   │   ├── tools/
+│   │   │   │   ├── search.ts
+│   │   │   │   ├── market.ts
+│   │   │   │   ├── price-history.ts
+│   │   │   │   └── orderbook.ts
+│   │   │   └── resources/
+│   │   │       └── market.ts
+│   │   ├── package.json             # @ratexai/mcp-polymarket
+│   │   └── tsconfig.json
+│   │
+│   └── shared/                      # Shared types & validation (NEW)
 │       ├── src/
-│       │   ├── types.ts             # All data contracts (moved from ui/types)
+│       │   ├── types.ts             # Data contracts (maps, nodes, predictions)
 │       │   ├── enums.ts             # Enum values as const arrays
-│       │   └── validation.ts        # Zod schemas for API validation
-│       ├── package.json             # @ratexai/shared
+│       │   ├── validation.ts        # Zod schemas for API validation
+│       │   └── avro.ts              # Avro schema type helpers
+│       ├── package.json             # @ratexai/prediction-shared
 │       └── tsconfig.json
 │
-├── agents/                          # Python agents (moved from radiant/agents/)
+├── agents/                          # Python agents (registered in TradingAgenticChat)
 │   ├── update_map.py
 │   ├── map_predictions.py
-│   ├── polymarket_sync.py           # NEW: auto-fetch market prices
+│   ├── polymarket_sync.py           # NEW: scheduled market price sync
 │   ├── config.py
-│   ├── api_client.py                # NEW: typed HTTP client for our API
+│   ├── api_client.py                # HTTP client for event-graph API
+│   ├── platform_client.py           # HTTP client for TradingAgenticChat API
 │   ├── prompts/
 │   └── requirements.txt
 │
+├── schemas/                         # Avro event schemas (NEW)
+│   └── avro/
+│       ├── prediction.map.updated.v1.avsc
+│       ├── prediction.node.created.v1.avsc
+│       ├── prediction.prob.changed.v1.avsc
+│       └── prediction.alert.triggered.v1.avsc
+│
 ├── data/                            # Seed data (moved from radiant/data/)
-│   ├── maps/                        # JSON files (now seed-only)
+│   ├── maps/
 │   └── registry.json
 │
 ├── demo/                            # Demo app
-├── docker-compose.yml               # NEW: PG + Redis
-├── .env.example                     # NEW
-├── pnpm-workspace.yaml              # NEW: monorepo config
-├── turbo.json                       # NEW: build orchestration
-└── package.json                     # Root workspace
+├── docker-compose.yml               # PostgreSQL (prediction DB only)
+├── .env.example
+├── pnpm-workspace.yaml
+├── turbo.json
+└── package.json
 ```
+
+**Key differences from v1:**
+- No Redis (platform handles pub/sub infrastructure)
+- Added `mcp-polymarket/` package
+- Added `schemas/avro/` for event contracts
+- Agents have `platform_client.py` alongside `api_client.py`
+- No auth routes — JWT validation only
 
 ---
 
-## 5. Refactoring Phases
+## 10. Refactoring Phases
 
 ### Phase 0 — Preparation (1-2 days)
 
-**Goal:** Set up monorepo, move files, nothing breaks.
+**Goal:** Monorepo setup, nothing breaks.
 
 - [ ] Install pnpm, create `pnpm-workspace.yaml`
 - [ ] Create `packages/ui/` — move current `src/`, adjust paths
-- [ ] Create `packages/shared/` — extract types from `src/types/index.ts`
-- [ ] Create `packages/api/` scaffold
+- [ ] Create `packages/shared/` — extract types
+- [ ] Create `packages/api/` scaffold (empty Hono server)
 - [ ] Move `radiant/agents/` → `agents/`
 - [ ] Move `radiant/data/` → `data/`
-- [ ] Add `turbo.json` for build orchestration
-- [ ] Verify: `pnpm build` builds all packages, `pnpm test` passes 72 tests
+- [ ] Add `turbo.json`
+- [ ] Verify: `pnpm build` passes, `pnpm test` passes 72 tests
 - [ ] Create `.env.example`
 
-### Phase 1 — Database Foundation (3-4 days)
+### Phase 1 — Database + API (3-4 days)
 
-**Goal:** PostgreSQL running, schema applied, data imported.
+**Goal:** PostgreSQL running with prediction schema, Hono serving data.
 
-- [ ] Add `docker-compose.yml` (PostgreSQL 16 + Redis 7)
-- [ ] Create Drizzle schema (`packages/api/src/db/schema.ts`)
-- [ ] Generate and apply initial migration
-- [ ] Write JSON → DB import script (`packages/api/src/db/seed.ts`)
-- [ ] Import all 5 maps (1 populated, 4 empty)
-- [ ] Verify data parity: JSON node count = DB node count
-- [ ] Write basic query tests
-
-### Phase 2 — API Server (3-4 days)
-
-**Goal:** TypeScript API serves same data as Python server.
-
-- [ ] Set up Hono server (`packages/api/src/server.ts`)
-- [ ] `GET /api/v1/maps` — list maps from DB
-- [ ] `GET /api/v1/maps/:id` — full map load (nodes + edges + timeslots)
-- [ ] `GET /api/v1/search?q=` — full-text search
-- [ ] `POST /api/v1/maps/:id/nodes` — create node (for agents)
-- [ ] `PATCH /api/v1/maps/:id/nodes/:nodeId` — update node
-- [ ] `DELETE /api/v1/maps/:id/nodes/:nodeId` — delete node
-- [ ] `GET /api/v1/maps/:id/history` — prob history for anchors
-- [ ] `POST /api/v1/agent-runs` — log agent runs
-- [ ] Request validation with Zod (from shared package)
-- [ ] Error handling middleware
-- [ ] API key auth middleware (for agents)
-- [ ] Verify: all existing frontend API calls work against new server
-
-### Phase 3 — Agent Migration (2-3 days)
-
-**Goal:** Python agents write to DB via API, not JSON files.
-
-- [ ] Create `agents/api_client.py` — typed HTTP client for our API
-- [ ] Modify `update_map.py`:
-  - Read current state via `GET /api/v1/maps/:id`
-  - Write new nodes via `POST /api/v1/maps/:id/nodes`
-  - Log run via `POST /api/v1/agent-runs`
-  - Keep JSON write as fallback (env flag `USE_DB=true`)
-- [ ] Modify `map_predictions.py`:
-  - Read anchors + facts via API
-  - Update anchors via `PATCH /api/v1/maps/:id/nodes/:id`
-  - Log run via `POST /api/v1/agent-runs`
-- [ ] Create `polymarket_sync.py` — auto-fetch market prices
-  - `GET https://clob.polymarket.com/markets/:slug`
-  - Write to `prob_history` via API
-  - Run on schedule (every 30 min)
-- [ ] Verify: run agent, check data appears in DB + API
-
-### Phase 4 — Frontend Client Update (1-2 days)
-
-**Goal:** Frontend works against new API without breaking.
-
-- [ ] Update `packages/ui/src/api/client.ts`:
-  - Map API response shapes (snake_case → camelCase if needed)
-  - Add SSE subscription method
-  - Add auth token management
-- [ ] Update demo app to point to local API
-- [ ] Add real-time update hook: `useMapSubscription(mapId)`
+- [ ] `docker-compose.yml` (PostgreSQL 16 only, no Redis)
+- [ ] Drizzle schema (`packages/api/src/db/schema.ts`) — prediction tables only
+- [ ] Generate initial migration
+- [ ] JSON → DB seed script
+- [ ] Hono server with prediction CRUD routes
+- [ ] JWT validation middleware (validates TradingAgenticChat tokens)
+- [ ] Agent API key auth middleware
 - [ ] Verify: demo loads data from PostgreSQL via new API
 
-### Phase 5 — Auth & Users (2-3 days)
+### Phase 2 — Agent Migration (2-3 days)
 
-**Goal:** User accounts, permissions, API keys.
+**Goal:** Python agents write to event-graph API, registered in TradingAgenticChat.
 
-- [ ] JWT middleware (access + refresh tokens)
-- [ ] Google OAuth flow (`/auth/google`)
-- [ ] GitHub OAuth flow (`/auth/github`)
-- [ ] API key generation (`POST /auth/api-keys`)
-- [ ] Permission middleware: check `user_map_access` role
-- [ ] `GET /auth/me` — current user profile
-- [ ] `GET /admin/users` — admin user management
+- [ ] Create `agents/api_client.py` (HTTP client for event-graph)
+- [ ] Create `agents/platform_client.py` (HTTP client for TradingAgenticChat)
+- [ ] Modify `update_map.py`: read via API, write via API, log run ref
+- [ ] Modify `map_predictions.py`: same pattern
+- [ ] Create `polymarket_sync.py`: fetch prices → write to prob_history
+- [ ] Register agents as `agent_versions` in TradingAgenticChat
+- [ ] Verify: agent run creates nodes in DB + agent_run_ref
 
-### Phase 6 — Real-Time & Polish (2-3 days)
+### Phase 3 — Polymarket Integration (2-3 days)
 
-**Goal:** Live updates, search, bookmarks.
+**Goal:** Live market data flowing into prediction maps.
 
-- [ ] SSE endpoint: `GET /api/v1/maps/:id/stream`
-  - Listen to PostgreSQL `NOTIFY map_changes`
-  - Broadcast to connected clients
-- [ ] Bookmark endpoints: `POST/DELETE /api/v1/bookmarks`
-- [ ] Alert endpoints: `POST/PATCH/DELETE /api/v1/alerts`
-- [ ] Alert evaluation worker (checks prob_history changes)
-- [ ] Admin dashboard: agent run stats, cost tracking
-- [ ] Rate limiting middleware (per API key)
+- [ ] `packages/api/src/lib/polymarket.ts` — REST client
+- [ ] `packages/mcp-polymarket/` — MCP server with tools
+- [ ] Polymarket price sync route: `POST /api/v1/maps/:id/sync-market`
+- [ ] WebSocket price feed for real-time probability updates (optional)
+- [ ] Verify: anchor nodes show live Polymarket prices
 
----
+### Phase 4 — Harvester + Kafka Integration (2-3 days)
 
-## 6. Detailed Task Breakdown
+**Goal:** News data and cross-service events flowing.
 
-### Phase 1 Tasks (Database Foundation)
+- [ ] `packages/api/src/lib/harvester.ts` — legacy API client
+- [ ] `packages/api/src/lib/kafka.ts` — Avro pub/sub
+- [ ] Avro schemas for prediction events
+- [ ] Consume `harvester.news.published.v1` → candidate events
+- [ ] Consume `workspace.member.changed.v1` → refresh map_access
+- [ ] Publish `prediction.map.updated.v1` on map changes
+- [ ] Verify: news events appear as suggestions in map update agent
 
-```
-P1.1  docker-compose.yml
-      ├── postgres:16 with healthcheck
-      ├── redis:7-alpine
-      └── Volumes for persistence
+### Phase 5 — Real-Time + Polish (2-3 days)
 
-P1.2  packages/api/package.json dependencies
-      ├── hono
-      ├── drizzle-orm + drizzle-kit
-      ├── pg (node-postgres)
-      ├── zod
-      ├── jose (JWT)
-      └── dotenv
+**Goal:** Live updates, search, user engagement.
 
-P1.3  packages/api/src/db/schema.ts
-      ├── All 10 tables as Drizzle pgTable()
-      ├── All indexes
-      ├── All relations (Drizzle relationalQuery)
-      └── Export inferred types (InsertNode, SelectNode, etc.)
+- [ ] SSE endpoint: `GET /api/v1/maps/:id/stream` (PG NOTIFY → SSE)
+- [ ] Full-text search: `GET /api/v1/search?q=`
+- [ ] Bookmark endpoints
+- [ ] Alert endpoints + evaluation worker
+- [ ] Frontend `useMapSubscription` hook
+- [ ] Rate limiting middleware
 
-P1.4  packages/api/src/db/seed.ts
-      ├── Read JSON from data/maps/*.json
-      ├── Read data/registry.json
-      ├── Insert maps
-      ├── Insert time_slots
-      ├── Insert nodes (transform camelCase → snake_case)
-      ├── Derive + insert edges from node.from[]
-      ├── Insert influence_links from node.influenceLinks[]
-      ├── Insert initial prob_history from node.probHistory[]
-      └── Verify counts match
+### Phase 6 — Production Readiness (2-3 days)
 
-P1.5  Migration + verification
-      ├── npx drizzle-kit generate
-      ├── npx drizzle-kit push
-      ├── Run seed.ts
-      └── SELECT count(*) sanity checks
-```
+**Goal:** Deploy, monitor, document.
 
-### Phase 2 Tasks (API Server)
-
-```
-P2.1  Server setup
-      ├── Hono with basePath("/api/v1")
-      ├── CORS middleware
-      ├── Request ID middleware
-      ├── Error handler (ApiError → JSON)
-      └── Health check endpoint
-
-P2.2  Map routes
-      ├── GET  /maps          → list all (with node_count, headline_prob)
-      ├── GET  /maps/:id      → full load (parallel: map + slots + nodes + edges)
-      ├── POST /maps          → create map (admin only)
-      └── PATCH /maps/:id     → update map metadata
-
-P2.3  Node routes
-      ├── GET    /maps/:id/nodes           → list with filters + pagination
-      ├── GET    /maps/:id/nodes/:nodeId   → single node + influence_links
-      ├── POST   /maps/:id/nodes           → create (auto-update map.node_count)
-      ├── PATCH  /maps/:id/nodes/:nodeId   → partial update
-      ├── DELETE /maps/:id/nodes/:nodeId   → delete (cascade edges)
-      └── POST   /maps/:id/nodes/batch     → bulk upsert (for agents)
-
-P2.4  Search route
-      ├── GET /search?q=&map_id=&category=&limit=
-      └── Full-text search with ts_rank ordering
-
-P2.5  Prediction routes
-      ├── GET  /maps/:id/predictions        → all anchors with latest prob
-      ├── GET  /maps/:id/predictions/:nodeId/history  → prob time-series
-      └── POST /maps/:id/predictions/:nodeId/prob     → record new reading
-
-P2.6  Agent routes
-      ├── POST /agent-runs         → start new run
-      ├── PATCH /agent-runs/:id    → complete/fail run
-      └── GET  /agent-runs?map_id= → list runs
-```
+- [ ] Health check endpoints (liveness + readiness)
+- [ ] Prometheus metrics
+- [ ] Error tracking (Sentry)
+- [ ] API documentation (OpenAPI via Hono)
+- [ ] Load testing (k6)
+- [ ] Deployment config (Railway/Fly.io)
+- [ ] Runbook for DB/agent failures
 
 ---
 
-## 7. API Contract: Before → After
+## 11. API Contract
 
-### `GET /api/v1/maps` — List maps
-
-**Before (Python, reads JSON):**
-```json
-{
-  "maps": [
-    { "id": "iran-war-2026", "title": "Iran-US-Israel War", "status": "active", ... }
-  ]
-}
-```
-
-**After (TypeScript, reads DB) — same shape, richer data:**
-```json
-{
-  "maps": [
-    {
-      "id": "iran-war-2026",
-      "title": "Iran-US-Israel War",
-      "status": "active",
-      "nodeCount": 74,
-      "headlineProb": 8,
-      "trend": "down",
-      "updatedAt": "2026-03-04T18:00:00Z",
-      "lastAgentRun": "2026-03-04T17:55:00Z",
-      "category": "war"
-    }
-  ],
-  "meta": { "total": 5 }
-}
-```
-
-### `GET /api/v1/maps/:id` — Full map
-
-**Before:** Returns raw JSON file as-is (untyped blob).
-
-**After:** Structured, with nested data properly shaped:
-```json
-{
-  "id": "iran-war-2026",
-  "title": "Iran-US-Israel War",
-  "timeSlots": [...],
-  "nodes": [
-    {
-      "id": "fact-1",
-      "mapId": "iran-war-2026",
-      "label": "...",
-      "parentIds": ["fact-0"],
-      "influenceLinks": [{ "factId": "...", "influence": -25, "mechanism": "..." }],
-      ...
-    }
-  ],
-  "edges": [...],
-  "narrative": { ... },
-  "stats": { ... }
-}
-```
-
-**Key change:** `node.from` → `node.parentIds` (avoids JS reserved word issues).
-
-### NEW Endpoints
+### Public Endpoints (JWT auth)
 
 | Method | Path | Purpose |
 |--------|------|---------|
-| `GET` | `/api/v1/search?q=` | Full-text search across all maps |
+| `GET` | `/api/v1/maps` | List maps (workspace-scoped) |
+| `GET` | `/api/v1/maps/:id` | Full map (nodes + edges + slots) |
+| `GET` | `/api/v1/maps/:id/predictions` | All anchors with latest prob |
+| `GET` | `/api/v1/maps/:id/predictions/:nodeId/history` | Prob time-series |
 | `GET` | `/api/v1/maps/:id/stream` | SSE real-time updates |
-| `GET` | `/api/v1/maps/:id/predictions` | All prediction anchors |
-| `GET` | `/api/v1/maps/:id/predictions/:id/history` | Prob time-series |
-| `POST` | `/api/v1/maps/:id/nodes` | Create node (agent) |
-| `POST` | `/api/v1/maps/:id/nodes/batch` | Bulk upsert (agent) |
-| `PATCH` | `/api/v1/maps/:id/nodes/:id` | Update node |
-| `POST` | `/api/v1/agent-runs` | Log agent run start |
-| `PATCH` | `/api/v1/agent-runs/:id` | Log agent run complete |
-| `POST` | `/auth/login` | Email login |
-| `POST` | `/auth/google` | Google OAuth |
-| `POST` | `/auth/api-keys` | Generate API key |
-| `GET` | `/auth/me` | Current user |
+| `GET` | `/api/v1/search?q=` | Full-text search |
 | `POST` | `/api/v1/bookmarks` | Bookmark node |
+| `DELETE` | `/api/v1/bookmarks/:id` | Remove bookmark |
 | `POST` | `/api/v1/alerts` | Create alert |
+| `PATCH` | `/api/v1/alerts/:id` | Update alert |
+
+### Agent Endpoints (API key auth)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/v1/maps/:id/nodes` | Create node |
+| `POST` | `/api/v1/maps/:id/nodes/batch` | Bulk upsert |
+| `PATCH` | `/api/v1/maps/:id/nodes/:nodeId` | Update node |
+| `DELETE` | `/api/v1/maps/:id/nodes/:nodeId` | Delete node |
+| `POST` | `/api/v1/maps/:id/prob` | Record probability reading |
+| `POST` | `/api/v1/maps/:id/sync-market` | Trigger Polymarket sync |
+| `POST` | `/api/v1/agent-run-refs` | Log agent run reference |
+| `PATCH` | `/api/v1/agent-run-refs/:id` | Complete/fail agent run ref |
+
+### Admin Endpoints (admin role in JWT)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `POST` | `/api/v1/maps` | Create map |
+| `PATCH` | `/api/v1/maps/:id` | Update map metadata |
+| `DELETE` | `/api/v1/maps/:id` | Archive map |
+| `GET` | `/api/v1/agent-run-refs` | List agent run refs |
+
+### Platform-to-Service Endpoints (service token)
+
+| Method | Path | Purpose |
+|--------|------|---------|
+| `GET` | `/api/v1/internal/maps` | List maps (no workspace filter) |
+| `GET` | `/api/v1/internal/maps/:id/summary` | Map summary for chat widget |
+| `POST` | `/api/v1/internal/map-access` | Push ACL update from platform |
 
 ---
 
-## 8. Agent Migration Plan
+## 12. Agent Strategy: Delegation, Not Duplication
 
-### Current Agent Flow
-```
-Agent reads JSON file → calls Claude → gets new nodes → rewrites JSON file
-```
-
-### Target Agent Flow
-```
-Agent calls GET /api/v1/maps/:id → calls Claude → POST /api/v1/maps/:id/nodes/batch → done
-```
-
-### `agents/api_client.py` — New shared HTTP client
+### Agent Registration in TradingAgenticChat
 
 ```python
-class RadiantApiClient:
-    def __init__(self, base_url: str, api_key: str):
-        self.base_url = base_url
-        self.headers = {"Authorization": f"Bearer {api_key}"}
+# Registered as agent_versions in TradingAgenticChat:
 
-    def get_map(self, map_id: str) -> dict:
-        """GET /api/v1/maps/:id → full map data."""
+{
+  "agent_id": "radiant-update-map",
+  "version": "1.0.0",
+  "type": "prediction",
+  "description": "Discovers new events for prediction maps using Claude + web search",
+  "runtime": "python",
+  "schedule": "0 6,18 * * *",  # 2x daily
+  "config": {
+    "target_service": "event-graph",
+    "model": "claude-sonnet-4-6",
+    "tools": ["web_search", "mcp-polymarket"]
+  }
+}
 
-    def create_nodes(self, map_id: str, nodes: list[dict]) -> list[dict]:
-        """POST /api/v1/maps/:id/nodes/batch → bulk create."""
+{
+  "agent_id": "radiant-map-predictions",
+  "version": "1.0.0",
+  "type": "prediction",
+  "description": "Maps prediction anchors to causal event chains",
+  "runtime": "python",
+  "schedule": "0 7,19 * * *",  # 2x daily, 1h after update
+  "config": {
+    "target_service": "event-graph",
+    "model": "claude-sonnet-4-6",
+    "tools": ["mcp-polymarket"]
+  }
+}
 
-    def update_node(self, map_id: str, node_id: str, data: dict) -> dict:
-        """PATCH /api/v1/maps/:id/nodes/:id → partial update."""
-
-    def start_run(self, map_id: str, agent_type: str, model: str) -> int:
-        """POST /api/v1/agent-runs → returns run ID."""
-
-    def complete_run(self, run_id: int, summary: str, stats: dict):
-        """PATCH /api/v1/agent-runs/:id → mark complete."""
-
-    def fail_run(self, run_id: int, error: str):
-        """PATCH /api/v1/agent-runs/:id → mark failed."""
-```
-
-### `update_map.py` Changes
-
-```diff
-- DATA_DIR = Path(__file__).parent.parent / "data" / "maps"
-+ from api_client import RadiantApiClient
-+ client = RadiantApiClient(os.environ["RADIANT_API_URL"], os.environ["RADIANT_API_KEY"])
-
-  def update_map(map_id: str):
--     with open(DATA_DIR / f"{map_id}.json") as f:
--         current = json.load(f)
-+     current = client.get_map(map_id)
-+     run_id = client.start_run(map_id, "update_map", MODEL)
-
-      # ... Claude call stays the same ...
-
--     with open(DATA_DIR / f"{map_id}.json", "w") as f:
--         json.dump(merged, f, indent=2)
-+     client.create_nodes(map_id, new_nodes)
-+     client.complete_run(run_id, summary, {"nodes_added": len(new_nodes)})
-```
-
----
-
-## 9. Frontend Client Changes
-
-### `packages/ui/src/api/client.ts` — Updates needed
-
-1. **Response shape mapping** — API returns `snake_case`, frontend expects `camelCase`
-   - Add `mapNodeFromApi(raw) → NarrativeNode` transformer
-   - Or configure API to return camelCase (preferred — let Hono handle it)
-
-2. **New method: subscribe to SSE**
-   ```typescript
-   subscribeToMap(mapId: string, onUpdate: (event: MapChangeEvent) => void): () => void {
-     const es = new EventSource(`${this.config.baseUrl}/maps/${mapId}/stream`);
-     es.onmessage = (e) => onUpdate(JSON.parse(e.data));
-     return () => es.close();
-   }
-   ```
-
-3. **Auth integration**
-   ```typescript
-   setToken(token: string): void {
-     this.config.token = token;
-   }
-   ```
-
-### `packages/ui/src/hooks/useMapSubscription.ts` — New hook
-
-```typescript
-export function useMapSubscription(
-  client: EventGraphApiClient,
-  mapId: string | undefined,
-  onNodeChange: (nodeId: string) => void,
-) {
-  useEffect(() => {
-    if (!mapId) return;
-    return client.subscribeToMap(mapId, (event) => {
-      if (event.table === 'nodes') onNodeChange(event.id);
-    });
-  }, [client, mapId, onNodeChange]);
+{
+  "agent_id": "radiant-polymarket-sync",
+  "version": "1.0.0",
+  "type": "data-sync",
+  "description": "Syncs Polymarket prices to probability history",
+  "runtime": "python",
+  "schedule": "*/30 * * * *",  # every 30 min
+  "config": {
+    "target_service": "event-graph",
+    "source": "polymarket-clob-api"
+  }
 }
 ```
 
+### Agent Code Changes
+
+```python
+# agents/update_map.py (v2)
+
+from api_client import EventGraphApiClient
+from platform_client import PlatformClient
+
+eg_client = EventGraphApiClient(
+    base_url=os.environ["EVENT_GRAPH_API_URL"],
+    api_key=os.environ["EVENT_GRAPH_API_KEY"],
+)
+platform = PlatformClient(
+    base_url=os.environ["PLATFORM_API_URL"],
+    api_key=os.environ["PLATFORM_AGENT_API_KEY"],
+)
+
+def update_map(map_id: str):
+    # 1. Start run in platform (tracking, billing, audit)
+    run = platform.start_agent_run(
+        agent_id="radiant-update-map",
+        map_id=map_id,
+        model=MODEL,
+    )
+
+    # 2. Read current state from event-graph
+    current = eg_client.get_map(map_id)
+
+    # 3. Log run ref in event-graph
+    ref = eg_client.start_run_ref(map_id, platform_run_id=run["id"], agent_type="update_map")
+
+    try:
+        # 4. Call Claude (same logic as before)
+        response = call_claude_with_web_search(current)
+        new_nodes = parse_response(response)
+
+        # 5. Write to event-graph
+        eg_client.create_nodes_batch(map_id, new_nodes)
+
+        # 6. Complete both refs
+        eg_client.complete_run_ref(ref["id"], nodes_added=len(new_nodes), summary=response.summary)
+        platform.complete_agent_run(run["id"], summary=response.summary, stats={
+            "nodes_added": len(new_nodes),
+            "input_tokens": response.usage.input_tokens,
+            "output_tokens": response.usage.output_tokens,
+        })
+
+    except Exception as e:
+        eg_client.fail_run_ref(ref["id"], error=str(e))
+        platform.fail_agent_run(run["id"], error=str(e))
+        raise
+```
+
 ---
 
-## 10. Testing Strategy
+## 13. Frontend Client Changes
 
-### Current: 72 unit tests (frontend only)
+### `packages/ui/src/api/client.ts` — Updates
 
-### Target:
+1. **Auth: accept token from host app** (TradingAgenticChat provides it)
+   ```typescript
+   const client = new EventGraphApiClient({
+     baseUrl: '/api/v1',
+     token: authContext.accessToken, // from TradingAgenticChat
+   });
+   ```
 
-| Layer | Framework | Tests |
-|-------|-----------|-------|
-| DB schema | `vitest` + `pg` | Seed → query → verify round-trip |
-| API routes | `vitest` + `supertest` | Each endpoint: happy path + errors + auth |
-| API integration | `vitest` | Full flow: create map → add nodes → search → verify |
-| Agent HTTP client | `pytest` | Mock API → verify requests are correct |
-| Frontend (existing) | `vitest` | Keep all 72 passing |
-| E2E | Playwright (Phase 6+) | Browser → API → DB round-trip |
+2. **New: SSE subscription**
+   ```typescript
+   subscribeToMap(mapId: string, onUpdate: (event: MapChangeEvent) => void): () => void
+   ```
 
-### Test Database
-```
-# docker-compose.test.yml — ephemeral PG for tests
-services:
-  postgres-test:
-    image: postgres:16
-    tmpfs: /var/lib/postgresql/data   # RAM disk = fast
-    environment:
-      POSTGRES_DB: radiant_test
-```
+3. **New: Polymarket data methods**
+   ```typescript
+   getMarketPrice(slug: string): Promise<{ price: number; volume: string }>
+   ```
+
+### No auth UI in event-graph
+
+Auth flows (login, register, OAuth) are handled by TradingAgenticChat's frontend.
+event-graph receives the JWT via:
+- `Authorization: Bearer <token>` header (when standalone)
+- Shared auth context (when embedded in TradingAgenticChat UI)
 
 ---
 
-## 11. Infrastructure & Deployment
+## 14. Testing Strategy
+
+| Layer | Framework | What |
+|-------|-----------|------|
+| DB schema | vitest + pg | Seed → query → verify round-trip |
+| API routes | vitest + Hono test client | Each endpoint: happy + error + auth |
+| JWT validation | vitest | Mock JWKS, test valid/expired/wrong-issuer |
+| Polymarket client | vitest | Mock REST, verify price parsing |
+| MCP server | vitest | Tool call → response verification |
+| Kafka events | vitest | Publish → consume → verify Avro schema |
+| Agent HTTP client | pytest | Mock API → verify requests |
+| Frontend (existing) | vitest | Keep all 72 passing |
+
+---
+
+## 15. Infrastructure & Deployment
 
 ### Development
 ```bash
-# Start everything:
-docker compose up -d          # PG + Redis
-pnpm --filter api db:migrate  # Apply schema
-pnpm --filter api db:seed     # Import JSON data
-pnpm --filter api dev         # Start API (port 3001)
-pnpm --filter ui demo         # Start demo (port 5173, proxies to 3001)
+docker compose up -d          # PostgreSQL only
+pnpm --filter api db:migrate
+pnpm --filter api db:seed
+pnpm dev                      # API (3001) + demo (5173) + MCP server
 ```
 
-### Production Options
-
-| Option | Pros | Cons |
-|--------|------|------|
-| **Railway** | Simple, monorepo support, PG addon | $$$ at scale |
-| **Fly.io** | Edge, cheap, Docker-native | More setup |
-| **Render** | Free tier, auto-deploy | Cold starts |
-| **VPS (Hetzner)** | Cheapest, full control | Manual ops |
-
-**Recommended for MVP:** Railway or Fly.io
-- PostgreSQL: Neon (free tier, serverless, branching)
-- Redis: Upstash (free tier, serverless)
-- API: Railway (auto-deploy from GitHub)
-
 ### Environment Variables
-
 ```bash
 # .env.example
-DATABASE_URL=postgresql://radiant:radiant_dev@localhost:5432/radiant
-REDIS_URL=redis://localhost:6379
 
-# Auth
-JWT_SECRET=change-me-in-production
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-GITHUB_CLIENT_ID=
-GITHUB_CLIENT_SECRET=
+# event-graph database (own DB)
+DATABASE_URL=postgresql://radiant:radiant_dev@localhost:5432/radiant_prediction
 
-# Agents
-ANTHROPIC_API_KEY=
-RADIANT_API_URL=http://localhost:3001/api/v1
-RADIANT_API_KEY=   # generated via POST /auth/api-keys
+# Platform integration
+PLATFORM_API_URL=http://localhost:8000          # TradingAgenticChat
+PLATFORM_JWKS_URL=http://localhost:8000/.well-known/jwks.json
+PLATFORM_SERVICE_TOKEN=                          # for internal API calls
+
+# Agent auth
+AGENT_API_KEYS=key1,key2                         # comma-separated valid keys
 
 # Polymarket
 POLYMARKET_API_URL=https://clob.polymarket.com
+POLYMARKET_WS_URL=wss://ws-subscriptions-clob.polymarket.com
+
+# Kafka (Avro events)
+KAFKA_BROKERS=localhost:9092
+SCHEMA_REGISTRY_URL=http://localhost:8081
+
+# Legacy harvester
+HARVESTER_API_URL=http://harvester.internal:8080
+
+# Claude (for agents — but runs are tracked in platform)
+ANTHROPIC_API_KEY=
 ```
+
+### Production
+- **Database:** Neon PostgreSQL (serverless, separate from TradingAgenticChat's DB)
+- **API:** Railway or Fly.io (auto-deploy from GitHub)
+- **MCP Server:** Runs as sidecar or separate process
+- **Agents:** Scheduled by TradingAgenticChat's agent runtime (not cron)
 
 ---
 
-## 12. Risks & Mitigations
+## 16. Risks & Mitigations
 
 | Risk | Probability | Impact | Mitigation |
 |------|------------|--------|------------|
-| Monorepo migration breaks builds | Medium | High | Do Phase 0 as isolated PR, verify CI |
-| Agent writes fail during dual-write | Medium | Medium | Keep JSON fallback, compare counts nightly |
-| `from` → `parentIds` rename breaks consumers | High | High | Frontend maps both field names for 2 releases |
-| Schema migration on live data | Low (no prod yet) | Low | We have no prod users, safe to break |
-| Python agents need API running | Medium | Medium | Health check + retry in `api_client.py` |
-| TypeScript API perf vs Python | Low | Low | Hono is faster than FastAPI for this workload |
+| TradingAgenticChat JWT format changes | Medium | High | Pin JWT schema version in shared contract |
+| Kafka not available in dev | High | Medium | Fallback to direct HTTP calls; Kafka is P2 |
+| Platform agent runtime not ready for prediction agents | Medium | High | Keep standalone cron as fallback (GitHub Actions) |
+| Polymarket API rate limits | Medium | Medium | Cache prices locally, respect rate limits |
+| map_access cache goes stale | Low | Medium | 1h TTL + Kafka refresh + fallback to API call |
+| Two databases means operational complexity | Medium | Medium | Same PG engine, same tooling, separate logical DBs |
+| News harvester API unstable | Medium | Low | Agent works without harvester (uses Claude web search) |
 
 ---
 
-## 13. Decision Log
+## 17. Decision Log
 
-| Date | Decision | Alternatives Considered | Reason |
-|------|----------|------------------------|--------|
-| 2026-03-13 | PostgreSQL 16 | MongoDB, SQLite, Supabase | JSONB + FTS + NOTIFY; best balance of flexibility and structure |
-| 2026-03-13 | Drizzle ORM | Prisma, Kysely, raw SQL | Lightest, best TS inference, no code gen |
-| 2026-03-13 | Hono | Express, Fastify, tRPC | Lightweight, Web Standard API, works everywhere |
-| 2026-03-13 | Keep Python agents | Rewrite in TS | 16K lines of working agent code; not worth rewriting now |
-| 2026-03-13 | pnpm workspaces | npm workspaces, Nx, Lerna | Simplest, fastest, best monorepo support |
-| 2026-03-13 | Turborepo | Nx | Simpler config, good enough for 3 packages |
-| 2026-03-13 | `node.from` → `parentIds` | Keep `from` | `from` is an import keyword, causes issues in destructuring |
-| 2026-03-13 | Composite PK on nodes | UUID PK | All queries scoped by map_id; composite is natural + efficient |
-| 2026-03-13 | SSE over WebSocket | WebSocket, polling | Simpler, works through proxies, sufficient for our update rate |
-| 2026-03-13 | API key auth for agents | mTLS, OAuth2 client creds | Simplest; agents run in trusted env |
+| Date | Decision | Alternatives | Reason |
+|------|----------|-------------|--------|
+| 2026-03-13 | **Domain service, not platform** | Build everything standalone | TradingAgenticChat already has auth, agents, billing — duplicating = months of waste |
+| 2026-03-13 | **Validate JWTs, don't issue them** | Own auth system | Identity authority is TradingAgenticChat |
+| 2026-03-13 | **agent_run_refs not agent_runs** | Full audit table | Cost/LLM tracking belongs in platform's billing_ledger |
+| 2026-03-13 | **Separate database** | Shared DB with platform | Decoupled deployments, no migration conflicts |
+| 2026-03-13 | **Hono (TypeScript)** | FastAPI (Python), Express | Same language as React library = shared types, single toolchain |
+| 2026-03-13 | **Drizzle ORM** | Alembic, Prisma | Lightest TS ORM, direct type inference, no codegen |
+| 2026-03-13 | **Polymarket: REST + MCP** | REST only | MCP enables agent tool access to market data |
+| 2026-03-13 | **Keep Python agents** | Rewrite in TS | Working code; they call our API over HTTP anyway |
+| 2026-03-13 | **Register agents in platform** | Independent agent runner | TradingAgenticChat has agent_versions/runs/billing; don't rebuild |
+| 2026-03-13 | **Kafka/Avro for cross-service** | Direct API calls only | Platform already has Avro governance + Spark/Iceberg pipeline |
+| 2026-03-13 | **No Redis** | Redis for cache/pubsub | PG NOTIFY + in-memory cache sufficient for our scale |
+| 2026-03-13 | **`map_access` cache table** | Call platform API on every request | Latency; cache with TTL + event refresh is practical |
 
 ---
 
-## Appendix: Quick Start After Refactor
+## Appendix A: Quick Start After Refactor
 
 ```bash
 # Clone & setup
@@ -1137,20 +1235,29 @@ pnpm install
 
 # Database
 docker compose up -d
-pnpm --filter @ratexai/api db:push
-pnpm --filter @ratexai/api db:seed
+pnpm --filter @ratexai/prediction-api db:push
+pnpm --filter @ratexai/prediction-api db:seed
 
 # Development
-pnpm dev   # starts API (3001) + demo (5173) concurrently
+pnpm dev   # API (3001) + demo (5173)
 
-# Run agents
+# Agents (requires TradingAgenticChat running for auth)
 cd agents
 pip install -r requirements.txt
 python update_map.py iran-war-2026
-python map_predictions.py iran-war-2026
+python polymarket_sync.py --all
 
 # Tests
-pnpm test          # all packages
-pnpm test:api      # API only
-pnpm test:ui       # UI only
+pnpm test
 ```
+
+## Appendix B: Migration from v1 Plan
+
+If you started implementing v1 (standalone with full user/agent tables):
+
+1. Keep all prediction-domain tables unchanged (maps, nodes, edges, etc.)
+2. Drop `users` table → replace with `user_id TEXT` references
+3. Drop `user_map_access` → replace with `map_access` cache
+4. Drop `agent_runs` → replace with `agent_run_refs`
+5. Replace auth middleware (own JWT issuance → platform JWT validation)
+6. Add platform integration layer (`lib/platform.ts`, `lib/kafka.ts`)
