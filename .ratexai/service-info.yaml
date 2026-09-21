@@ -1,0 +1,23 @@
+apiVersion: platform.ratexai.io/v1
+kind: ServiceInfo
+metadata:
+  serviceId: radiant-event-graph
+  displayName: RADIANT Event Graph
+  owner: radiant_product_owner_ratification_required
+  repository: ratexai/event-graph
+spec:
+  serviceType: product_visualization_and_agent_prompt
+  runtime: python_web
+  authority:
+    owns:
+      - radiant_event_graph_visualization
+      - radiant_map_agent_prompt_candidate
+    doesNotOwn:
+      - kros_agent_compilation_or_tool_semantics
+      - model_service_inference_interfaces
+      - canonical_market_or_social_facts
+      - production_model_provider_policy
+  protocols:
+    - prompt_template
+  lifecycle: candidate
+  productionAuthorization: false

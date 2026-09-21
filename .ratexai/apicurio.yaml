@@ -1,0 +1,27 @@
+apiVersion: registry.ratexai.io/v1
+kind: ArtifactBundle
+metadata:
+  serviceId: radiant-event-graph
+  owner: radiant_product_owner_ratification_required
+  repository: ratexai/event-graph
+spec:
+  coverage:
+    include:
+      - radiant/agents/prompts/*.txt
+      - .ratexai/service-info.yaml
+  artifacts:
+    - artifactId: radiant-map-agent-prompt-v1
+      groupId: ratex.agent.radiant
+      type: PROMPT_TEMPLATE
+      source: radiant/agents/prompts/map_agent.txt
+      contentType: text/plain
+      authority: radiant_product_owner_ratification_required
+      lifecycle: candidate
+      description: RADIANT event-map agent prompt template candidate
+    - artifactId: radiant-event-graph-service-info
+      groupId: ratex.service.radiant-event-graph
+      type: RATEX_SERVICE_INFO
+      source: .ratexai/service-info.yaml
+      authority: radiant_product_owner_ratification_required
+      lifecycle: candidate
+      description: RADIANT event-graph and prompt ownership boundary descriptor
