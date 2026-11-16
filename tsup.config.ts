@@ -9,6 +9,7 @@ export default defineConfig({
     "styles/theme": "src/styles/theme.ts",
     "types/index": "src/types/index.ts",
     "read-model/index": "src/read-model/index.ts",
+    "prediction-intelligence/index": "src/prediction-intelligence/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

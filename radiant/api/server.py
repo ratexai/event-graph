@@ -9,8 +9,15 @@ Run:
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pathlib import Path
 import json
+
+from .prediction_intelligence import (
+    PredictionIntelligenceNotFound,
+    fixture_source,
+    load_fixture_card,
+)
 
 app = FastAPI(title="Radiant API", version="0.1.0")
 
@@ -71,6 +78,22 @@ def search(q: str = ""):
     ]
 
     return {"maps": matches, "projects": []}
+
+
+@app.get("/api/v1/prediction-intelligence/{market_id}")
+def get_prediction_intelligence(market_id: str):
+    """Serve a static prediction-intelligence fixture. Read-only, no live data."""
+    try:
+        card = load_fixture_card(market_id)
+    except PredictionIntelligenceNotFound:
+        return JSONResponse(
+            status_code=404,
+            content={
+                "state": "NOT_FOUND",
+                "reason": f"Prediction intelligence fixture '{market_id}' not found",
+            },
+        )
+    return {"state": "OK", "source": fixture_source(), "data": card}
 
 
 @app.get("/health")
