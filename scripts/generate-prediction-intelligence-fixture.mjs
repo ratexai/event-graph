@@ -212,5 +212,6 @@ const card = composePredictionIntelligence({
 });
 
 await mkdir(dirname(outputPath), { recursive: true });
-await writeFile(outputPath, `${JSON.stringify(card, null, 2)}\n`, "utf8");
+const fixture = { source: "prototype_fixture", ...card };
+await writeFile(outputPath, `${JSON.stringify(fixture, null, 2)}\n`, "utf8");
 console.log(`wrote ${outputPath}`);

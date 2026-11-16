@@ -57,7 +57,8 @@ deterministic tests. The default clock is only used when `now` is omitted.
 ## Fixture and endpoint
 
 - Fixture: `radiant/data/prediction-intelligence/example.json`
-- Source label: `radiant.fixture/iran-war-2026@2026-11-16`
+- Fixture source: `source: "prototype_fixture"` (static, never live)
+- Card source label: `radiant.fixture/iran-war-2026@2026-11-16`
 - Basis: Iran map node `n4_strikes`, with a fixture T1 revision and the
   `us-strikes-iran-by` market from the map's market anchor.
 - Recorded/static: `as_of: 2026-03-03T12:30:00Z`; the card is `STALE`.

@@ -71,6 +71,7 @@ class PredictionIntelligenceFixtureTest(unittest.TestCase):
         self.assertTrue(FIXTURE.is_file())
         card = self.card
         self.assertEqual(card["contract_version"], "prediction-intelligence/v1")
+        self.assertEqual(card["source"], "prototype_fixture")
         self.assertTrue(card["source_version"].startswith("radiant.fixture/"))
         self.assertEqual(card["as_of"], "2026-03-03T12:30:00Z")
         self.assertEqual(card["freshness"]["state"], "STALE")
