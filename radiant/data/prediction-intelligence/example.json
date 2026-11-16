@@ -1,0 +1,547 @@
+{
+  "source": "prototype_fixture",
+  "contract_version": "prediction-intelligence/v1",
+  "as_of": "2026-03-03T12:30:00Z",
+  "event": {
+    "event_ref": "prototype:iran-war-2026:n4_strikes",
+    "event_id": null,
+    "id_authority": "prototype_compatibility",
+    "lifecycle_status": "active",
+    "revision_id": "prototype:iran-war-2026:n4_strikes@r2",
+    "revision_number": 2,
+    "supersedes_revision_id": "prototype:iran-war-2026:n4_strikes@r1",
+    "title": "Op. Epic Fury + Roaring Lion begins",
+    "summary": "Joint US (Epic Fury) + Israel (Roaring Lion) strikes. Targets: Tehran, Isfahan, Qom, Karaj, Kermanshah. Opening strike hits Leadership House compound. Aimed at regime change. Revision 2 adds the later Al Jazeera casualty tracker (the map records ≥1,045 killed); it does not resolve damage or responsibility.",
+    "event_type": "UNKNOWN",
+    "epistemic_status": "observed",
+    "valid_time": {
+      "precision": "exact",
+      "starts_at": "2026-02-28T06:35:00Z",
+      "ends_at": null,
+      "local_date": null,
+      "timezone": "UTC"
+    },
+    "observed_at": "2026-03-03T12:30:00Z",
+    "last_observed_at": "2026-03-03T12:30:00Z",
+    "evidence": [
+      {
+        "evidence_ref_id": "fixture:iran-war-2026:n4_strikes:source",
+        "evidence_id": null,
+        "source_id": null,
+        "canonical_url": "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran",
+        "published_at": null,
+        "observed_at": "2026-02-28T07:00:00Z",
+        "relation_type": "context",
+        "is_primary": true,
+        "identity_status": "prototype_only"
+      },
+      {
+        "evidence_ref_id": "fixture:iran-war-2026:n4_strikes:casualties",
+        "evidence_id": null,
+        "source_id": null,
+        "canonical_url": "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker",
+        "published_at": null,
+        "observed_at": "2026-03-03T12:15:00Z",
+        "relation_type": "context",
+        "is_primary": false,
+        "identity_status": "prototype_only"
+      }
+    ],
+    "entity_ids": [],
+    "narrative_ids": [],
+    "country_codes": [],
+    "requires_verification": true,
+    "quality": {
+      "status": "partial",
+      "as_of": "2026-03-03T12:30:00Z",
+      "missing_sources": [
+        "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran",
+        "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker"
+      ],
+      "warnings": [
+        "event_type_unclassified",
+        "evidence_identity_incomplete",
+        "fixture_static_snapshot",
+        "prototype_compatibility"
+      ],
+      "provenance_complete": false
+    },
+    "as_of": "2026-03-03T12:30:00Z",
+    "schema_version": "ratex.radiant.read/v1",
+    "method_version": "fixture/iran-war-2026@2026-11-16",
+    "content_digest": null,
+    "market_bindings": [
+      {
+        "market_id": "fixture:polymarket:us-strikes-iran-by",
+        "provider": "polymarket_international",
+        "external_market_id": "us-strikes-iran-by",
+        "question": "Will the US conduct additional airstrikes on Iran before March 15, 2026?",
+        "canonical_url": null,
+        "closes_at": "2026-03-15T23:59:59Z",
+        "resolved_at": null,
+        "resolution": null,
+        "outcomes": [
+          {
+            "outcome_id": "fixture-yes",
+            "label": "YES",
+            "probability": 72,
+            "probability_basis": "prototype_fixture",
+            "as_of": "2026-03-03T12:00:00Z"
+          },
+          {
+            "outcome_id": "fixture-no",
+            "label": "NO",
+            "probability": 28,
+            "probability_basis": "prototype_fixture",
+            "as_of": "2026-03-03T12:00:00Z"
+          }
+        ],
+        "binding_type": "anchor",
+        "confidence": null,
+        "as_of": "2026-03-03T12:00:00Z",
+        "probability": 72,
+        "probability_basis": "prototype_fixture",
+        "id_authority": "prototype_compatibility",
+        "ambiguity": {
+          "ambiguous": false,
+          "reasons": []
+        },
+        "quality_warnings": []
+      }
+    ],
+    "relations": [],
+    "forecast": null,
+    "explanation": {
+      "evidence_only": true,
+      "probability": null,
+      "forecast": null,
+      "causality": "not_asserted",
+      "claims": [
+        {
+          "statement": "Op. Epic Fury + Roaring Lion begins",
+          "evidence_ref_ids": [
+            "fixture:iran-war-2026:n4_strikes:source",
+            "fixture:iran-war-2026:n4_strikes:casualties"
+          ],
+          "epistemic_status": "observed"
+        }
+      ],
+      "unknowns": [
+        "At least one evidence source identity is unresolved.",
+        "No calibrated forecast is produced by this read model."
+      ]
+    },
+    "warnings": [
+      "event_type_unclassified",
+      "evidence_identity_incomplete",
+      "fixture_static_snapshot",
+      "prototype_compatibility"
+    ]
+  },
+  "revisions": {
+    "from": {
+      "revision_id": "prototype:iran-war-2026:n4_strikes@r1",
+      "revision_number": 1,
+      "as_of": "2026-02-28T07:10:00Z"
+    },
+    "to": {
+      "revision_id": "prototype:iran-war-2026:n4_strikes@r2",
+      "revision_number": 2,
+      "as_of": "2026-03-03T12:30:00Z"
+    },
+    "diff": {
+      "event_ref": "prototype:iran-war-2026:n4_strikes",
+      "from_revision": 1,
+      "to_revision": 2,
+      "comparable": true,
+      "reason": null,
+      "changed_fields": [
+        {
+          "field": "summary",
+          "from": "Joint US (Epic Fury) + Israel (Roaring Lion) strikes. Targets: Tehran, Isfahan, Qom, Karaj, Kermanshah. Opening strike hits Leadership House compound. Aimed at regime change.",
+          "to": "Joint US (Epic Fury) + Israel (Roaring Lion) strikes. Targets: Tehran, Isfahan, Qom, Karaj, Kermanshah. Opening strike hits Leadership House compound. Aimed at regime change. Revision 2 adds the later Al Jazeera casualty tracker (the map records ≥1,045 killed); it does not resolve damage or responsibility."
+        },
+        {
+          "field": "market_bindings",
+          "from": [
+            {
+              "market_id": "fixture:polymarket:us-strikes-iran-by",
+              "provider": "polymarket_international",
+              "external_market_id": "us-strikes-iran-by",
+              "question": "Will the US conduct additional airstrikes on Iran before March 15, 2026?",
+              "canonical_url": null,
+              "closes_at": "2026-03-15T23:59:59Z",
+              "resolved_at": null,
+              "resolution": null,
+              "outcomes": [
+                {
+                  "outcome_id": "fixture-yes",
+                  "label": "YES",
+                  "probability": 67,
+                  "probability_basis": "prototype_fixture",
+                  "as_of": "2026-02-28T07:10:00Z"
+                },
+                {
+                  "outcome_id": "fixture-no",
+                  "label": "NO",
+                  "probability": 33,
+                  "probability_basis": "prototype_fixture",
+                  "as_of": "2026-02-28T07:10:00Z"
+                }
+              ],
+              "binding_type": "anchor",
+              "confidence": null,
+              "as_of": "2026-02-28T07:10:00Z",
+              "probability": 67,
+              "probability_basis": "prototype_fixture",
+              "id_authority": "prototype_compatibility",
+              "ambiguity": {
+                "ambiguous": false,
+                "reasons": []
+              },
+              "quality_warnings": []
+            }
+          ],
+          "to": [
+            {
+              "market_id": "fixture:polymarket:us-strikes-iran-by",
+              "provider": "polymarket_international",
+              "external_market_id": "us-strikes-iran-by",
+              "question": "Will the US conduct additional airstrikes on Iran before March 15, 2026?",
+              "canonical_url": null,
+              "closes_at": "2026-03-15T23:59:59Z",
+              "resolved_at": null,
+              "resolution": null,
+              "outcomes": [
+                {
+                  "outcome_id": "fixture-yes",
+                  "label": "YES",
+                  "probability": 72,
+                  "probability_basis": "prototype_fixture",
+                  "as_of": "2026-03-03T12:00:00Z"
+                },
+                {
+                  "outcome_id": "fixture-no",
+                  "label": "NO",
+                  "probability": 28,
+                  "probability_basis": "prototype_fixture",
+                  "as_of": "2026-03-03T12:00:00Z"
+                }
+              ],
+              "binding_type": "anchor",
+              "confidence": null,
+              "as_of": "2026-03-03T12:00:00Z",
+              "probability": 72,
+              "probability_basis": "prototype_fixture",
+              "id_authority": "prototype_compatibility",
+              "ambiguity": {
+                "ambiguous": false,
+                "reasons": []
+              },
+              "quality_warnings": []
+            }
+          ]
+        }
+      ],
+      "added_evidence": [
+        {
+          "evidence_ref_id": "fixture:iran-war-2026:n4_strikes:casualties",
+          "evidence_id": null,
+          "source_id": null,
+          "canonical_url": "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker",
+          "published_at": null,
+          "observed_at": "2026-03-03T12:15:00Z",
+          "relation_type": "context",
+          "is_primary": false,
+          "identity_status": "prototype_only"
+        }
+      ],
+      "removed_evidence": [],
+      "changed_evidence": [],
+      "unchanged_fields": [
+        "title",
+        "event_type",
+        "epistemic_status",
+        "valid_time",
+        "lifecycle_status",
+        "requires_verification",
+        "entity_ids",
+        "narrative_ids",
+        "country_codes",
+        "relations"
+      ],
+      "summary": [
+        "summary changed.",
+        "Prediction-market binding changed.",
+        "Evidence added: 1."
+      ],
+      "forecast": null
+    },
+    "diff_reason": null
+  },
+  "evidence_timeline": {
+    "event_ref": "prototype:iran-war-2026:n4_strikes",
+    "revision_id": "prototype:iran-war-2026:n4_strikes@r2",
+    "revision_number": 2,
+    "as_of": "2026-03-03T12:30:00Z",
+    "items": [
+      {
+        "sequence": 1,
+        "evidence": {
+          "evidence_ref_id": "fixture:iran-war-2026:n4_strikes:source",
+          "evidence_id": null,
+          "source_id": null,
+          "canonical_url": "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran",
+          "published_at": null,
+          "observed_at": "2026-02-28T07:00:00Z",
+          "relation_type": "context",
+          "is_primary": true,
+          "identity_status": "prototype_only"
+        },
+        "display_time": "2026-02-28T07:00:00Z",
+        "time_basis": "observed_at",
+        "label": "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran"
+      },
+      {
+        "sequence": 2,
+        "evidence": {
+          "evidence_ref_id": "fixture:iran-war-2026:n4_strikes:casualties",
+          "evidence_id": null,
+          "source_id": null,
+          "canonical_url": "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker",
+          "published_at": null,
+          "observed_at": "2026-03-03T12:15:00Z",
+          "relation_type": "context",
+          "is_primary": false,
+          "identity_status": "prototype_only"
+        },
+        "display_time": "2026-03-03T12:15:00Z",
+        "time_basis": "observed_at",
+        "label": "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker"
+      }
+    ],
+    "quality": {
+      "status": "partial",
+      "as_of": "2026-03-03T12:30:00Z",
+      "missing_sources": [
+        "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran",
+        "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker"
+      ],
+      "warnings": [
+        "event_type_unclassified",
+        "evidence_identity_incomplete",
+        "fixture_static_snapshot",
+        "prototype_compatibility"
+      ],
+      "provenance_complete": false
+    },
+    "forecast": null
+  },
+  "market_binding": {
+    "state": "BOUND",
+    "binding": {
+      "market_id": "fixture:polymarket:us-strikes-iran-by",
+      "provider": "polymarket_international",
+      "external_market_id": "us-strikes-iran-by",
+      "question": "Will the US conduct additional airstrikes on Iran before March 15, 2026?",
+      "canonical_url": null,
+      "closes_at": "2026-03-15T23:59:59Z",
+      "resolved_at": null,
+      "resolution": null,
+      "outcomes": [
+        {
+          "outcome_id": "fixture-yes",
+          "label": "YES",
+          "probability": 72,
+          "probability_basis": "prototype_fixture",
+          "as_of": "2026-03-03T12:00:00Z"
+        },
+        {
+          "outcome_id": "fixture-no",
+          "label": "NO",
+          "probability": 28,
+          "probability_basis": "prototype_fixture",
+          "as_of": "2026-03-03T12:00:00Z"
+        }
+      ],
+      "binding_type": "anchor",
+      "confidence": null,
+      "as_of": "2026-03-03T12:00:00Z",
+      "probability": 72,
+      "probability_basis": "prototype_fixture",
+      "id_authority": "prototype_compatibility",
+      "ambiguity": {
+        "ambiguous": false,
+        "reasons": []
+      },
+      "quality_warnings": []
+    },
+    "candidates": [
+      {
+        "market_id": "fixture:polymarket:us-strikes-iran-by",
+        "provider": "polymarket_international",
+        "external_market_id": "us-strikes-iran-by",
+        "question": "Will the US conduct additional airstrikes on Iran before March 15, 2026?",
+        "canonical_url": null,
+        "closes_at": "2026-03-15T23:59:59Z",
+        "resolved_at": null,
+        "resolution": null,
+        "outcomes": [
+          {
+            "outcome_id": "fixture-yes",
+            "label": "YES",
+            "probability": 72,
+            "probability_basis": "prototype_fixture",
+            "as_of": "2026-03-03T12:00:00Z"
+          },
+          {
+            "outcome_id": "fixture-no",
+            "label": "NO",
+            "probability": 28,
+            "probability_basis": "prototype_fixture",
+            "as_of": "2026-03-03T12:00:00Z"
+          }
+        ],
+        "binding_type": "anchor",
+        "confidence": null,
+        "as_of": "2026-03-03T12:00:00Z",
+        "probability": 72,
+        "probability_basis": "prototype_fixture",
+        "id_authority": "prototype_compatibility",
+        "ambiguity": {
+          "ambiguous": false,
+          "reasons": []
+        },
+        "quality_warnings": []
+      }
+    ],
+    "candidate_count": 1,
+    "reasons": []
+  },
+  "market_projection": {
+    "contract_version": "prediction-market.read/v1",
+    "venue": "polymarket_international",
+    "event": {
+      "venue_event_id": "fixture:polymarket:event-us-iran-strikes-2026",
+      "slug": "us-iran-strikes-2026",
+      "title": "Op. Epic Fury + Roaring Lion begins"
+    },
+    "market": {
+      "venue_market_id": "us-strikes-iran-by",
+      "slug": "us-strikes-iran-by",
+      "question": "Will the US conduct additional airstrikes on Iran before March 15, 2026?",
+      "condition_id": "fixture:polymarket:condition-us-strikes-iran-by",
+      "market_version": "v1",
+      "market_state": "ACTIVE",
+      "resolution_state": "UNRESOLVED",
+      "end_date": "2026-03-15T23:59:59Z"
+    },
+    "outcomes": [
+      {
+        "label": "YES",
+        "outcome_index": 0,
+        "asset_id": "fixture:polymarket:token-yes",
+        "asset_id_kind": "CTF_TOKEN_ID",
+        "price": "0.72",
+        "best_bid": "0.71",
+        "best_ask": "0.73"
+      },
+      {
+        "label": "NO",
+        "outcome_index": 1,
+        "asset_id": "fixture:polymarket:token-no",
+        "asset_id_kind": "CTF_TOKEN_ID",
+        "price": "0.28",
+        "best_bid": "0.27",
+        "best_ask": "0.29"
+      }
+    ],
+    "quote": {
+      "source": "gamma_market",
+      "price_basis": "OUTCOME_PRICE",
+      "as_of": "2026-03-03T12:00:00Z",
+      "stale_after_seconds": 3600
+    },
+    "evidence": [
+      {
+        "evidence_id": "fixture:polymarket:market-us-strikes-iran-by",
+        "kind": "VENUE_MARKET",
+        "url": "https://polymarket.com",
+        "observed_at": "2026-03-03T12:00:00Z",
+        "source_version": "fixture:gamma_market@2026-03-03T12:00:00Z"
+      }
+    ],
+    "freshness": {
+      "state": "STALE",
+      "observed_at": "2026-03-03T12:00:00Z",
+      "age_seconds": null,
+      "reason": "STATIC_FIXTURE_SNAPSHOT"
+    },
+    "source_version": "fixture:gamma_market@2026-03-03T12:00:00Z",
+    "ownership_label": "NOT_APPLICABLE"
+  },
+  "market_projection_reason": null,
+  "market_implied_probability": {
+    "value": 0.72,
+    "basis": "prototype_fixture",
+    "as_of": "2026-03-03T12:00:00Z",
+    "source": "market_binding:polymarket_international"
+  },
+  "model_probability": null,
+  "model_probability_reason": "NO_CANONICAL_MODEL_OUTPUT",
+  "model_probability_provenance": null,
+  "citations": [
+    {
+      "evidence_id": null,
+      "evidence_ref_id": "fixture:iran-war-2026:n4_strikes:source",
+      "kind": "RADIANT_EVIDENCE",
+      "url": "https://en.wikipedia.org/wiki/2026_Israeli%E2%80%93United_States_strikes_on_Iran",
+      "observed_at": "2026-02-28T07:00:00Z",
+      "source_version": "fixture/iran-war-2026@2026-11-16"
+    },
+    {
+      "evidence_id": null,
+      "evidence_ref_id": "fixture:iran-war-2026:n4_strikes:casualties",
+      "kind": "RADIANT_EVIDENCE",
+      "url": "https://www.aljazeera.com/news/2026/3/1/us-israel-attacks-on-iran-death-toll-and-injuries-live-tracker",
+      "observed_at": "2026-03-03T12:15:00Z",
+      "source_version": "fixture/iran-war-2026@2026-11-16"
+    },
+    {
+      "evidence_id": "us-strikes-iran-by",
+      "evidence_ref_id": "venue:polymarket_international:us-strikes-iran-by",
+      "kind": "VENUE_MARKET",
+      "url": "https://polymarket.com",
+      "observed_at": "2026-03-03T12:00:00Z",
+      "source_version": "fixture:gamma_market@2026-03-03T12:00:00Z"
+    }
+  ],
+  "freshness": {
+    "state": "STALE",
+    "as_of": "2026-03-03T12:30:00Z",
+    "age_seconds": 22246200,
+    "stale_after_seconds": 86400,
+    "reason": "AGE_EXCEEDS_STALE_AFTER"
+  },
+  "unknowns": [
+    "At least one evidence source identity is unresolved.",
+    "No calibrated forecast is produced by this read model.",
+    "No canonical model output with provenance was supplied; model probability is null.",
+    "Prediction evidence bundle: PREDICTION_EVIDENCE_BUNDLE_NOT_SUPPLIED."
+  ],
+  "warnings": [
+    "event_type_unclassified",
+    "evidence_identity_incomplete",
+    "fixture_static_snapshot",
+    "prototype_compatibility",
+    "VENUE_FRESHNESS_STALE"
+  ],
+  "source_version": "radiant.fixture/iran-war-2026@2026-11-16",
+  "evidence_bundle": {
+    "state": "NOT_SUPPLIED",
+    "as_of": null,
+    "source_version": null,
+    "items": [],
+    "reason": "PREDICTION_EVIDENCE_BUNDLE_NOT_SUPPLIED"
+  }
+}

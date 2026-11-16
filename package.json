@@ -38,6 +38,11 @@
       "types": "./dist/read-model/index.d.ts",
       "import": "./dist/read-model/index.mjs",
       "require": "./dist/read-model/index.js"
+    },
+    "./prediction-intelligence": {
+      "types": "./dist/prediction-intelligence/index.d.ts",
+      "import": "./dist/prediction-intelligence/index.mjs",
+      "require": "./dist/prediction-intelligence/index.js"
     }
   },
   "files": [
