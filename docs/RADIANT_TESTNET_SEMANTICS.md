@@ -150,7 +150,7 @@ The acceptance dataset must include:
 - one Event with at least two immutable revisions;
 - one explicit correction or retraction;
 - three or more Events with branching temporal relations;
-- one bounded `PRECEDES` DAG and one non-acyclic associative relation;
+- one bounded `FOLLOWS` DAG and one non-acyclic associative relation;
 - canonical Entity and Narrative links resolved through shared IDs;
 - one Scenario and one Prediction with methodology labeled preview;
 - one Resolution fixture with evidence;
@@ -180,7 +180,7 @@ No existing prototype map is automatically accepted as this dataset.
 
 - Revision replay, concurrency, out-of-order, and retraction tests pass.
 - Graph projection is idempotent and rebuildable.
-- `PRECEDES` cycle and temporal consistency checks pass.
+- `FOLLOWS` cycle and temporal consistency checks pass.
 - Provenance and quality survive every hop.
 
 ### Integration

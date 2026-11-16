@@ -116,7 +116,7 @@ revision read model.
 
 | Frozen relationship | Direction | Domain owner | Constraint |
 |---|---|---|---|
-| `EVENT_RELATES_TO_EVENT` | Event → Event | RADIANT | Carries stable `relation_id`, bounded `relation_type`, valid time, epistemic status, evidence references, and assertion revision. `PRECEDES` is acyclic; association is not causal proof. |
+| `EVENT_RELATES_TO_EVENT` | Event → Event | RADIANT | Carries stable `relation_id`, bounded `relation_type`, valid time, epistemic status, evidence references, and assertion revision. `FOLLOWS` is acyclic; association is not causal proof. |
 | `EVENT_EVIDENCED_BY` | Event → Evidence | RADIANT binding; Harvester owns Evidence | Carries `evidence_ref_id`, relation type, and assertion revision; the Evidence endpoint must exist or be resolvable. |
 | `EVENT_INVOLVES_ENTITY` | Event → Entity | RADIANT binding; shared owner owns Entity | MATCH-only canonical Entity identity. |
 | `EVENT_CONTEXTUALIZED_BY_NARRATIVE` | Event → Narrative | RADIANT binding; shared owner owns Narrative | MATCH-only canonical Narrative identity. |
@@ -187,7 +187,7 @@ produce a successful complete graph.
   schemas, and transport topology.
 - Graph Updater allowlists and validates all RADIANT message types.
 - Duplicate, out-of-order, retry, DLQ, and partial-failure tests pass.
-- `PRECEDES` cycle detection and time-order tests pass.
+- `FOLLOWS` cycle detection and time-order tests pass.
 - Rebuild-from-authority and parity tests pass.
 - No direct Neo4j writer exists outside Graph Updater.
 - Serving/read adapter exposes provenance, quality, revision, and as-of fields.

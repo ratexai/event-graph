@@ -249,3 +249,26 @@ mounted under canonical paths as an implementation shortcut.
 - Security and entitlement tests pass default-deny behavior.
 - Exact-SHA Testnet smoke proves Event → Evidence → relationship → graph read.
 - Runtime, deployment, readiness, trace, and rollback evidence is linked.
+
+## 16. Reconciliation with the promoted shared OpenAPI
+
+The promoted `platform-api-contracts/openapi/public/radiant.v1.yaml` is the
+operation surface of record. This RC closes domain gaps, but the promoted
+document still omits invariants that MUST be amended before any implementation:
+
+- `EventRevision`: `supersedes_revision_id`, `content_digest`, `valid_time`
+  (not only `valid_from`/`valid_to`), `observed_at`, `last_observed_at`,
+  `lifecycle_status`, and `quality`;
+- `EventSummary`: title, `event_type`, `epistemic_status`, `valid_time`,
+  `observed_at`, `requires_verification`, `evidence_count`, and quality;
+- `EventRelation`: the reconciled relation vocabulary (including `FOLLOWS`,
+  `CONTINUES`, `RESPONDS_TO`, `CONFIRMS`, `CORRECTS`, `SUPERSEDES`, `ESCALATES`,
+  `DEESCALATES`, `RESOLVES`, `IMPACTS`, `CONTRADICTS`, `ASSOCIATED_WITH`),
+  evidence references, and assertion revision;
+- `PredictionMarketBinding`: provider-neutral market/outcome identity,
+  `as_of`, prices, close/resolution timestamps, and binding provenance;
+- every response: `environment`, `lifecycle`, `as_of`, and quality.
+
+No runtime claim is made by this section. The amendments are contract-only until
+the shared contract-plane owner accepts them. Provenance and the vocabulary
+mapping are recorded in `docs/RADIANT_CONTRACT_RECONCILIATION.md`.

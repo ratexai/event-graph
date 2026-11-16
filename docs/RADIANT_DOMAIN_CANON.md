@@ -109,21 +109,33 @@ Events. Relation assertion time and the valid-time interval are distinct.
 
 Every Event-to-Event assertion projects through the frozen shared Neo4j
 relationship name `EVENT_RELATES_TO_EVENT`. Its narrower RADIANT-owned
-`relation_type` property is deliberately limited to:
+`relation_type` property is reconciled with the accepted shared Testnet
+vocabulary and is limited to:
 
-- `PRECEDES`
-- `CO_OCCURS_WITH`
-- `ASSOCIATED_WITH`
-- `CORRELATED_WITH`
+- `FOLLOWS`
+- `CONTINUES`
+- `RESPONDS_TO`
+- `CONFIRMS`
 - `CONTRADICTS`
-- `CAUSAL_CANDIDATE`
+- `CORRECTS`
+- `SUPERSEDES`
+- `ESCALATES`
+- `DEESCALATES`
+- `RESOLVES`
+- `IMPACTS`
+- `ASSOCIATED_WITH`
 
-`CAUSAL_CANDIDATE` is not proof of causation. No relation may be silently
-upgraded to a stronger epistemic class.
+Causality is an *epistemic* label, not a relation type: `CAUSES` is excluded
+from the vocabulary. `causal_candidate` is an epistemic status on a bounded
+relation (normally `ASSOCIATED_WITH` or `IMPACTS`) and is not proof of
+causation. No relation may be silently upgraded to a stronger epistemic class.
+The earlier RC vocabulary (`PRECEDES`, `CO_OCCURS_WITH`, `CORRELATED_WITH`,
+`CAUSAL_CANDIDATE`) is superseded; the mapping and provenance are recorded in
+`docs/RADIANT_CONTRACT_RECONCILIATION.md`.
 
 World history is a temporal graph or DAG over bounded relation types. It is not
 one global linked list. Cycles are forbidden only for relation types explicitly
-declared acyclic, such as `PRECEDES`; associative relations may form cycles.
+declared acyclic, such as `FOLLOWS`; associative relations may form cycles.
 
 The other frozen shared semantic relationship names are
 `EVENT_EVIDENCED_BY`, `EVENT_INVOLVES_ENTITY`, and
