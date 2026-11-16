@@ -33,6 +33,11 @@
       "types": "./dist/styles/theme.d.ts",
       "import": "./dist/styles/theme.mjs",
       "require": "./dist/styles/theme.js"
+    },
+    "./read-model": {
+      "types": "./dist/read-model/index.d.ts",
+      "import": "./dist/read-model/index.mjs",
+      "require": "./dist/read-model/index.js"
     }
   },
   "files": [
