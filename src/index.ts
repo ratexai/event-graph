@@ -82,3 +82,6 @@ export type { CuiBonoPanelProps } from "./components/CuiBono/CuiBonoPanel";
 export { GraphErrorBoundary } from "./components/Shared/ErrorBoundary";
 export { NarrativeLegend } from "./components/EventGraph/Overlays";
 export { NarrativeLegendBar } from "./components/EventGraph/TopBars";
+
+// RADIANT read model (read-only; no event writer)
+export * from "./read-model";

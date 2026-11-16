@@ -8,6 +8,7 @@ export default defineConfig({
     "api/client": "src/api/client.ts",
     "styles/theme": "src/styles/theme.ts",
     "types/index": "src/types/index.ts",
+    "read-model/index": "src/read-model/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,
